@@ -1,5 +1,5 @@
 import streamlit as st
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -9,10 +9,8 @@ st.set_page_config(
 )
 
 # 세션 상태 초기화
-if "current_tab" not in st.session_state:
-    st.session_state.current_tab = "설정"
-if "sub_page" not in st.session_state:
-    st.session_state.sub_page = "main"
+if "current_tab" not in st.session_state: st.session_state.current_tab = "설정"
+if "sub_page" not in st.session_state: st.session_state.sub_page = "main"
 
 # [주행 설정 데이터]
 if "pilot_assist" not in st.session_state: st.session_state.pilot_assist = True
@@ -29,38 +27,19 @@ if "reduce_alarm_sensitivity" not in st.session_state: st.session_state.reduce_a
 if "welcome_light" not in st.session_state: st.session_state.welcome_light = True
 if "wireless_charging" not in st.session_state: st.session_state.wireless_charging = True
 
-# [조명 모두 보기 추가 설정 데이터]
-if "left_drive_light_adjust" not in st.session_state: st.session_state.left_drive_light_adjust = False
-if "cluster_trip_info" not in st.session_state: st.session_state.cluster_trip_info = "자동"
-
-# 🔒 [잠금 모두 보기 추가 설정 데이터]
-if "unlock_mode" not in st.session_state: st.session_state.unlock_mode = "모두"
-if "sunroof_curtain_auto_close" not in st.session_state: st.session_state.sunroof_curtain_auto_close = False
-if "turn_signal_blink" not in st.session_state: st.session_state.turn_signal_blink = True
-if "auto_fold_mirror" not in st.session_state: st.session_state.auto_fold_mirror = True
-
-# [시스템 상세 설정 데이터]
-if "sys_time_auto" not in st.session_state: st.session_state.sys_time_auto = True
-if "sys_timezone_auto" not in st.session_state: st.session_state.sys_timezone_auto = True
-if "sys_time_24h" not in st.session_state: st.session_state.sys_time_24h = True
-if "selected_language" not in st.session_state: st.session_state.selected_language = "한국어(대한민국)"
-
-# [NUGU Auto 전용 상태 데이터]
-if "nugu_enabled" not in st.session_state: st.session_state.nugu_enabled = True
-if "nugu_alarm" not in st.session_state: st.session_state.nugu_alarm = True
-if "nugu_perf" not in st.session_state: st.session_state.nugu_perf = False
-if "nugu_permission_clear" not in st.session_state: st.session_state.nugu_permission_clear = True
+# 쿼리 파라미터 연동 (안전하게 가져오기)
+if "brightness_slider" in st.query_params:
+    try:
+        st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
+    except ValueError:
+        pass
 
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 내부 밝기 쿼리 파라미터 연동
-if "brightness_slider" in st.query_params:
-    st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
-
-# 2. 볼보 헤리티지 UI 스타일 정의
+# 2. 볼보 헤리티지 UI 스타일 정의 (</style> 태그 누락 수정)
 st.markdown(
     f"""
     <style>
@@ -89,24 +68,6 @@ st.markdown(
         padding: 0 10px;
     }}
     
-    /* 상단 메인 탭 */
-    div.tab-zone button {{
-        background-color: transparent !important;
-        color: #8e959e !important;
-        border: none !important;
-        font-size: 16px !important;
-        font-weight: 500 !important;
-        padding: 8px 0 !important;
-        width: 100% !important;
-        box-shadow: none !important;
-    }}
-    div.tab-zone button[kind="primary"] {{
-        color: #ffffff !important;
-        font-weight: bold !important;
-        border-bottom: 2px solid #ffffff !important;
-        border-radius: 0px !important;
-    }}
-    
     /* 📱 퀵 컨트롤 카드 */
     .volvo-card-content {{
         background-color: rgb(22, 27, 35) !important;
@@ -123,3 +84,37 @@ st.markdown(
     }}
     .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
     .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# --- 3. 실제 화면에 그려지는 UI 영역 (예시) ---
+
+# 상단 상태바
+current_time = datetime.now().strftime("%H:%M")
+st.markdown(
+    f"""
+    <div class="volvo-status-bar">
+        <span>LTE</span>
+        <span>{current_time}</span>
+        <span>22.0 °C</span>
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+
+# 메인 레이아웃 구성
+col1, col2, col3 = st.columns([1, 2, 1])
+
+with col1:
+    st.markdown('<div class="volvo-card-content side-btn"><div>왼쪽<br>컨트롤</div></div>', unsafe_allow_html=True)
+    if st.button("파일럿 어시스트", use_container_width=True):
+        st.session_state.pilot_assist = not st.session_state.pilot_assist
+
+with col2:
+    st.markdown('<div class="volvo-card-content center-box"><div>VOLVO</div></div>', unsafe_allow_html=True)
+
+with col3:
+    st.markdown('<div class="volvo-card-content side-btn"><div>오른쪽<br>컨트롤</div></div>', unsafe_allow_html=True)
+    st.toggle("무선 충전", value=st.session_state.wireless_charging)
