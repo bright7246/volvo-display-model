@@ -11,21 +11,16 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* 전체 배경색: 짙은 차콜 블랙 */
     .stApp {
         background-color: #1a1e24;
         color: #ffffff;
     }
-    
-    /* 가로 너비를 제한하여 세로가 긴 차량용 디스플레이 느낌 구현 */
     .block-container {
         max-width: 450px !important;
         padding-top: 1.5rem;
         padding-bottom: 1.5rem;
         margin: 0 auto;
     }
-
-    /* 상단 상태 바 */
     .volvo-status-bar {
         display: flex;
         justify-content: space-between;
@@ -36,8 +31,6 @@ st.markdown(
         padding: 5px 10px;
         margin-bottom: 5px;
     }
-
-    /* 스트림릿 기본 버튼 투명화 (상단 탭 메뉴용) */
     .stButton > button {
         background-color: transparent !important;
         color: #8e959e !important;
@@ -49,15 +42,11 @@ st.markdown(
         border-radius: 0px !important;
         box-shadow: none !important;
     }
-    
-    /* 활성화된 탭 스타일 */
     .stButton > button[kind="primary"] {
         color: #ffffff !important;
         font-weight: bold !important;
         border-bottom: 3px solid #ffffff !important;
     }
-
-    /* 중앙 3단 정렬 컨테이너 (정중앙 센터링을 위한 flex 설정) */
     .volvo-main-grid {
         display: flex;
         justify-content: space-between;
@@ -66,7 +55,6 @@ st.markdown(
         min-height: 240px;
         width: 100%;
     }
-
     .grid-column {
         display: flex;
         flex-direction: column;
@@ -74,8 +62,6 @@ st.markdown(
         justify-content: center;
         width: 30%;
     }
-
-    /* 모든 버튼을 회색 원으로 통일하고 안에 글씨가 들어가도록 설정 */
     .volvo-circle-btn {
         width: 65px;
         height: 65px;
@@ -90,7 +76,6 @@ st.markdown(
         text-align: center;
         line-height: 1.3;
     }
-
     .btn-bottom-label {
         font-size: 11px;
         color: #8e959e;
@@ -98,15 +83,12 @@ st.markdown(
         text-align: center;
         white-space: nowrap;
     }
-
-    /* 중앙 대형 VOLVO 텍스트 완전 센터링 스타일 */
     .center-volvo-container {
         display: flex;
         align-items: center;
         justify-content: center;
         width: 40%;
     }
-
     .center-volvo-text {
         font-size: 36px;
         font-weight: 300;
@@ -115,8 +97,6 @@ st.markdown(
         font-family: 'Times New Roman', Times, serif;
         text-align: center;
     }
-
-    /* 하단 공조장치 바 디자인 */
     .volvo-bottom-bar {
         display: flex;
         justify-content: space-between;
@@ -127,7 +107,6 @@ st.markdown(
         margin-top: 40px;
         border: 1px solid #232830;
     }
-
     .bottom-item {
         font-size: 14px;
         font-weight: 500;
@@ -138,15 +117,12 @@ st.markdown(
         align-items: center;
         justify-content: center;
     }
-    
     .bottom-sub-label {
         font-size: 9px;
         color: #8e959e;
         display: block;
         margin-top: 1px;
     }
-
-    /* 하단 공조바 내부의 원형 설정 버튼 */
     .bottom-setting-circle {
         width: 38px;
         height: 38px;
@@ -169,15 +145,7 @@ if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
 # --- 1. 최상단 상태바 ---
-st.markdown(
-    '''
-    <div class="volvo-status-bar">
-        <span>오전 08:46</span>
-        <span>📶 LTE</span>
-    </div>
-    ''', 
-    unsafe_allow_html=True
-)
+st.markdown('<div class="volvo-status-bar"><span>오전 08:46</span><span>📶 LTE</span></div>', unsafe_allow_html=True)
 
 # --- 2. 상단 메뉴 탭 ---
 top_col1, top_col2, top_col3 = st.columns(3)
@@ -220,55 +188,30 @@ else:
     # 밝기 조절 슬라이더
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, value=85)
 
-    # 중앙 메인 레이아웃 (HTML 템플릿 하나로 묶어 깨짐 방지)
-    st.markdown(
-        '''
-        <div class="volvo-main-grid">
-            <div class="grid-column">
-                <div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;">
-                    <div class="volvo-circle-btn">차선<br>유지</div>
-                    <div class="btn-bottom-label">차선유지 보조</div>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <div class="volvo-circle-btn">S / S</div>
-                    <div class="btn-bottom-label">Start/Stop</div>
-                </div>
-            </div>
-            
-            <div class="center-volvo-container">
-                <div class="center-volvo-text">VOLVO</div>
-            </div>
-            
-            <div class="grid-column">
-                <div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;">
-                    <div class="volvo-circle-btn">알람<br>줄이기</div>
-                    <div class="btn-bottom-label">알람 줄이기</div>
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <div class="volvo-circle-btn">헤드<br>레스트</div>
-                    <div class="btn-bottom-label">헤드레스트 접기</div>
-                </div>
-            </div>
-        </div>
-        ''',
-        unsafe_allow_html=True
+    # 💡 스트림릿 오작동 방지를 위해 문자열의 모든 들여쓰기를 제거하여 한 줄로 붙여넣었습니다.
+    main_html = (
+        '<div class="volvo-main-grid">'
+        '<div class="grid-column">'
+        '<div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-circle-btn">차선<br>유지</div><div class="btn-bottom-label">차선유지 보조</div></div>'
+        '<div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-circle-btn">S / S</div><div class="btn-bottom-label">Start/Stop</div></div>'
+        '</div>'
+        '<div class="center-volvo-container"><div class="center-volvo-text">VOLVO</div></div>'
+        '<div class="grid-column">'
+        '<div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-circle-btn">알람<br>줄이기</div><div class="btn-bottom-label">알람 줄이기</div></div>'
+        '<div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-circle-btn">헤드<br>레스트</div><div class="btn-bottom-label">헤드레스트 접기</div></div>'
+        '</div>'
+        '</div>'
     )
+    st.markdown(main_html, unsafe_allow_html=True)
 
-    # --- 4. 하단 공조 장치 바 (원형 설정 버튼 포함) ---
-    st.markdown(
-        '''
-        <div class="volvo-bottom-bar">
-            <div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>
-            <div class="bottom-item">💺 LO</div>
-            <div class="bottom-item">
-                <span style="font-size: 16px;">🌀</span>
-                <span class="bottom-sub-label">공기 재순환</span>
-            </div>
-            <div class="bottom-item">LO 💺</div>
-            <div class="bottom-item">
-                <div class="bottom-setting-circle">설정</div>
-            </div>
-        </div>
-        ''', 
-        unsafe_allow_html=True
+    # --- 4. 하단 공조 장치 바 ---
+    bottom_html = (
+        '<div class="volvo-bottom-bar">'
+        '<div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>'
+        '<div class="bottom-item">💺 LO</div>'
+        '<div class="bottom-item"><span style="font-size: 16px;">🌀</span><span class="bottom-sub-label">공기 재순환</span></div>'
+        '<div class="bottom-item">LO 💺</div>'
+        '<div class="bottom-item"><div class="bottom-setting-circle">설정</div></div>'
+        '</div>'
     )
+    st.markdown(bottom_html, unsafe_allow_html=True)
