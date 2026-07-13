@@ -194,25 +194,18 @@ st.markdown(
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
     /* ⚙️ 설정 메인 격자 카드 */
-/* ⚙️ 설정 메인 격자 카드 - 높이를 절반 수준으로 조정 */
-    div.volvo-grid-card div.stButton > button {
+    div.volvo-grid-card div.stButton > button {{
         background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
-        border-radius: 12px !important; 
-        height: 65px !important; /* 기존 135px에서 약 절반인 65px로 축소 */
-        font-size: 14px !important; /* 높이가 줄어든 만큼 폰트도 살짝 작게 */
-        font-weight: 600 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+        border-radius: 14px !important;
+        height: 135px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         width: 100% !important;
-        white-space: nowrap !important; /* 텍스트가 길어져도 한 줄로 유지 */
-        padding: 0 10px !important;
-    }
-    
-    /* 버튼에 마우스 올렸을 때 효과 */
-    div.volvo-grid-card div.stButton > button:hover {
-        border: 1px solid #5a667a !important;
-    }
+        white-space: pre-line !important;
+    }}
     
     /* 🛠️ 세팅 박스 타이틀 */
     .volvo-title-row {{ font-size: 14px; color: #8e959e; font-weight: bold; margin-top: 22px; margin-bottom: 12px; padding-left: 5px; }}
@@ -344,6 +337,7 @@ if st.session_state.sub_page == "main":
 # --- 3. 화면 분기 처리 ---
 
 # 📊 [상태] 메인 탭 화면
+# 📊 [상태] 메인 탭 화면 (버튼형 카드 스타일 적용)
 if st.session_state.current_tab == "상태" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     
@@ -675,7 +669,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                     st.session_state.interior_light_dim = "높음"; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="volvo-title-row">외부 조명</div>', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row">外部 조명</div>', unsafe_allow_html=True)
     with st.container(border=True):
         ext_col1, ext_col2 = st.columns([4.2, 0.8])
         with ext_col1:
