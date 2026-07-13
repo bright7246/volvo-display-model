@@ -35,7 +35,7 @@ if "sys_timezone_auto" not in st.session_state: st.session_state.sys_timezone_au
 if "sys_time_24h" not in st.session_state: st.session_state.sys_time_24h = True
 if "selected_language" not in st.session_state: st.session_state.selected_language = "한국어(대한민국)"
 
-# [NUGU Auto 전용 상태 데이터 (image_fe7906.jpg 대응)]
+# [NUGU Auto 전용 상태 데이터]
 if "nugu_enabled" not in st.session_state: st.session_state.nugu_enabled = True
 if "nugu_alarm" not in st.session_state: st.session_state.nugu_alarm = True
 if "nugu_perf" not in st.session_state: st.session_state.nugu_perf = False
@@ -200,16 +200,13 @@ st.markdown(
         font-weight: bold !important;
         box-shadow: none !important;
     }}
-    div.app-action-zone div.stButton > button:active {{
-        background-color: rgb(48, 56, 70) !important;
-    }}
-
-    /* 🛡️ 권한 설정 화면 전용 커스텀 스타일 (image_fe8141.jpg / image_fe815e.jpg 대응) */
+    
+    /* 🛡️ 권한 설정 화면 전용 커스텀 스타일 */
     .right-top-text {{
         font-size: 14px;
         color: #8e959e;
         text-align: right;
-        line-height: 38px; /* 뒤로가기 버튼과 완벽하게 수평 정렬 */
+        line-height: 38px;
         font-weight: 500;
         padding-right: 8px;
     }}
@@ -231,8 +228,6 @@ st.markdown(
         font-size: 15px;
         font-weight: bold;
         color: white;
-        font-family: 'Helvetica Neue', sans-serif;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }}
     .app-header-title-custom {{
         font-size: 18px;
@@ -254,6 +249,8 @@ st.markdown(
         align-items: center;
         justify-content: center;
     }}
+    .permission-title {{ font-size: 15px; font-weight: 500; color: #ffffff; }}
+    .permission-subtext {{ font-size: 12px; color: #8e959e; margin-top: 3px; }}
     
     /* 슬라이더 스타일 */
     .slider-container-custom {{ display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 5px 0; background: transparent !important; }}
@@ -624,6 +621,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="volvo-title-row">기본 앱</div>', unsafe_allow_html=True)
     
+    # 💥 [해결 완료] 외부 레이아웃 래퍼를 컬럼 바깥에 정상 배치
     st.markdown('<div class="system-list-zone align-arrow-center">', unsafe_allow_html=True)
     col1, col2 = st.columns([4.2, 0.8])
     with col1: 
@@ -635,10 +633,8 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             unsafe_allow_html=True
         )
     with col2: 
-        # NUGU Auto 정보 상세 보기(sys_nugu_info) 페이지 분기 유도
         if st.button("〉", key="btn_nugu_auto", use_container_width=True):
             st.session_state.sub_page = "sys_nugu_info"; st.rerun()
-            
     st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
@@ -675,7 +671,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🔍 [시스템 -> 애플리케이션 -> NUGU Auto 앱 정보] 세부 페이지 (image_fe7906.jpg 대응)
+# 🔍 [시스템 -> 애플리케이션 -> NUGU Auto 앱 정보] 세부 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_nugu_info":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  앱 정보", key="back_to_sys_apps"):
@@ -683,10 +679,8 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 중앙 정렬 앱 타이틀 명시
     st.markdown('<div style="text-align: center; font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 25px;">NUGU Auto</div>', unsafe_allow_html=True)
 
-    # 🔳 상단 순정형 기능 액션 버튼 존
     st.markdown('<div class="app-action-zone">', unsafe_allow_html=True)
     act_col1, act_col2 = st.columns(2)
     with act_col1:
@@ -700,16 +694,13 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     
     st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
 
-    # 하부 리스트 구성
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
-    # 알림 토글
     col_al1, col_al2 = st.columns([4.2, 0.8])
     with col_al1: st.markdown('<div class="text-container-fix"><div class="system-item-main" style="margin-top: 6px;">알림</div></div>', unsafe_allow_html=True)
     with col_al2: st.session_state.nugu_alarm = st.toggle("tgl_nugu_alarm", value=st.session_state.nugu_alarm, label_visibility="collapsed")
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 권한 항목 (〉 클릭 시 image_fe8141.jpg 권한페이지로 화면 전환 연동!)
     col_pr1, col_pr2 = st.columns([4.2, 0.8])
     with col_pr1: st.markdown('<div class="text-container-fix"><div class="system-item-main">권한</div><div class="system-item-sub">근처 기기, 마이크, 알림, 연락처, 위치, 전화, 통화 기록, SMS 및 추가 권한 1개</div></div>', unsafe_allow_html=True)
     with col_pr2: 
@@ -717,32 +708,27 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.sub_page = "sys_nugu_permissions"; st.rerun()
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 저장용량 및 캐시
     col_st1, col_st2 = st.columns([4.2, 0.8])
     with col_st1: st.markdown('<div class="text-container-fix"><div class="system-item-main">저장용량 및 캐시</div><div class="system-item-sub">내부 저장소의 94.87MB</div></div>', unsafe_allow_html=True)
     with col_st2: st.button("〉", key="btn_nugu_storage", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 앱 성능 우선순위 지정 토글
     col_pf1, col_pf2 = st.columns([4.2, 0.8])
     with col_pf1: st.markdown('<div class="text-container-fix"><div class="system-item-main">앱 성능 우선순위 지정</div><div class="system-item-sub">시스템 리소스를 사용하여 앱 성능 우선순위를 지정합니다.</div></div>', unsafe_allow_html=True)
     with col_pf2: st.session_state.nugu_perf = st.toggle("tgl_nugu_perf", value=st.session_state.nugu_perf, label_visibility="collapsed")
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 권한을 삭제하고 여유 공간 확보 토글
     col_cl1, col_cl2 = st.columns([4.2, 0.8])
     with col_cl1: st.markdown('<div class="text-container-fix"><div class="system-item-main" style="margin-top: 6px;">권한을 삭제하고 여유 공간 확보</div></div>', unsafe_allow_html=True)
     with col_cl2: st.session_state.nugu_permission_clear = st.toggle("tgl_nugu_clear", value=st.session_state.nugu_permission_clear, label_visibility="collapsed")
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 버전 표기
     st.markdown('<div class="text-container-fix" style="padding-left: 4px;"><div class="system-item-sub" style="font-size: 14px;">버전: 2.0.133</div></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🛡️ [시스템 -> 애플리케이션 -> NUGU Auto -> 앱 권한] 세부 설정 뷰 (신규 추가! image_fe8141.jpg / image_fe815e.jpg 대응)
+# 🛡️ [시스템 -> 애플리케이션 -> NUGU Auto -> 앱 권한] 세부 설정 뷰
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_nugu_permissions":
-    # 상단 내비게이션 바 (좌측 뒤로가기 버튼 + 우측 모든 권한 텍스트 수평 정렬)
     col_top_l, col_top_r = st.columns([3.5, 1.5])
     with col_top_l:
         st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -754,7 +740,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 순정형 앱명 영역 (NUGU Auto 아이콘 서클 + 타이틀 구성)
     st.markdown(
         '<div class="app-header-row">'
         '<div class="app-header-icon-custom">N</div>'
@@ -764,13 +749,10 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     )
     st.markdown('<div style="border-bottom: 1px solid #232830; margin-top: -10px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # [허용됨] 대단락
     st.markdown('<div class="volvo-title-row" style="margin-top: 10px; margin-bottom: 10px;">허용됨</div>', unsafe_allow_html=True)
     
-    # 허용 권한 상세 리스트 HTML 인젝션
     allowed_permissions_html = """
     <div class="system-list-zone">
-        <!-- 근처 기기 -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">💠</div>
             <div class="permission-text-box">
@@ -780,7 +762,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
         
-        <!-- 마이크 -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">🎤</div>
             <div class="permission-text-box">
@@ -789,7 +770,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
         
-        <!-- 알림 -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">🔔</div>
             <div class="permission-text-box">
@@ -798,7 +778,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
         
-        <!-- 연락처 -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">👤</div>
             <div class="permission-text-box">
@@ -807,7 +786,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
         
-        <!-- 위치 -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">📍</div>
             <div class="permission-text-box">
@@ -817,7 +795,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
         
-        <!-- 전화 -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">📞</div>
             <div class="permission-text-box">
@@ -827,7 +804,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
         
-        <!-- 통화 기록 -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">🕒</div>
             <div class="permission-text-box">
@@ -836,7 +812,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
         
-        <!-- SMS -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">💬</div>
             <div class="permission-text-box">
@@ -845,7 +820,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
         
-        <!-- 추가 권한 -->
         <div class="permission-item-row-custom">
             <div class="permission-icon-custom">⚙️</div>
             <div class="permission-text-box">
@@ -857,7 +831,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     """
     st.markdown(allowed_permissions_html, unsafe_allow_html=True)
     
-    # [허용되지 않음] 대단락
     st.markdown('<div class="volvo-title-row" style="margin-top: 25px; margin-bottom: 10px;">허용되지 않음</div>', unsafe_allow_html=True)
     
     denied_permissions_html = """
