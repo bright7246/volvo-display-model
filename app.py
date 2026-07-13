@@ -38,35 +38,31 @@ border_color = "rgb(42, 49, 61)"
 if "brightness_slider" in st.query_params:
     st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
 
-# 2. [골든 룰] 스타일 정의 (공조 바 아래까지 채우는 일체형 레이아웃 오버라이딩)
+# 2. [골든 룰] 스타일 정의 (스크롤바 박멸 및 순정 컨테이너 오버라이딩)
 st.markdown(
     f"""
     <style>
-    /* 기본 스트림릿 배경 투명화 및 여백 완전 초기화 */
+    /* 전체 브라우저 외곽 배경 */
     .stApp {{
         background-color: {bg_color} !important;
-    }}
-    .block-container {{
-        max-width: 530px !important;
-        padding-top: 2rem !important;
-        padding-bottom: 2rem !important;
-        padding-left: 0px !important;
-        padding-right: 0px !important;
-        margin: 0 auto;
-        background-color: transparent !important;
+        color: #ffffff !important;
     }}
     
-    /* 📱 [제안 반영 핵심 수술] 상단부터 공조 바 아래 끝까지 무조건 채우는 절대 스크린 래퍼 */
-    .volvo-screen-wrapper {{
+    /* 📱 [버그 원천 해결] 밀림 현상이 발생하는 원인인 스트림릿 메인 컨테이너 자체를 타겟팅하여 도색 및 규격 고정 */
+    div[data-testid="stMainBlockContainer"] {{
+        max-width: 480px !important;
         background-color: {card_color} !important;
-        padding: 30px 25px 25px 25px !important;
+        padding-top: 35px !important; 
+        padding-bottom: 25px !important;
+        padding-left: 25px !important;
+        padding-right: 25px !important;
+        margin: 0 auto !important;
+        min-height: 870px !important; 
+        height: auto !important;
+        box-shadow: 0 0 35px rgba(0, 0, 0, 0.6);
         border-radius: 16px;
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
-        width: 100%;
-        min-height: 920px;
-        height: auto;
-        display: flex;
-        flex-direction: column;
+        display: flex !important;
+        flex-direction: column !important;
     }}
     
     /* 상단 시계 및 상태바 */
@@ -78,6 +74,7 @@ st.markdown(
         font-size: 14px;
         color: #ffffff !important;
         font-weight: 500;
+        padding: 5px 0px;
         margin-bottom: 25px;
     }}
     
@@ -133,7 +130,7 @@ st.markdown(
         white-space: pre-line !important;
     }}
     
-    /* 🛠️ 서브페이지 제목줄 및 상자 제어 */
+    /* 🛠️ [A 세팅] 제목줄 스타일 */
     .volvo-title-row {{
         font-size: 14px;
         color: #8e959e;
@@ -142,6 +139,8 @@ st.markdown(
         margin-bottom: 12px;
         padding-left: 5px;
     }}
+    
+    /* 🛠️ [B 세팅] 서브페이지 내부 상자들 */
     div.subpage-content-zone div[data-testid="stVerticalBlockBorderWrapper"] {{
         background-color: rgba(18, 22, 28, 0.4) !important;
         border: 1px solid {border_color} !important;
@@ -150,15 +149,31 @@ st.markdown(
         margin-bottom: 5px !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
     }}
+    
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-title-align-btn {{ font-size: 15px; font-weight: bold; color: #ffffff; padding-top: 6px; }}
     .setting-title-align-tgl {{ font-size: 15px; font-weight: bold; color: #ffffff; padding-top: 2px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
     /* 시스템 리스트 아이템 UI 스타일 */
-    .system-list-zone {{ display: flex; flex-direction: column; width: 100%; margin-top: -5px; }}
-    .system-list-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 14px 8px; border-bottom: 1px solid #333b46; cursor: pointer; }}
-    .system-list-item:last-child {{ border-bottom: none; }}
+    .system-list-zone {{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: -5px;
+    }}
+    .system-list-item {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 14px 8px;
+        border-bottom: 1px solid #333b46;
+        cursor: pointer;
+    }}
+    .system-list-item:last-child {{
+        border-bottom: none;
+    }}
     .system-item-main {{ font-size: 15px; font-weight: 500; color: #ffffff; }}
     .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 3px; }}
     .system-arrow {{ color: #5d646e; font-size: 15px; font-weight: bold; padding-right: 4px; }}
@@ -185,7 +200,7 @@ st.markdown(
     div[data-testid="stCheckboxToggleHoverTarget"] div[aria-checked="true"] {{ background-color: #00A3E0 !important; }}
     .back-btn-box button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 18px !important; font-weight: bold !important; padding: 0 !important; box-shadow: none !important; }}
     
-    /* 하단 공조 바 (래퍼 내부 최하단 자동 가치 고정) */
+    /* 하단 공조 바 (컨테이너 내 유동적 최하단 배치 고정) */
     .volvo-bottom-bar {{ 
         display: flex; 
         justify-content: space-between; 
@@ -193,8 +208,9 @@ st.markdown(
         background-color: #111418; 
         padding: 14px 18px; 
         border-radius: 12px; 
-        margin-top: auto !important; /* 💡 콘텐츠 종료 지점 아래에 자동 배치 */
+        margin-top: auto !important; /* 💡 콘텐츠 양에 상관없이 무조건 화면 하단 정렬 */
         border: 1px solid #232830; 
+        width: 100%;
     }}
     .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
     .bottom-sub-label {{ font-size: 9px; color: #8e959e !important; display: block; margin-top: 2px; }}
@@ -202,9 +218,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-# 📱 래퍼 컨테이너 열기 (화면 전체 도색 레이어)
-st.markdown('<div class="volvo-screen-wrapper">', unsafe_allow_html=True)
 
 # --- 1. 최상단 상태바 상시 표시 ---
 utc_now = datetime.utcnow()
@@ -516,7 +529,7 @@ else:
         st.write("<div style='margin-top:25px;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="volvo-card-content side-btn">헤드<br>레스트</div>', unsafe_allow_html=True)
 
-# --- 4. 하단 공조 장치 바 (이제 완벽히 회색 스크린 내부 밑바닥에 완전 흡수) ---
+# --- 4. 하단 공조 장치 바 ---
 bottom_html = (
     '<div class="volvo-bottom-bar">'
     '<div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>'
@@ -527,6 +540,3 @@ bottom_html = (
     '</div>'
 )
 st.markdown(bottom_html, unsafe_allow_html=True)
-
-# 📱 래퍼 컨테이너 닫기
-st.markdown('</div>', unsafe_allow_html=True)
