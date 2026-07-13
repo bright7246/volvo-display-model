@@ -205,19 +205,36 @@ st.markdown(
     .oil-bar-fill-green {{ background-color: #00c853; height: 100%; width: 84%; border-radius: 4px 0 0 4px; }}
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
-    /* ⚙️ 설정 메인 격자 카드 */
-    div.volvo-grid-card div.stButton > button {{
+  /* ⚙️ 설정 메인 격자 카드 - 스트림릿 고집을 꺾는 초강력 크기 고정 */
+    div.volvo-grid-card div.stButton > button {
         background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
-        border: 1px solid {border_color} !important;
+        border: 1px solid rgb(42, 49, 61) !important;
         border-radius: 14px !important;
+        
+        /* 1. 처음에 만드셨던 전(Before) 사진의 그 크기 그대로 135px 강제 고정 */
         height: 135px !important;
+        width: 100% !important;
+        
+        /* 2. 스트림릿 내부 컴포넌트가 버튼을 찌그러트리지 못하게 내부 여백 초기화 및 중앙 정렬 */
+        padding: 0px !important;
+        margin: 0px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        
+        /* 3. 폰트 및 그림자 스타일 복원 */
         font-size: 16px !important;
         font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-        width: 100% !important;
         white-space: pre-line !important;
-    }}
+    }
+
+    /* 버튼 내부 텍스트 컨테이너가 정중앙에 위치하도록 강제 홀딩 */
+    div.volvo-grid-card div.stButton > button div[data-testid="stMarkdownContainer"] p {
+        margin: 0 !important;
+        line-height: 1.5 !important;
+    }
     
     /* 🛠️ 세팅 박스 타이틀 */
     .volvo-title-row {{ font-size: 14px; color: #8e959e; font-weight: bold; margin-top: 22px; margin-bottom: 12px; padding-left: 5px; }}
