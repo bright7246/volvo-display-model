@@ -7,31 +7,31 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# 세션 상태 초기화 및 슬라이더 초기값 세팅
+# 세션 상태 초기화
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
-# 💡 오류 원인 해결: 여기서 슬라이더 값을 안전하게 제어합니다.
+# 밝기 조절 기본값 설정
 if "brightness" not in st.session_state:
     st.session_state.brightness = 85
 
-# 밝기 값(0~100)을 기반으로 RGB 배경색 동적 계산
-bg_base = 15 + int(st.session_state.brightness * 0.2)
-card_base = 25 + int(st.session_state.brightness * 0.25)
-border_base = 35 + int(st.session_state.brightness * 0.3)
+# 💡 실시간 밝기 값 연동을 위한 RGB 색상 계산
+bg_base = 12 + int(st.session_state.brightness * 0.25)     # 12 ~ 37 범위
+card_base = 20 + int(st.session_state.brightness * 0.3)    # 20 ~ 50 범위
+border_base = 30 + int(st.session_state.brightness * 0.35) # 30 ~ 65 범위
 
 bg_color = f"rgb({bg_base}, {bg_base+4}, {bg_base+10})"
 card_color = f"rgb({card_base}, {card_base+6}, {card_base+16})"
 border_color = f"rgb({border_base}, {border_base+7}, {border_base+17})"
 
-# 2. 볼보 UI의 세로형 사각형 박스 레이아웃 및 동적 밝기 CSS 설정
+# 2. 볼보 UI 레이아웃 및 동적 CSS 주입
 st.markdown(
     f"""
     <style>
     .stApp {{
         background-color: {bg_color} !important;
         color: #ffffff;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.1s ease;
     }}
     .block-container {{
         max-width: 450px !important;
@@ -96,7 +96,7 @@ st.markdown(
         text-align: center;
         line-height: 1.4;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: background-color 0.3s, border-color 0.3s;
+        transition: background-color 0.1s, border-color 0.1s;
     }}
     .center-volvo-box {{
         width: 130px; 
@@ -108,7 +108,7 @@ st.markdown(
         align-items: center;
         justify-content: center;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: background-color 0.3s, border-color 0.3s;
+        transition: background-color 0.1s, border-color 0.1s;
     }}
     .center-volvo-text {{
         font-size: 24px;
@@ -169,8 +169,32 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 1. 최상단 상태바 ---
-st.markdown('<div class="volvo-status-bar"><span>오전 08:46</span><span>📶 LTE</span></div>', unsafe_allow_html=True)
+# --- 1. 최상단 상태바 (💡 JavaScript 실시간 표준시간 연동 스크립트 추가) ---
+st.markdown(
+    """
+    <div class="volvo-status-bar">
+        <span id="live-clock">오전 00:00</span>
+        <span>📶 LTE</span>
+    </div>
+    <script>
+    function updateClock() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var ampm = hours >= 12 ? '오후' : '오전';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0시는 12시로 표시
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        
+        var strTime = ampm + ' ' + (hours < 10 ? '0' + hours : hours) + ':' + minutes;
+        document.getElementById('live-clock').innerHTML = strTime;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+    </script>
+    """, 
+    unsafe_allow_html=True
+)
 
 # --- 2. 상단 메뉴 탭 ---
 top_col1, top_col2, top_col3 = st.columns(3)
@@ -209,7 +233,7 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 else:
-    # 💡 정상적인 슬라이더 배치 (key 값을 한 번만 선언하여 에러를 방지했습니다)
+    # 💡 밝기 조절 슬라이더 작동 시 세션을 갱신하여 CSS에 즉시 반영
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, key="brightness")
 
     # 중앙 메인 레이아웃
