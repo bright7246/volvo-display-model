@@ -31,7 +31,7 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 2. [골든 룰] 스타일 정의 (디자인 절대 보존 및 슬라이더 배경 제거/여백 밸런스 수술)
+# 2. [골든 룰] 스타일 정의 (디자인 절대 보존 및 슬라이더 트랙 색상 박멸/하단 패딩 3배 확보 CSS)
 st.markdown(
     f"""
     <style>
@@ -138,11 +138,11 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🎚️ [버그 컷] 슬라이더 자체 연한 배경색 완전 지우기 및 볼보 블루 커스텀 */
-    div[data-testid="stSlider"] {{ background-color: transparent !important; background: transparent !important; }}
-    div[data-testid="stSlider"] > div {{ background-color: transparent !important; }}
-    div[data-testid="stSlider"] div[aria-label] {{ background-color: #00A3E0 !important; }}
-    div[data-testid="stSlider"] div[data-testid="stSliderTrack"] > div {{ background-color: #00A3E0 !important; }}
+    /* 🎚️ [요구사항 반영] 슬라이더 푸른색 채우기 완전 박멸 -> 카드 배경색과 일치화 */
+    div[data-testid="stSlider"] {{ background-color: transparent !important; }}
+    div[data-testid="stSlider"] div[aria-label] {{ background-color: #ffffff !important; }} /* 단추는 깔끔한 흰색 고정 */
+    div[data-testid="stSlider"] div[data-testid="stSliderTrack"] > div {{ background-color: #4a525d !important; }} /* 기본 트랙 라인 */
+    div[data-testid="stSlider"] div[data-testid="stSliderTrack"] > div > div {{ background-color: #4a525d !important; }} /* 💡 푸른색으로 채워지던 영역을 트랙 기본 회색으로 덮어버림 */
     
     /* 🔗 알약형 통합 세그먼트 가로 정렬 바 */
     div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{
@@ -179,7 +179,7 @@ st.markdown(
         margin-top: 20px;
         margin-bottom: 0px;
     }}
-    /* 💡 [여백 밸런스 수술] 모두보기 위아래 패딩 간격을 대칭으로 균일하게 배치 */
+    /* 💡 [요구사항 반영] 모두보기 밑에 공간을 기존의 3배가 넘는 24px로 넉넉하게 확장 완료 */
     .more-link {{
         display: flex;
         justify-content: space-between;
@@ -188,7 +188,7 @@ st.markdown(
         color: #ffffff;
         cursor: pointer;
         padding-top: 14px;
-        padding-bottom: 6px;
+        padding-bottom: 24px; 
     }}
     
     /* 뒤로가기 링크 박스 */
@@ -329,7 +329,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 컨트롤] 서브 페이지 (여백 균형 및 배경 슬라이더 이물질 완벽 교정 완료)
+# 🎛️ [설정 -> 컨트롤] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
@@ -342,7 +342,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     # [A 세팅]: 제목줄
     st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
     
-    # [B 세팅]: 1번 사진 전용 정갈한 단일 상자 몰아넣기 마감
+    # [B 세팅]: 하단 여백 대칭 및 채우기 파란색이 완전히 제거된 카드 칸
     with st.container(border=True):
         # 1. 내부 밝기 슬라이더 항목
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
@@ -371,7 +371,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                 st.session_state.interior_light_dim = "높음"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 3. 마감 구분선 및 완벽 마감 모두 보기 링크
+        # 3. 마감 구분선 및 모두 보기 링크 마감 (패딩 24px 확보)
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
