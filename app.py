@@ -384,7 +384,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 컨트롤] 서브 페이지
+# 🎛️ [설정 -> 컨트롤] 서브 페이지 (🎯 더 보기 하단 모두보기 제거 완료!)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
@@ -483,9 +483,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.markdown('<div class="setting-title-align-tgl">무선 장치 충전</div>', unsafe_allow_html=True)
         with wire_col2:
             st.session_state.wireless_charging = st.toggle("Wireless_tgl", value=st.session_state.wireless_charging, label_visibility="collapsed")
-            
-        st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -577,7 +574,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🔒 [설정 -> 컨트롤 -> 잠금 -> 모두 보기] 상세 서브 페이지 (🎯 새롭게 구성된 레이아웃!)
+# 🔒 [설정 -> 컨트롤 -> 잠금 -> 모두 보기] 상세 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lock_all":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  잠금", key="back_to_control_main_lock"):
