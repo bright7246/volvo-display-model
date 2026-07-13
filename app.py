@@ -64,7 +64,7 @@ st.markdown(
         margin-bottom: 25px;
     }}
     
-    /* 📌 상단 메인 탭 메뉴 (3번 사진의 깔끔한 텍스트+밑줄 스타일) */
+    /* 📌 상단 메인 탭 메뉴 (3번 사진 스타일) */
     div.tab-zone div[data-testid="stHorizontalBlock"] div.stButton > button {{
         background-color: transparent !important;
         color: #8e959e !important;
@@ -182,7 +182,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- 2. 상단 메뉴 탭 (정확히 격리 처리) ---
+# --- 2. 상단 메뉴 탭 ---
 if st.session_state.sub_page == "main":
     st.markdown('<div class="tab-zone">', unsafe_allow_html=True)
     top_col1, top_col2, top_col3 = st.columns(3)
@@ -306,18 +306,20 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         st.session_state.ready_to_drive = st.toggle("RD_toggle", value=st.session_state.ready_to_drive, label_visibility="collapsed")
 
 
-# ⚙️ [설정] 메인 탭 화면 (3번 사진의 완벽한 박스 형태 복원)
+# ⚙️ [설정] 메인 탭 화면 (구조적 버그 수정 완료!)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
     # 1라인: 주행 / 컨트롤
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
+        # 🛠️ 버튼 전체를 div 덩어리로 완벽하게 감쌌습니다
         st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
         if st.button("주행", key="btn_drive_route", use_container_width=True):
             st.session_state.sub_page = "driving"
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
+        
     with row1_col2:
         st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
         st.button("컨트롤", key="btn_control_route", use_container_width=True)
