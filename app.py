@@ -7,7 +7,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# 2. 볼보 UI의 세로형 비율과 버튼 디자인을 위한 CSS 통합 설정
+# 2. 볼보 UI의 세로형 비율과 버튼 디자인을 위한 CSS 설정
 st.markdown(
     """
     <style>
@@ -17,9 +17,9 @@ st.markdown(
         color: #ffffff;
     }
     
-    /* 💡 가로 너비를 제한하여 세로가 긴 차량용 디스플레이 느낌 구현 */
+    /* 가로 너비를 제한하여 세로가 긴 차량용 디스플레이 느낌 구현 */
     .block-container {
-        max-width: 480px !important;
+        max-width: 450px !important;
         padding-top: 1.5rem;
         padding-bottom: 1.5rem;
         margin: 0 auto;
@@ -50,7 +50,7 @@ st.markdown(
         box-shadow: none !important;
     }
     
-    /* 활성화된 탭 스타일 (흰색 글씨 + 하단 흰색 밑줄) */
+    /* 활성화된 탭 스타일 */
     .stButton > button[kind="primary"] {
         color: #ffffff !important;
         font-weight: bold !important;
@@ -61,54 +61,54 @@ st.markdown(
     .volvo-main-grid {
         display: flex;
         justify-content: space-between;
-        align-items: center; /* 💡 좌우 요소들의 중심을 세로축 중앙으로 맞춤 */
-        margin: 40px 0;
-        min-height: 220px;
+        align-items: center; 
+        margin: 30px 0;
+        min-height: 240px;
+        width: 100%;
     }
 
     .grid-column {
-        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        width: 30%;
     }
 
-    /* 버튼 스타일 (그림 빼고 모두 회색 원, 안에 글씨가 들어가도록 세팅) */
+    /* 모든 버튼을 회색 원으로 통일하고 안에 글씨가 들어가도록 설정 */
     .volvo-circle-btn {
         width: 65px;
         height: 65px;
-        background-color: #383e47; /* 💡 모든 버튼을 우측과 같은 회색으로 통일 */
+        background-color: #383e47; 
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px; /* 원 안에 글자가 들어가므로 폰트 사이즈 조절 */
+        font-size: 11px; 
         font-weight: bold;
         color: #ffffff;
         text-align: center;
-        line-height: 1.2;
+        line-height: 1.3;
     }
 
     .btn-bottom-label {
-        font-size: 12px;
-        color: #e1e2e3;
+        font-size: 11px;
+        color: #8e959e;
         margin-top: 6px;
         text-align: center;
         white-space: nowrap;
     }
 
-    /* 💡 중앙 대형 VOLVO 텍스트 완전 센터링 스타일 */
+    /* 중앙 대형 VOLVO 텍스트 완전 센터링 스타일 */
     .center-volvo-container {
-        flex: 1.2;
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100%;
+        width: 40%;
     }
 
     .center-volvo-text {
-        font-size: 38px;
+        font-size: 36px;
         font-weight: 300;
         color: #ffffff;
         letter-spacing: 6px;
@@ -122,9 +122,9 @@ st.markdown(
         justify-content: space-between;
         align-items: center;
         background-color: #111418;
-        padding: 12px 15px;
+        padding: 10px 15px;
         border-radius: 10px;
-        margin-top: 50px;
+        margin-top: 40px;
         border: 1px solid #232830;
     }
 
@@ -133,6 +133,10 @@ st.markdown(
         font-weight: 500;
         color: #ffffff;
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
     
     .bottom-sub-label {
@@ -142,7 +146,7 @@ st.markdown(
         margin-top: 1px;
     }
 
-    /* 💡 하단 공조바 내부의 원형 설정 버튼 */
+    /* 하단 공조바 내부의 원형 설정 버튼 */
     .bottom-setting-circle {
         width: 38px;
         height: 38px;
@@ -201,7 +205,6 @@ st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; ma
 
 
 # --- 3. 화면 분기 처리 ---
-
 if st.session_state.current_tab == "설정":
     st.subheader("⚙️ 볼보 시스템 설정")
     st.write("차량 시스템 옵션 설정 페이지입니다.")
@@ -217,12 +220,12 @@ else:
     # 밝기 조절 슬라이더
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, value=85)
 
-    # 💡 중앙 메인 레이아웃 구성 (HTML 형식을 사용하여 완벽한 세로 정렬 및 색상 통일)
+    # 중앙 메인 레이아웃 (HTML 템플릿 하나로 묶어 깨짐 방지)
     st.markdown(
         '''
         <div class="volvo-main-grid">
             <div class="grid-column">
-                <div style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;">
+                <div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;">
                     <div class="volvo-circle-btn">차선<br>유지</div>
                     <div class="btn-bottom-label">차선유지 보조</div>
                 </div>
@@ -237,7 +240,7 @@ else:
             </div>
             
             <div class="grid-column">
-                <div style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;">
+                <div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;">
                     <div class="volvo-circle-btn">알람<br>줄이기</div>
                     <div class="btn-bottom-label">알람 줄이기</div>
                 </div>
@@ -251,17 +254,17 @@ else:
         unsafe_allow_html=True
     )
 
-    # --- 4. 하단 공조 장치 바 (우측 하단 설정을 원형 버튼으로 변경) ---
+    # --- 4. 하단 공조 장치 바 (원형 설정 버튼 포함) ---
     st.markdown(
         '''
         <div class="volvo-bottom-bar">
-            <div class="bottom-item" style="color: #8e959e; font-size: 16px; padding-top: 5px;">㗊</div>
-            <div class="bottom-item" style="padding-top: 5px;">💺 LO</div>
+            <div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>
+            <div class="bottom-item">💺 LO</div>
             <div class="bottom-item">
-                🌀
+                <span style="font-size: 16px;">🌀</span>
                 <span class="bottom-sub-label">공기 재순환</span>
             </div>
-            <div class="bottom-item" style="padding-top: 5px;">LO 💺</div>
+            <div class="bottom-item">LO 💺</div>
             <div class="bottom-item">
                 <div class="bottom-setting-circle">설정</div>
             </div>
