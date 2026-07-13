@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 
-# 1. 페이지 설정 (3번 사진에서 검증된 규격 그대로 고정)
+# 1. 페이지 설정 (3번 사진의 황금 규격 고정)
 st.set_page_config(
     page_title="Volvo Main Display",
     layout="centered",
@@ -27,7 +27,7 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 2. [골든 룰 1] 최상단 스타일 정의 (절대 수정 금지 구역)
+# 2. [골든 룰] 최상단 스타일 정의 (절대 수정 금지 구역)
 st.markdown(
     f"""
     <style>
@@ -94,30 +94,24 @@ st.markdown(
     .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
     .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
     
-    /* ⚙️ 설정 메인 그리드 카드 박스 고정 장치 */
-    .volvo-grid-btn {{
+    /* ⚙️ [버그 해결 핵심] 분리 현상을 원천 차단하는 스트림릿 전용 락(Lock) 타겟팅 */
+    div.volvo-grid-card div.stButton > button {{
         background-color: {card_color} !important;
+        color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
         height: 135px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+        width: 100% !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        margin-bottom: 12px;
-    }}
-    .volvo-grid-btn button {{
-        background-color: transparent !important;
-        border: none !important;
-        color: #ffffff !important;
-        font-weight: bold !important;
-        font-size: 16px !important;
-        width: 100% !important;
-        height: 100% !important;
-        box-shadow: none !important;
+        white-space: pre-line !important; /* 개인정보 보호 줄바꿈 처리 대응 */
     }}
     
-    /* 🚗 주행 서브페이지용 개별 카드 디자인 */
+    /* 🚗 주행 서브페이지용 스타일 */
     .back-btn-box button {{
         background-color: transparent !important;
         color: #ffffff !important;
@@ -194,7 +188,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- 2. 상단 메뉴 탭 (주행 내부 페이지 분기 시 상단 메뉴 숨김) ---
+# --- 2. 상단 메뉴 탭 ---
 if st.session_state.sub_page == "main":
     st.markdown('<div class="tab-zone">', unsafe_allow_html=True)
     top_col1, top_col2, top_col3 = st.columns(3)
@@ -219,7 +213,7 @@ if st.session_state.sub_page == "main":
 
 # --- 3. 화면 분기 처리 ---
 
-# 🚗 [설정 -> 주행] 서브 페이지 진입 상태 (올려주신 사진 2장 내용 완벽 구현)
+# 🚗 [설정 -> 주행] 서브 페이지
 if st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  주행", key="back_to_settings"):
@@ -228,9 +222,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # PAGE 1 사진 내용: 운전자 지원 시스템
     st.markdown('<div class="sub-section-title">운전자 지원 시스템</div>', unsafe_allow_html=True)
-    
     st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
     pa_col1, pa_col2 = st.columns([3.6, 1])
     with pa_col1:
@@ -244,10 +236,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         st.session_state.pilot_assist = st.toggle("PA_tgl", value=st.session_state.pilot_assist, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # PAGE 2 사진 내용: 주행 역학
     st.markdown('<div class="sub-section-title">주행 역학</div>', unsafe_allow_html=True)
-    
-    # 주행 모드 세그먼트 카드
     st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
     st.markdown('<div class="setting-title">주행 모드</div>', unsafe_allow_html=True)
     st.markdown('<div class="setting-desc" style="margin-bottom:12px;">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
@@ -264,7 +253,6 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 스티어링 감도 카드
     st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
     st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
     st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
@@ -281,7 +269,6 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Start/Stop 카드
     st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
     ss_col1, ss_col2 = st.columns([3.6, 1])
     with ss_col1:
@@ -295,10 +282,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         st.session_state.start_stop = st.toggle("SS_tgl", value=st.session_state.start_stop, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # PAGE 2 사진 내용: 안전 어시스트
     st.markdown('<div class="sub-section-title">안전 어시스트</div>', unsafe_allow_html=True)
-    
-    # 차선유지 보조 시스템 카드
     st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
     lk_col1, lk_col2 = st.columns([3.6, 1])
     with lk_col1:
@@ -312,7 +296,6 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         st.session_state.lane_keeping = st.toggle("LK_tgl", value=st.session_state.lane_keeping, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 주행 준비 알림 카드
     st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
     rd_col1, rd_col2 = st.columns([3.6, 1])
     with rd_col1:
@@ -327,48 +310,55 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ⚙️ [골든 룰 2] 설정 메인 화면 (기존의 완벽한 2x2 및 3열 카드 박스 유지)
+# ⚙️ [설정] 메인 탭 화면 (★HTML 찌꺼기 완벽 제거형 컨테이너 구조★)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
     # 1라인: 주행 / 컨트롤
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
-        st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
-        if st.button("주행", key="btn_drive_go"):
-            st.session_state.sub_page = "driving"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=False):
+            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+            if st.button("주행", key="btn_drive_go", use_container_width=True):
+                st.session_state.sub_page = "driving"
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
     with row1_col2:
-        st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
-        st.button("컨트롤", key="btn_control_go")
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=False):
+            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+            st.button("컨트롤", key="btn_control_go", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # 2라인: 사운드 / 연결
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
-        st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
-        st.button("사운드", key="btn_sound_go")
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=False):
+            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+            st.button("사운드", key="btn_sound_go", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
     with row2_col2:
-        st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
-        st.button("연결", key="btn_connect_go")
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=False):
+            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+            st.button("연결", key="btn_connect_go", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # 3라인: 프로필 / 개인정보 보호 / 시스템
     row3_col1, row3_col2, row3_col3 = st.columns(3)
     with row3_col1:
-        st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
-        st.button("프로필", key="btn_profile_go")
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=False):
+            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+            st.button("프로필", key="btn_profile_go", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
     with row3_col2:
-        st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
-        st.button("개인정보\n보호", key="btn_privacy_go")
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=False):
+            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+            st.button("개인정보\n보호", key="btn_privacy_go", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
     with row3_col3:
-        st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
-        st.button("시스템", key="btn_system_go")
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=False):
+            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+            st.button("시스템", key="btn_system_go", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
 
 # 📊 [상태] 탭 화면
@@ -377,7 +367,7 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 
-# 📱 [퀵 컨트롤] 탭 화면 (기존 디자인 철저히 보존)
+# 📱 [퀵 컨트롤] 탭 화면 (골든 룰 수호)
 else:
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
@@ -396,7 +386,7 @@ else:
         st.markdown('<div class="volvo-card-content side-btn">헤드<br>레스트</div>', unsafe_allow_html=True)
 
 
-# --- 4. 하단 공조 장치 바 상시 표시 ---
+# --- 4. 하단 공조 장치 바 ---
 bottom_html = (
     '<div class="volvo-bottom-bar">'
     '<div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>'
