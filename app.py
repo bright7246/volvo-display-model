@@ -142,13 +142,20 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🎚️ [요구사항 반영] 슬라이더 바 최대값(가로 길이)을 아래 버튼의 '높음' 영역 끝까지 확장 */
+    /* 🎚️ [가로 전체 확장] 컴포넌트 iframe 자체의 마진과 너비를 100%로 강제 확장 */
+    div[data-testid="stHtmlBlock"] {{
+        width: 100% !important;
+    }}
+    iframe {{
+        width: 100% !important;
+    }}
+
     .slider-container-custom {{
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        padding: 10px 0;
+        padding: 5px 0;
         background: transparent !important;
     }}
     .slider-wrapper {{
@@ -156,7 +163,7 @@ st.markdown(
         flex-grow: 1;
         display: flex;
         align-items: center;
-        margin-right: 8px; /* 숫자가 레이아웃 우측 끝에 붙도록 마진 최소화 */
+        margin-right: 15px;
     }}
     .slider-custom {{
         -webkit-appearance: none;
@@ -220,7 +227,6 @@ st.markdown(
         margin-top: 20px;
         margin-bottom: 0px;
     }}
-    /* 💡 [요구사항 반영] 모두 보기 아래쪽 공백을 직전 상태의 딱 절반인 12px로 완벽 튜닝 */
     .more-link {{
         display: flex;
         justify-content: space-between;
@@ -370,7 +376,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 컨트롤] 서브 페이지 (가로 길이 극대화 및 하단 여백 반절 축소 완료)
+# 🎛️ [설정 -> 컨트롤] 서브 페이지 (가로 너비 잠금장치 완전 해제 버전)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
@@ -384,12 +390,13 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     with st.container(border=True):
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
         
-        # 💡 버튼 크기 마감과 동일한 핏으로 와이드하게 작동하는 커스텀 슬라이더
+        # 💡 iframe 껍데기 제한을 풀어 하단 '높음' 버튼 오른쪽 끝 정렬선까지 와이드하게 밀어버린 마감
         slider_html = f"""
-        <div class="slider-container-custom">
+        <div class="slider-container-custom" style="padding: 0; margin: 0;">
             <div class="slider-wrapper">
                 <input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" 
                        class="slider-custom" id="brightnessRange"
+                       style="width: 100%;"
                        oninput="document.getElementById('sliderVal').innerText = this.value">
             </div>
             <div class="slider-val-box" id="sliderVal">{st.session_state.interior_brightness}</div>
@@ -407,9 +414,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         }});
         </script>
         """
-        st.components.v1.html(slider_html, height=45)
+        st.components.v1.html(slider_html, height=35)
         
-        st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
+        st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
         
         st.markdown('<div class="setting-title">내부 조명 감도</div>', unsafe_allow_html=True)
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
@@ -428,7 +435,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                 st.session_state.interior_light_dim = "높음"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 구분선 및 12px 간격으로 최적화 마감된 모두 보기 영역
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
