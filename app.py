@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -15,10 +16,10 @@ if "current_tab" not in st.session_state:
 if "brightness" not in st.session_state:
     st.session_state.brightness = 85
 
-# 💡 실시간 밝기 값 연동을 위한 RGB 색상 계산
-bg_base = 12 + int(st.session_state.brightness * 0.25)     # 12 ~ 37 범위
-card_base = 20 + int(st.session_state.brightness * 0.3)    # 20 ~ 50 범위
-border_base = 30 + int(st.session_state.brightness * 0.35) # 30 ~ 65 범위
+# 실시간 밝기 값 연동을 위한 RGB 색상 계산
+bg_base = 12 + int(st.session_state.brightness * 0.25)     
+card_base = 20 + int(st.session_state.brightness * 0.3)    
+border_base = 30 + int(st.session_state.brightness * 0.35) 
 
 bg_color = f"rgb({bg_base}, {bg_base+4}, {bg_base+10})"
 card_color = f"rgb({card_base}, {card_base+6}, {card_base+16})"
@@ -35,20 +36,9 @@ st.markdown(
     }}
     .block-container {{
         max-width: 450px !important;
-        padding-top: 3.5rem !important; 
+        padding-top: 1.5rem !important; 
         padding-bottom: 1.5rem;
         margin: 0 auto;
-    }}
-    .volvo-status-bar {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-family: 'Helvetica Neue', sans-serif;
-        font-size: 13px;
-        color: #ffffff !important;
-        font-weight: 500;
-        padding: 5px 10px;
-        margin-bottom: 5px;
     }}
     .stButton > button {{
         background-color: transparent !important;
@@ -82,15 +72,15 @@ st.markdown(
         width: 30%;
     }}
     .volvo-rect-btn {{
-        width: 90px;
-        height: 125px;
+        width: 100px;
+        height: 130px;
         background-color: {card_color};
         border: 1px solid {border_color};
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 13px; 
+        font-size: 14px; 
         font-weight: bold;
         color: #ffffff;
         text-align: center;
@@ -100,7 +90,7 @@ st.markdown(
     }}
     .center-volvo-box {{
         width: 130px; 
-        height: 270px;
+        height: 280px;
         background-color: {card_color};
         border: 1px solid {border_color};
         border-radius: 12px;
@@ -116,13 +106,6 @@ st.markdown(
         color: #ffffff;
         letter-spacing: 5px;
         font-family: 'Times New Roman', Times, serif;
-        text-align: center;
-        white-space: nowrap;
-    }}
-    .btn-bottom-label {{
-        font-size: 11px;
-        color: #8e959e;
-        margin-top: 8px;
         text-align: center;
         white-space: nowrap;
     }}
@@ -169,10 +152,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 1. 최상단 상태바 (💡 JavaScript 실시간 표준시간 연동 스크립트 추가) ---
-st.markdown(
+# --- 1. 최상단 상태바 (💡 스트림릿 컴포넌트 기능으로 스크립트 강제 분리 및 노출 오류 해결) ---
+components.html(
     """
-    <div class="volvo-status-bar">
+    <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Helvetica Neue', sans-serif; font-size: 13px; color: #ffffff; font-weight: 500; padding: 2px 5px;">
         <span id="live-clock">오전 00:00</span>
         <span>📶 LTE</span>
     </div>
@@ -183,17 +166,16 @@ st.markdown(
         var minutes = now.getMinutes();
         var ampm = hours >= 12 ? '오후' : '오전';
         hours = hours % 12;
-        hours = hours ? hours : 12; // 0시는 12시로 표시
+        hours = hours ? hours : 12;
         minutes = minutes < 10 ? '0' + minutes : minutes;
-        
         var strTime = ampm + ' ' + (hours < 10 ? '0' + hours : hours) + ':' + minutes;
         document.getElementById('live-clock').innerHTML = strTime;
     }
     setInterval(updateClock, 1000);
     updateClock();
     </script>
-    """, 
-    unsafe_allow_html=True
+    """,
+    height=25,
 )
 
 # --- 2. 상단 메뉴 탭 ---
@@ -233,22 +215,24 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 else:
-    # 💡 밝기 조절 슬라이더 작동 시 세션을 갱신하여 CSS에 즉시 반영
+    # 밝기 조절 슬라이더
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, key="brightness")
 
-    # 중앙 메인 레이아웃
+    # 중앙 메인 레이아웃 (💡 불필요한 하단 레이블 문구 완벽 제거)
     main_html = f"""
     <div class="volvo-main-grid">
         <div class="grid-column">
-            <div style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">차선<br>유지</div><div class="btn-bottom-label">차선유지 보조</div></div>
-            <div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">Start<br>Stop</div><div class="btn-bottom-label">Start/Stop</div></div>
+            <div style="margin-bottom: 20px;"><div class="volvo-rect-btn">차선<br>유지</div></div>
+            <div><div class="volvo-rect-btn">Start<br>Stop</div></div>
         </div>
+        
         <div class="center-volvo-box">
             <div class="center-volvo-text">VOLVO</div>
         </div>
+        
         <div class="grid-column">
-            <div style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">알람<br>줄이기</div><div class="btn-bottom-label">알람 줄이기</div></div>
-            <div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">헤드<br>레스트</div><div class="btn-bottom-label">헤드레스트 접기</div></div>
+            <div style="margin-bottom: 20px;"><div class="volvo-rect-btn">알람<br>줄이기</div></div>
+            <div><div class="volvo-rect-btn">헤드<br>레스트</div></div>
         </div>
     </div>
     """
