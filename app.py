@@ -338,24 +338,36 @@ if st.session_state.sub_page == "main":
 
 # 📊 [상태] 메인 탭 화면
 if st.session_state.current_tab == "상태" and st.session_state.sub_page == "main":
-    st.write("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
-    view_col1, view_col2 = st.columns([1.1, 0.9])
-    with view_col1:
-        st.markdown('<div class="status-msg-box"><span class="status-msg-icon">ⓘ</span><span>업데이트가 없습니다</span></div>', unsafe_allow_html=True)
-    with view_col2:
-        st.markdown('<div class="car-topview-container"><div class="car-visual">🚙</div></div>', unsafe_allow_html=True)
-        
-    st.write("<div style='margin-top: 45px;'></div>", unsafe_allow_html=True)
+    st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     
-    st.markdown('<div class="status-action-zone">', unsafe_allow_html=True)
-    status_btn_col1, status_btn_col2 = st.columns(2)
-    with status_btn_col1:
-        if st.button("(!)  타이어 공기압", key="btn_status_tire", use_container_width=True):
+    # 상단 차량 뷰 (이 부분은 시각적 요소로 유지)
+    st.markdown('<div class="car-topview-container"><div class="car-visual">🚙</div></div>', unsafe_allow_html=True)
+    st.write("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+    
+    # 퀵 컨트롤 스타일을 적용한 상태 카드들
+    col1, col2 = st.columns(2)
+    
+    # 1. 타이어 카드
+    with col1:
+        # 버튼 스타일을 커스텀 CSS로 강제 적용하기 위해 st.markdown과 버튼 조합
+        if st.button("타이어\n공기압\n\n정상", key="btn_status_tire_card"):
             st.session_state.sub_page = "status_tire"; st.rerun()
-    with status_btn_col2:
-        if st.button("📋  진단", key="btn_status_diag", use_container_width=True):
+        # 퀵 컨트롤 카드와 유사한 높이를 맞추기 위한 CSS 추가 필요 시 반영
+        st.markdown("""
+            <style>
+            div[data-testid="column"]:nth-of-type(1) button { height: 185px !important; width: 100% !important; background-color: rgb(22, 27, 35) !important; color: white !important; border: 1px solid #3d4656 !important; border-radius: 14px !important; }
+            </style>
+        """, unsafe_allow_html=True)
+
+    # 2. 진단 카드
+    with col2:
+        if st.button("차량\n진단\n\n최상", key="btn_status_diag_card"):
             st.session_state.sub_page = "status_diag"; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("""
+            <style>
+            div[data-testid="column"]:nth-of-type(2) button { height: 185px !important; width: 100% !important; background-color: rgb(22, 27, 35) !important; color: white !important; border: 1px solid #3d4656 !important; border-radius: 14px !important; }
+            </style>
+        """, unsafe_allow_html=True)
 
 
 # ⭕ [상태 -> 타이어 공기압] 상세 서브 뷰 (🎯 1번 사진 완벽 반영!)
