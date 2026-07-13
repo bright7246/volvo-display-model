@@ -107,27 +107,18 @@ st.markdown(
         border-radius: 0px !important;
     }}
     
-    /* 📱 [수술 부위 1] 퀵 컨트롤 버튼 - 185px 크기 복원 및 내부 여백 제어 */
+    /* 📱 퀵 컨트롤 카드 및 더미 버튼 스타일 통합 디자인 */
     div.volvo-quick-card div.stButton > button {{
         background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
         height: 185px !important;
-        width: 100% !important;
-        padding: 0px !important;
-        margin: 0px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
         font-size: 16px !important;
         font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        width: 100% !important;
         white-space: pre-line !important;
-    }}
-    div.volvo-quick-card div.stButton > button div[data-testid="stMarkdownContainer"] p {{
-        margin: 0 !important;
-        line-height: 1.5 !important;
     }}
     
     .volvo-card-content {{
@@ -214,27 +205,18 @@ st.markdown(
     .oil-bar-fill-green {{ background-color: #00c853; height: 100%; width: 84%; border-radius: 4px 0 0 4px; }}
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
-    /* ⚙️ [수술 부위 2] 설정 메인 격자 카드 - 납작해지지 않게 135px 철통 고정 */
+    /* ⚙️ 설정 메인 격자 카드 */
     div.volvo-grid-card div.stButton > button {{
         background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
         height: 135px !important;
-        width: 100% !important;
-        padding: 0px !important;
-        margin: 0px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
         font-size: 16px !important;
         font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        width: 100% !important;
         white-space: pre-line !important;
-    }}
-    div.volvo-grid-card div.stButton > button div[data-testid="stMarkdownContainer"] p {{
-        margin: 0 !important;
-        line-height: 1.5 !important;
     }}
     
     /* 🛠️ 세팅 박스 타이틀 */
@@ -1160,42 +1142,48 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.components.v1.html(denied_permissions_html, height=60)
 
 
-# ⚙️ [설정] 메인 격자 맵 화면 (🎯 135px 높이 복원 타겟 적용)
+# ⚙️ [설정] 메인 격자 맵 화면
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-    st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-    
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
         if st.button("주행", key="btn_drive_go", use_container_width=True):
             st.session_state.sub_page = "driving"; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with row1_col2:
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
         if st.button("컨트롤", key="btn_control_go", use_container_width=True):
             st.session_state.sub_page = "control"; st.rerun()
-
-    st.write("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
         st.button("사운드", key="btn_sound_go", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row2_col2:
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
         st.button("연결", key="btn_connect_go", use_container_width=True)
-
-    st.write("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     row3_col1, row3_col2, row3_col3 = st.columns(3)
     with row3_col1:
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
         st.button("프로필", key="btn_profile_go", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row3_col2:
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
         st.button("개인정보\n보호", key="btn_privacy_go", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row3_col3:
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
         if st.button("시스템", key="btn_system_go", use_container_width=True):
             st.session_state.sub_page = "system"; st.rerun()
-            
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📱 [퀵 컨트롤] 탭 (st.button 순정 컴포넌트로 교체 완료 및 무반응 처리 완료)
+# 📱 [퀵 컨트롤] 탭 (st.button 순정 컴포넌트로 전면 교체 완료하여 모션 활성화 및 무반응 처리)
 else:
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     st.markdown('<div class="volvo-quick-card">', unsafe_allow_html=True)
