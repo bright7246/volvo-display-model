@@ -194,18 +194,25 @@ st.markdown(
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
     /* ⚙️ 설정 메인 격자 카드 */
-    div.volvo-grid-card div.stButton > button {{
+/* ⚙️ 설정 메인 격자 카드 - 높이를 절반 수준으로 조정 */
+    div.volvo-grid-card div.stButton > button {
         background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
-        border-radius: 14px !important;
-        height: 135px !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        border-radius: 12px !important; 
+        height: 65px !important; /* 기존 135px에서 약 절반인 65px로 축소 */
+        font-size: 14px !important; /* 높이가 줄어든 만큼 폰트도 살짝 작게 */
+        font-weight: 600 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
         width: 100% !important;
-        white-space: pre-line !important;
-    }}
+        white-space: nowrap !important; /* 텍스트가 길어져도 한 줄로 유지 */
+        padding: 0 10px !important;
+    }
+    
+    /* 버튼에 마우스 올렸을 때 효과 */
+    div.volvo-grid-card div.stButton > button:hover {
+        border: 1px solid #5a667a !important;
+    }
     
     /* 🛠️ 세팅 박스 타이틀 */
     .volvo-title-row {{ font-size: 14px; color: #8e959e; font-weight: bold; margin-top: 22px; margin-bottom: 12px; padding-left: 5px; }}
