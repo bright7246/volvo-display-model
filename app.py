@@ -25,7 +25,7 @@ st.markdown(
         color: #ffffff !important;
     }}
     
-    /* 💡 전체 세로 길이를 시원하게 뽑기 위해 최대 너비와 최소 세로 높이 최적화 */
+    /* 전체 세로 길이를 시원하게 뽑기 위해 최대 너비와 최소 세로 높이 최적화 */
     .block-container {{
         max-width: 480px !important;
         padding-top: 2rem !important; 
@@ -76,12 +76,12 @@ st.markdown(
         width: 100%;
     }}
     .side-btn {{
-        height: 185px; /* 140px -> 185px로 늘려서 위아래 꽉 차게 변경 */
+        height: 185px; /* 늘어난 롱 배율 높이 */
         font-size: 15px;
         line-height: 1.5;
     }}
     .center-box {{
-        height: 400px; /* 300px -> 400px로 대폭 늘려 메인 존재감 확보 */
+        height: 400px; /* 메인 센터 박스 롱 배율 높이 */
         font-size: 24px;
         letter-spacing: 5px;
         font-family: 'Times New Roman', Times, serif;
@@ -205,12 +205,33 @@ elif st.session_state.current_tab == "상태":
     st.subheader("📊 차량 상태")
     st.write("차량 진단 및 정보를 확인합니다.")
 
-# 📱 [퀵 컨트롤] 탭 내용 (기본값)
+# 📱 [퀵 컨트롤] 탭 내용
 else:
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
 
-    # 💡 세로 길이를 시원하게 늘리고 버튼 간 격차 조절을 위한 margin-bottom 최적화
+    # 🛠️ 깨졌던 st.write 코드를 완벽하게 수정하여 마진 배치
     with main_col1:
         st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
-        st.write("<div style='margin-bottom: 30px;'></div>", unsafe_allow_html=
+        st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True) 
+        st.markdown('<div class="volvo-card-content side-btn">Start<br>Stop</div>', unsafe_allow_html=True)
+
+    with main_col2:
+        st.markdown('<div class="volvo-card-content center-box">VOLVO</div>', unsafe_allow_html=True)
+
+    with main_col3:
+        st.markdown('<div class="volvo-card-content side-btn">알람<br>줄이기</div>', unsafe_allow_html=True)
+        st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-card-content side-btn">헤드<br>레스트</div>', unsafe_allow_html=True)
+
+# --- 4. 하단 공조 장치 바 (모든 탭 공통 노출) ---
+bottom_html = (
+    '<div class="volvo-bottom-bar">'
+    '<div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>'
+    '<div class="bottom-item">💺 LO</div>'
+    '<div class="bottom-item"><span style="font-size: 16px;">🌀</span><span class="bottom-sub-label">공기 재순환</span></div>'
+    '<div class="bottom-item">LO 💺</div>'
+    '<div class="bottom-item" style="font-size: 16px; opacity: 0.9;">🚗</div>'
+    '</div>'
+)
+st.markdown(bottom_html, unsafe_allow_html=True)
