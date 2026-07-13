@@ -29,11 +29,9 @@ if "reduce_alarm_sensitivity" not in st.session_state: st.session_state.reduce_a
 if "welcome_light" not in st.session_state: st.session_state.welcome_light = True
 if "wireless_charging" not in st.session_state: st.session_state.wireless_charging = True
 
-# [💡 조명 및 디스플레이 - 모두 보기 전용 데이터]
-if "display_theme" not in st.session_state: st.session_state.display_theme = "자동"
-if "trip_info_mode" not in st.session_state: st.session_state.trip_info_mode = "자동"  # 없음, 자동, 수동 멀티익스클루시브 구조
-if "hud_enabled" not in st.session_state: st.session_state.hud_enabled = True
-if "hud_brightness" not in st.session_state: st.session_state.hud_brightness = 70
+# [조명 모두 보기 추가 설정 데이터]
+if "left_drive_light_adjust" not in st.session_state: st.session_state.left_drive_light_adjust = False
+if "cluster_trip_info" not in st.session_state: st.session_state.cluster_trip_info = "자동"
 
 # [시스템 상세 설정 데이터]
 if "sys_time_auto" not in st.session_state: st.session_state.sys_time_auto = True
@@ -163,7 +161,7 @@ st.markdown(
     .system-item-main {{ font-size: 15px; font-weight: 500; color: #ffffff; line-height: 1.2; }}
     .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 4px; line-height: 1.3; }}
     
-    /* NUGU OUTO 밑 안내 문구 스타일 */
+    /* NUGU AUTO 밑 안내 문구 스타일 */
     .app-notice-desc {{
         font-size: 13px;
         color: #8e959e; 
@@ -254,23 +252,11 @@ st.markdown(
     div.volvo-segment-row div.stButton > button[kind="secondary"] {{ background-color: transparent !important; color: #727a85 !important; border: none !important; border-radius: 22px !important; height: 40px !important; box-shadow: none !important; }}
     div.volvo-fold-btn-zone div.stButton > button {{ background-color: #383e48 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; height: 38px !important; font-size: 14px !important; font-weight: bold !important; width: 100% !important; box-shadow: none !important; }}
 
+    /* 조명 모두보기 전용 수평 알약형 세그먼트 커스텀 패딩 보정 */
+    div.inline-segment-fix div[data-testid="stHorizontalBlock"] {{ margin-top: 0px !important; }}
+
     .card-divider {{ border-top: 1px solid #333b46; margin-top: 20px; margin-bottom: 0px; }}
-    
-    /* 가짜 모두 보기 링크 스타일 */
-    .more-link-btn button {{
-        background-color: transparent !important;
-        color: #ffffff !important;
-        border: none !important;
-        font-size: 14px !important;
-        font-weight: bold !important;
-        width: 100% !important;
-        text-align: left !important;
-        padding: 14px 0 12px 0 !important;
-        box-shadow: none !important;
-        display: flex !important;
-        justify-content: space-between !important;
-    }}
-    .more-link-btn button:hover {{ color: #00A3E0 !important; }}
+    .more-link-btn button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 14px !important; font-weight: bold !important; padding: 14px 0 12px 0 !important; box-shadow: none !important; text-align: left !important; width: 100% !important; }}
 
     /* 뒤로가기 버튼 박스 */
     .back-btn-box {{ display: flex; align-items: center; justify-content: space-between; width: 100%; }}
@@ -426,7 +412,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         with dim_col1:
             t_type = "primary" if st.session_state.interior_light_dim == "끄기" else "secondary"
             if st.button("끄기", key="btn_dim_off", type=t_type, use_container_width=True):
-                st.session_state.interior_light_dim = "끄기"; st.rerun()
+                st.session_state.interior_light_dim == "끄기"; st.rerun()
         with dim_col2:
             t_type = "primary" if st.session_state.interior_light_dim == "낮음" else "secondary"
             if st.button("낮음", key="btn_dim_low", type=t_type, use_container_width=True):
@@ -438,10 +424,10 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
+        # 모두 보기 클릭 시 새로 빌드된 조명 및 디스플레이 모두보기 전용창으로 화면 전환!
         st.markdown('<div class="more-link-btn">', unsafe_allow_html=True)
-        if st.button("모두 보기  〉", key="btn_ctrl_light_more"):
-            st.session_state.sub_page = "ctrl_light_all"
-            st.rerun()
+        if st.button("모두 보기                      〉", key="btn_go_lighting_all"):
+            st.session_state.sub_page = "ctrl_lighting_all"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="volvo-title-row">🔒 잠금</div>', unsafe_allow_html=True)
@@ -488,8 +474,8 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 💡 [💡 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세페이지
-elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_light_all":
+# 💡 [설정 -> 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세 서브 페이지 (신규 제작! image_fef4fd.jpg 대응)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lighting_all":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  조명 및 디스플레이", key="back_to_control_main"):
         st.session_state.sub_page = "control"; st.rerun()
@@ -498,68 +484,83 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
-    st.markdown('<div class="volvo-title-row">화면 모드</div>', unsafe_allow_html=True)
+    # 단락 A: 내부 조명
+    st.markdown('<div class="volvo-title-row">내부 조명</div>', unsafe_allow_html=True)
     with st.container(border=True):
-        st.markdown('<div class="setting-title">테마 선택</div><div class="setting-desc">중앙 스크린 및 계기판의 밝기 테마 배색을 지정합니다.</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
-        thm_col1, thm_col2, thm_col3 = st.columns(3)
-        with thm_col1:
-            t_type = "primary" if st.session_state.display_theme == "라이트" else "secondary"
-            if st.button("라이트", key="btn_thm_light", type=t_type, use_container_width=True):
-                st.session_state.display_theme = "라이트"; st.rerun()
-        with thm_col2:
-            t_type = "primary" if st.session_state.display_theme == "다크" else "secondary"
-            if st.button("다크", key="btn_thm_dark", type=t_type, use_container_width=True):
-                st.session_state.display_theme = "다크"; st.rerun()
-        with thm_col3:
-            t_type = "primary" if st.session_state.display_theme == "자동" else "secondary"
-            if st.button("자동", key="btn_thm_auto", type=t_type, use_container_width=True):
-                st.session_state.display_theme = "자동"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">계기판 세부 정보</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        st.markdown('<div class="setting-title">디스플레이 계기판 트립정보</div><div class="setting-desc">계기판 중앙 하단에 연비 및 주행 관련 트립 컴퓨터 정보를 노출할 모드를 선택합니다.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
+        slider_html = f"""
+        <div class="slider-container-custom" style="padding: 0; margin: 0;">
+            <div class="slider-wrapper">
+                <input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" 
+                       class="slider-custom" id="brightnessRangeAll"
+                       style="width: 100%;"
+                       oninput="document.getElementById('sliderValAll').innerText = this.value">
+            </div>
+            <div class="slider-val-box" id="sliderValAll">{st.session_state.interior_brightness}</div>
+        </div>
+        <script>
+        var slider = document.getElementById("brightnessRangeAll");
+        slider.addEventListener("change", function() {{
+            window.parent.postMessage({{
+                type: "streamlit:set_query_params",
+                queryParams: {{"brightness_slider": this.value}}
+            }}, "*");
+        }});
+        </script>
+        """
+        st.components.v1.html(slider_html, height=35)
+        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
         
-        # 🎯 [핵심 요구사항 구현] 1개가 켜지면 나머지가 꺼지는 구조 (Exclusive Segment)
+        # 내부 조명 감도 가로 정렬 알약 컴포넌트
+        dim_lbl_col, dim_btn_col = st.columns([1.8, 3.2])
+        with dim_lbl_col:
+            st.markdown('<div class="setting-title" style="padding-top: 12px;">내부 조명 감도</div>', unsafe_allow_html=True)
+        with dim_btn_col:
+            st.markdown('<div class="volvo-segment-row inline-segment-fix">', unsafe_allow_html=True)
+            d_col1, d_col2, d_col3 = st.columns(3)
+            with d_col1:
+                t_type = "primary" if st.session_state.interior_light_dim == "끄기" else "secondary"
+                if st.button("끄기", key="all_dim_off", type=t_type, use_container_width=True):
+                    st.session_state.interior_light_dim = "끄기"; st.rerun()
+            with d_col2:
+                t_type = "primary" if st.session_state.interior_light_dim == "낮음" else "secondary"
+                if st.button("낮음", key="all_dim_low", type=t_type, use_container_width=True):
+                    st.session_state.interior_light_dim = "낮음"; st.rerun()
+            with d_col3:
+                t_type = "primary" if st.session_state.interior_light_dim == "높음" else "secondary"
+                if st.button("높음", key="all_dim_high", type=t_type, use_container_width=True):
+                    st.session_state.interior_light_dim = "높음"; st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # 단락 A: 외부 조명
+    st.markdown('<div class="volvo-title-row">외부 조명</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        ext_col1, ext_col2 = st.columns([3.8, 12])
+        with ext_col1:
+            st.markdown('<div class="setting-title" style="padding-top: 4px; line-height: 1.3;">좌측 주행 조명에 맞게 조명 조정</div>', unsafe_allow_html=True)
+        with ext_col2:
+            st.session_state.left_drive_light_adjust = st.toggle("tgl_left_light", value=st.session_state.left_drive_light_adjust, label_visibility="collapsed")
+
+    # 단락 A: 디스플레이
+    st.markdown('<div class="volvo-title-row">디스플레이</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">계기판 트립 정보</div>', unsafe_allow_html=True)
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         trip_col1, trip_col2, trip_col3 = st.columns(3)
         with trip_col1:
-            t_type = "primary" if st.session_state.trip_info_mode == "없음" else "secondary"
-            if st.button("없음", key="btn_trip_none", type=t_type, use_container_width=True):
-                st.session_state.trip_info_mode = "없음"; st.rerun()
+            t_type = "primary" if st.session_state.cluster_trip_info == "없음" else "secondary"
+            if st.button("없음", key="trip_none", type=t_type, use_container_width=True):
+                st.session_state.cluster_trip_info = "없음"; st.rerun()
         with trip_col2:
-            t_type = "primary" if st.session_state.trip_info_mode == "자동" else "secondary"
-            if st.button("자동", key="btn_trip_auto", type=t_type, use_container_width=True):
-                st.session_state.trip_info_mode = "자동"; st.rerun()
+            t_type = "primary" if st.session_state.cluster_trip_info == "자동" else "secondary"
+            if st.button("자동", key="trip_auto", type=t_type, use_container_width=True):
+                st.session_state.cluster_trip_info = "자동"; st.rerun()
         with trip_col3:
-            t_type = "primary" if st.session_state.trip_info_mode == "수동" else "secondary"
-            if st.button("수동", key="btn_trip_manual", type=t_type, use_container_width=True):
-                st.session_state.trip_info_mode = "수동"; st.rerun()
+            t_type = "primary" if st.session_state.cluster_trip_info == "수동" else "secondary"
+            if st.button("수동", key="trip_manual", type=t_type, use_container_width=True):
+                st.session_state.cluster_trip_info = "수동"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="volvo-title-row">헤드업 디스플레이 (HUD)</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        hud_tgl_col1, hud_tgl_col2 = st.columns([3.6, 1])
-        with hud_tgl_col1:
-            st.markdown('<div class="setting-title" style="padding-top:2px;">전면 유리 HUD 활성화</div>', unsafe_allow_html=True)
-        with hud_tgl_col2:
-            st.session_state.hud_enabled = st.toggle("hud_enabled_tgl", value=st.session_state.hud_enabled, label_visibility="collapsed")
-        
-        if st.session_state.hud_enabled:
-            st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
-            st.markdown('<div class="setting-title">HUD 그래픽 밝기</div>', unsafe_allow_html=True)
-            hud_slider_html = f"""
-            <div class="slider-container-custom" style="padding: 0; margin: 0;">
-                <div class="slider-wrapper">
-                    <input type="range" min="10" max="100" value="{st.session_state.hud_brightness}" 
-                           class="slider-custom" id="hudRange" style="width: 100%;">
-                </div>
-                <div class="slider-val-box">{st.session_state.hud_brightness}%</div>
-            </div>
-            """
-            st.components.v1.html(hud_slider_html, height=35)
-            
     st.markdown('</div>', unsafe_allow_html=True)
 
 
