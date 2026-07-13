@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 
-# 1. 페이지 설정 (3번 사진의 황금 규격 고정)
+# 1. 페이지 설정 (황금 규격 고정)
 st.set_page_config(
     page_title="Volvo Main Display",
     layout="centered",
@@ -27,7 +27,7 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 2. [골든 룰] 최상단 스타일 정의 (절대 수정 금지 구역)
+# 2. [골든 룰] 스타일 정의 (디자인 철벽 방어 및 분리 버그 해결)
 st.markdown(
     f"""
     <style>
@@ -94,7 +94,7 @@ st.markdown(
     .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
     .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
     
-    /* ⚙️ [버그 해결 핵심] 분리 현상을 원천 차단하는 스트림릿 전용 락(Lock) 타겟팅 */
+    /* ⚙️ 설정 메인 카드 버튼 스타일 */
     div.volvo-grid-card div.stButton > button {{
         background-color: {card_color} !important;
         color: #ffffff !important;
@@ -108,10 +108,18 @@ st.markdown(
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        white-space: pre-line !important; /* 개인정보 보호 줄바꿈 처리 대응 */
+        white-space: pre-line !important;
     }}
     
-    /* 🚗 주행 서브페이지용 스타일 */
+    /* 🚗 [주행 서브페이지 버그 해결 핵심] 스트림릿 컨테이너를 회색 카드로 강제 변조 */
+    div.volvo-driving-node div[data-testid="stVerticalBlockBorderWrapper"] {{
+        background-color: {card_color} !important;
+        border: 1px solid {border_color} !important;
+        border-radius: 12px !important;
+        padding: 18px !important;
+        margin-bottom: 15px !important;
+    }}
+    
     .back-btn-box button {{
         background-color: transparent !important;
         color: #ffffff !important;
@@ -128,13 +136,6 @@ st.markdown(
         margin-top: 25px;
         margin-bottom: 12px;
         padding-left: 5px;
-    }}
-    .setting-row-box {{
-        background-color: {card_color};
-        border: 1px solid {border_color};
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 12px;
     }}
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
@@ -213,7 +214,7 @@ if st.session_state.sub_page == "main":
 
 # --- 3. 화면 분기 처리 ---
 
-# 🚗 [설정 -> 주행] 서브 페이지
+# 🚗 [설정 -> 주행] 서브 페이지 (박스가 글자들을 완벽히 감싸도록 올-수정)
 if st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  주행", key="back_to_settings"):
@@ -222,95 +223,107 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
+    # 대구획 1: 운전자 지원 시스템
     st.markdown('<div class="sub-section-title">운전자 지원 시스템</div>', unsafe_allow_html=True)
-    st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
-    pa_col1, pa_col2 = st.columns([3.6, 1])
-    with pa_col1:
-        st.markdown(
-            '<div class="setting-title">Pilot Assist 기본 설정</div>'
-            '<div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>',
-            unsafe_allow_html=True
-        )
-    with pa_col2:
-        st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-        st.session_state.pilot_assist = st.toggle("PA_tgl", value=st.session_state.pilot_assist, label_visibility="collapsed")
+    
+    # 💡 volvo-driving-node 클래스로 묶어 파이썬 컴포넌트들을 통째로 박스 내부에 가둠
+    st.markdown('<div class="volvo-driving-node">', unsafe_allow_html=True)
+    with st.container(border=True):
+        pa_col1, pa_col2 = st.columns([3.6, 1])
+        with pa_col1:
+            st.markdown(
+                '<div class="setting-title">Pilot Assist 기본 설정</div>'
+                '<div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>',
+                unsafe_allow_html=True
+            )
+        with pa_col2:
+            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+            st.session_state.pilot_assist = st.toggle("PA_tgl", value=st.session_state.pilot_assist, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
+    # 대구획 2: 주행 역학
     st.markdown('<div class="sub-section-title">주행 역학</div>', unsafe_allow_html=True)
-    st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
-    st.markdown('<div class="setting-title">주행 모드</div>', unsafe_allow_html=True)
-    st.markdown('<div class="setting-desc" style="margin-bottom:12px;">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
-    dm_col1, dm_col2 = st.columns(2)
-    with dm_col1:
-        btn_id = "active-seg-std" if st.session_state.drive_mode == "Standard" else "inactive-seg-std"
-        if st.button("Standard", key=btn_id, use_container_width=True):
-            st.session_state.drive_mode = "Standard"
-            st.rerun()
-    with dm_col2:
-        btn_id = "active-seg-off" if st.session_state.drive_mode == "Off-road" else "inactive-seg-off"
-        if st.button("Off-road", key=btn_id, use_container_width=True):
-            st.session_state.drive_mode = "Off-road"
-            st.rerun()
+    
+    st.markdown('<div class="volvo-driving-node">', unsafe_allow_html=True)
+    # 주행 모드 박스
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">주행 모드</div>', unsafe_allow_html=True)
+        st.markdown('<div class="setting-desc" style="margin-bottom:12px;">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
+        dm_col1, dm_col2 = st.columns(2)
+        with dm_col1:
+            btn_id = "active-seg-std" if st.session_state.drive_mode == "Standard" else "inactive-seg-std"
+            if st.button("Standard", key=btn_id, use_container_width=True):
+                st.session_state.drive_mode = "Standard"
+                st.rerun()
+        with dm_col2:
+            btn_id = "active-seg-off" if st.session_state.drive_mode == "Off-road" else "inactive-seg-off"
+            if st.button("Off-road", key=btn_id, use_container_width=True):
+                st.session_state.drive_mode = "Off-road"
+                st.rerun()
+
+    # 스티어링 감도 박스
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
+        st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+        sf_col1, sf_col2 = st.columns(2)
+        with sf_col1:
+            btn_id = "active-seg-sf1" if st.session_state.steering_feel == "부드러움" else "inactive-seg-sf1"
+            if st.button("부드러움", key=btn_id, use_container_width=True):
+                st.session_state.steering_feel = "부드러움"
+                st.rerun()
+        with sf_col2:
+            btn_id = "active-seg-sf2" if st.session_state.steering_feel == "단단함" else "inactive-seg-sf2"
+            if st.button("단단함", key=btn_id, use_container_width=True):
+                st.session_state.steering_feel = "단단함"
+                st.rerun()
+
+    # Start/Stop 박스
+    with st.container(border=True):
+        ss_col1, ss_col2 = st.columns([3.6, 1])
+        with ss_col1:
+            st.markdown(
+                '<div class="setting-title">Start/Stop</div>'
+                '<div class="setting-desc">정지 시 일시적으로 엔진을 끕니다. 새로 주행할 때마다 켜짐으로 재설정됩니다.</div>',
+                unsafe_allow_html=True
+            )
+        with ss_col2:
+            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+            st.session_state.start_stop = st.toggle("SS_tgl", value=st.session_state.start_stop, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
-    st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
-    st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
-    sf_col1, sf_col2 = st.columns(2)
-    with sf_col1:
-        btn_id = "active-seg-sf1" if st.session_state.steering_feel == "부드러움" else "inactive-seg-sf1"
-        if st.button("부드러움", key=btn_id, use_container_width=True):
-            st.session_state.steering_feel = "부드러움"
-            st.rerun()
-    with sf_col2:
-        btn_id = "active-seg-sf2" if st.session_state.steering_feel == "단단함" else "inactive-seg-sf2"
-        if st.button("단단함", key=btn_id, use_container_width=True):
-            st.session_state.steering_feel = "단단함"
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
-    ss_col1, ss_col2 = st.columns([3.6, 1])
-    with ss_col1:
-        st.markdown(
-            '<div class="setting-title">Start/Stop</div>'
-            '<div class="setting-desc">정지 시 일시적으로 엔진을 끕니다. 새로 주행할 때마다 켜짐으로 재설정됩니다.</div>',
-            unsafe_allow_html=True
-        )
-    with ss_col2:
-        st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-        st.session_state.start_stop = st.toggle("SS_tgl", value=st.session_state.start_stop, label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
-
+    # 대구획 3: 안전 어시스트
     st.markdown('<div class="sub-section-title">안전 어시스트</div>', unsafe_allow_html=True)
-    st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
-    lk_col1, lk_col2 = st.columns([3.6, 1])
-    with lk_col1:
-        st.markdown(
-            '<div class="setting-title">차선유지 보조 시스템</div>'
-            '<div class="setting-desc">갑작스런 차선 이탈을 방지하도록 도와줍니다.</div>',
-            unsafe_allow_html=True
-        )
-    with lk_col2:
-        st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
-        st.session_state.lane_keeping = st.toggle("LK_tgl", value=st.session_state.lane_keeping, label_visibility="collapsed")
+    
+    st.markdown('<div class="volvo-driving-node">', unsafe_allow_html=True)
+    # 차선유지 보조 시스템 박스
+    with st.container(border=True):
+        lk_col1, lk_col2 = st.columns([3.6, 1])
+        with lk_col1:
+            st.markdown(
+                '<div class="setting-title">차선유지 보조 시스템</div>'
+                '<div class="setting-desc">갑작스런 차선 이탈을 방지하도록 도와줍니다.</div>',
+                unsafe_allow_html=True
+            )
+        with lk_col2:
+            st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
+            st.session_state.lane_keeping = st.toggle("LK_tgl", value=st.session_state.lane_keeping, label_visibility="collapsed")
+
+    # 주행 준비 알림 박스
+    with st.container(border=True):
+        rd_col1, rd_col2 = st.columns([3.6, 1])
+        with rd_col1:
+            st.markdown(
+                '<div class="setting-title">주행 준비 알림</div>'
+                '<div class="setting-desc">전방 차량이 주행을 시작한 후 알림을 제공합니다.</div>',
+                unsafe_allow_html=True
+            )
+        with rd_col2:
+            st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
+            st.session_state.ready_to_drive = st.toggle("RD_tgl", value=st.session_state.ready_to_drive, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="setting-row-box">', unsafe_allow_html=True)
-    rd_col1, rd_col2 = st.columns([3.6, 1])
-    with rd_col1:
-        st.markdown(
-            '<div class="setting-title">주행 준비 알림</div>'
-            '<div class="setting-desc">전방 차량이 주행을 시작한 후 알림을 제공합니다.</div>',
-            unsafe_allow_html=True
-        )
-    with rd_col2:
-        st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
-        st.session_state.ready_to_drive = st.toggle("RD_tgl", value=st.session_state.ready_to_drive, label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
 
-
-# ⚙️ [설정] 메인 탭 화면 (★HTML 찌꺼기 완벽 제거형 컨테이너 구조★)
+# ⚙️ [설정] 메인 탭 화면 (1번 사진 황금 비율 박스 핏 유지)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
@@ -367,7 +380,7 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 
-# 📱 [퀵 컨트롤] 탭 화면 (골든 룰 수호)
+# 📱 [퀵 컨트롤] 탭 화면
 else:
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
