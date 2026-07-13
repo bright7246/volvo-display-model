@@ -124,6 +124,47 @@ st.markdown(
     .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
     .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
 
+    /* 📊 상태 탭 커스텀 스타일 */
+    .status-msg-box {{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #ffffff;
+        padding-top: 30px;
+        padding-left: 10px;
+    }}
+    .status-msg-icon {{
+        font-size: 20px;
+        color: #ffffff;
+    }}
+    .car-topview-container {{
+        background: radial-gradient(circle at center, rgb(36, 43, 56) 0%, rgb(22, 27, 35) 70%);
+        border-radius: 20px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }}
+    .car-visual {{
+        font-size: 90px;
+        transform: rotate(-10deg);
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
+    }}
+    div.status-action-zone div.stButton > button {{
+        background-color: rgb(34, 40, 52) !important;
+        color: #ffffff !important;
+        border: 1px solid #3d4656 !important;
+        border-radius: 10px !important;
+        height: 54px !important;
+        font-size: 15px !important;
+        font-weight: bold !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+    }}
+
     /* ⚙️ 설정 메인 격자 카드 */
     div.volvo-grid-card div.stButton > button {{
         background-color: rgb(22, 27, 35) !important;
@@ -286,7 +327,7 @@ st.markdown(
 )
 
 # --- 1. 최상단 상태바 상시 표시 ---
-st.markdown('<div class="volvo-status-bar"><span>오전 08:49</span><span>📶 LTE</span></div>', unsafe_allow_html=True)
+st.markdown('<div class="volvo-status-bar"><span>오전 08:50</span><span>📶 LTE</span></div>', unsafe_allow_html=True)
 
 # --- 2. 상단 메뉴 탭 (서브 메인 화면에서만 노출) ---
 if st.session_state.sub_page == "main":
@@ -299,7 +340,7 @@ if st.session_state.sub_page == "main":
     with top_col2:
         is_active = "primary" if st.session_state.current_tab == "설정" else "secondary"
         if st.button("설정", key="tab_settings", type=is_active, use_container_width=True):
-            st.session_state.current_tab = "설정"; st.rerun()
+            st.session_state.current_tab = "설정"; st.session_state.sub_page = "main"; st.rerun()
     with top_col3:
         is_active = "primary" if st.session_state.current_tab == "상태" else "secondary"
         if st.button("상태", key="tab_status", type=is_active, use_container_width=True):
@@ -310,8 +351,42 @@ if st.session_state.sub_page == "main":
 
 # --- 3. 화면 분기 처리 ---
 
+# 📊 [상태] 메인 탭 화면 (🎯 요청하신 순정형 업데이트/차량탑뷰 레이아웃 적용 완료!)
+if st.session_state.current_tab == "상태":
+    st.write("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
+    
+    # 상단 정보와 차량 그래픽 스플릿 구조
+    view_col1, view_col2 = st.columns([1.1, 0.9])
+    with view_col1:
+        st.markdown(
+            '<div class="status-msg-box">'
+            '<span class="status-msg-icon">ⓘ</span>'
+            '<span>업데이트가 없습니다</span>'
+            '</div>',
+            unsafe_allow_html=True
+        )
+    with view_col2:
+        st.markdown(
+            '<div class="car-topview-container">'
+            '<div class="car-visual">🚙</div>'
+            '</div>',
+            unsafe_allow_html=True
+        )
+        
+    st.write("<div style='margin-top: 45px;'></div>", unsafe_allow_html=True)
+    
+    # 하단 2종 진단/점검 버튼 구역
+    st.markdown('<div class="status-action-zone">', unsafe_allow_html=True)
+    status_btn_col1, status_btn_col2 = st.columns(2)
+    with status_btn_col1:
+        st.button("(!)  타이어 공기압", key="btn_status_tire", use_container_width=True)
+    with status_btn_col2:
+        st.button("📋  진단", key="btn_status_diag", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
 # 🚗 [설정 -> 주행] 서브 페이지
-if st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  주행", key="back_to_settings"):
         st.session_state.sub_page = "main"; st.rerun()
@@ -384,7 +459,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 컨트롤] 서브 페이지 (🎯 더 보기 하단 모두보기 제거 완료!)
+# 🎛️ [설정 -> 컨트롤] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
@@ -584,7 +659,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
-    # 단락 1: 문 잠금 해제 & 알람 감도
     st.markdown('<div class="volvo-title-row">잠금</div>', unsafe_allow_html=True)
     with st.container(border=True):
         ul_lbl_col, ul_btn_col = st.columns([1.8, 3.2])
@@ -614,7 +688,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.reduce_alarm_sensitivity = st.toggle("tgl_lock_reduce_alarm", value=st.session_state.reduce_alarm_sensitivity, label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
 
-    # 단락 2: 접근 및 하차
     st.markdown('<div class="volvo-title-row">접근 및 하차</div>', unsafe_allow_html=True)
     with st.container(border=True):
         acc_col1, acc_col2 = st.columns([4.2, 0.8])
@@ -637,7 +710,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.sunroof_curtain_auto_close = st.toggle("tgl_lock_sunroof", value=st.session_state.sunroof_curtain_auto_close, label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
 
-    # 단락 3: 잠금 및 잠금 해제 반응
     st.markdown('<div class="volvo-title-row">잠금 및 잠금 해제 반응</div>', unsafe_allow_html=True)
     with st.container(border=True):
         resp_col1, resp_col2 = st.columns([4.2, 0.8])
@@ -1062,7 +1134,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📊 [상태] 및 📱 [퀵 컨트롤] 탭 구조 보존
+# 📱 [퀵 컨트롤] 탭 구조 보존
 else:
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
