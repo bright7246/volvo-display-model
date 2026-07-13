@@ -25,13 +25,13 @@ st.markdown(
         color: #ffffff !important;
     }}
     
-    /* 💡 전체 세로 길이를 길게 뽑기 위해 최대 너비와 상하 패딩 최적화 */
+    /* 💡 전체 세로 길이를 시원하게 뽑기 위해 최대 너비와 최소 세로 높이 최적화 */
     .block-container {{
         max-width: 480px !important;
         padding-top: 2rem !important; 
         padding-bottom: 3rem !important;
         margin: 0 auto;
-        min-height: 850px; /* 세로 최소 높이 확보 */
+        min-height: 850px; 
     }}
     
     .volvo-status-bar {{
@@ -61,7 +61,7 @@ st.markdown(
         border-bottom: 3px solid #ffffff !important;
     }}
     
-    /* 📱 퀵 컨트롤 전용 카드 디자인 */
+    /* 📱 퀵 컨트롤 전용 카드 디자인 - 세로 길이 대폭 확장 */
     .volvo-card-content {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
@@ -76,19 +76,19 @@ st.markdown(
         width: 100%;
     }}
     .side-btn {{
-        height: 140px; /* 퀵컨트롤 사이드 버튼도 소폭 확장 */
-        font-size: 14px;
-        line-height: 1.4;
+        height: 185px; /* 140px -> 185px로 늘려서 위아래 꽉 차게 변경 */
+        font-size: 15px;
+        line-height: 1.5;
     }}
     .center-box {{
-        height: 300px; /* 퀵컨트롤 중앙 박스 확장 */
+        height: 400px; /* 300px -> 400px로 대폭 늘려 메인 존재감 확보 */
         font-size: 24px;
         letter-spacing: 5px;
         font-family: 'Times New Roman', Times, serif;
         font-weight: 400;
     }}
     
-    /* 💡 설정 탭 전용 카드 디자인 - 세로 길이를 시원하게 늘림 */
+    /* ⚙️ 설정 탭 전용 카드 디자인 */
     .volvo-set-card {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
@@ -102,8 +102,8 @@ st.markdown(
         font-size: 16px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         width: 100%;
-        height: 125px; /* 90px -> 125px로 대폭 늘려서 세로 비율 강조 */
-        margin-bottom: 18px; /* 카드 간 간격도 넓혀서 롱 디스플레이 느낌 제공 */
+        height: 125px; 
+        margin-bottom: 18px; 
     }}
     
     /* 하단 바 디자인 */
@@ -114,7 +114,7 @@ st.markdown(
         background-color: #111418;
         padding: 14px 18px;
         border-radius: 12px;
-        margin-top: 50px; /* 하단 바를 아래로 더 밀어내어 전체 길이 확장 */
+        margin-top: 50px; 
         border: 1px solid #232830;
     }}
     .bottom-item {{
@@ -207,30 +207,10 @@ elif st.session_state.current_tab == "상태":
 
 # 📱 [퀵 컨트롤] 탭 내용 (기본값)
 else:
-    st.write("") 
+    st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
 
+    # 💡 세로 길이를 시원하게 늘리고 버튼 간 격차 조절을 위한 margin-bottom 최적화
     with main_col1:
         st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
-        st.write("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True) 
-        st.markdown('<div class="volvo-card-content side-btn">Start<br>Stop</div>', unsafe_allow_html=True)
-
-    with main_col2:
-        st.markdown('<div class="volvo-card-content center-box">VOLVO</div>', unsafe_allow_html=True)
-
-    with main_col3:
-        st.markdown('<div class="volvo-card-content side-btn">알람<br>줄이기</div>', unsafe_allow_html=True)
-        st.write("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown('<div class="volvo-card-content side-btn">헤드<br>레스트</div>', unsafe_allow_html=True)
-
-# --- 4. 하단 공조 장치 바 (모든 탭 공통 노출) ---
-bottom_html = (
-    '<div class="volvo-bottom-bar">'
-    '<div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>'
-    '<div class="bottom-item">💺 LO</div>'
-    '<div class="bottom-item"><span style="font-size: 16px;">🌀</span><span class="bottom-sub-label">공기 재순환</span></div>'
-    '<div class="bottom-item">LO 💺</div>'
-    '<div class="bottom-item" style="font-size: 16px; opacity: 0.9;">🚗</div>'
-    '</div>'
-)
-st.markdown(bottom_html, unsafe_allow_html=True)
+        st.write("<div style='margin-bottom: 30px;'></div>", unsafe_allow_html=
