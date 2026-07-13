@@ -35,6 +35,12 @@ if "sys_timezone_auto" not in st.session_state: st.session_state.sys_timezone_au
 if "sys_time_24h" not in st.session_state: st.session_state.sys_time_24h = True
 if "selected_language" not in st.session_state: st.session_state.selected_language = "한국어(대한민국)"
 
+# [NUGU Auto 전용 상태 데이터]
+if "nugu_enabled" not in st.session_state: st.session_state.nugu_enabled = True
+if "nugu_alarm" not in st.session_state: st.session_state.nugu_alarm = True
+if "nugu_perf" not in st.session_state: st.session_state.nugu_perf = False
+if "nugu_permission_clear" not in st.session_state: st.session_state.nugu_permission_clear = True
+
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
@@ -149,9 +155,9 @@ st.markdown(
         min-height: 48px;
     }}
     .system-item-main {{ font-size: 15px; font-weight: 500; color: #ffffff; line-height: 1.2; }}
-    .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 4px; line-height: 1.2; }}
+    .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 4px; line-height: 1.3; }}
     
-    /* 🏷️ NUGU AUTO 밑에 추가될 서브 안내 문구 스타일 */
+    /* NUGU AUTO 밑 안내 문구 스타일 */
     .app-notice-desc {{
         font-size: 13px;
         color: #8e959e; 
@@ -181,6 +187,21 @@ st.markdown(
     /* NUGU AUTO 처럼 밑에 서브문구가 있어 칸이 커진 항목용 화살표 세로정렬 강제 보정 */
     div.align-arrow-center div.stButton > button {{
         height: 68px !important;
+    }}
+    
+    /* 🔳 순정형 앱 관리 상단 버튼 스타일 */
+    div.app-action-zone div.stButton > button {{
+        background-color: rgb(38, 45, 56) !important;
+        color: #ffffff !important;
+        border: 1px solid #4a5464 !important;
+        border-radius: 8px !important;
+        height: 50px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        box-shadow: none !important;
+    }}
+    div.app-action-zone div.stButton > button:active {{
+        background-color: rgb(48, 56, 70) !important;
     }}
     
     /* 슬라이더 스타일 */
@@ -379,7 +400,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         
         welcome_col1, welcome_col2 = st.columns([3.6, 1])
         with welcome_col1:
-            st.markdown('<div class="setting-title">웰컴 라이트</div><div class="setting-desc">차량에 접근하고 차량에서 내릴 때 조명을 켭니다</div>', unsafe_allow_html=True)
+            st.markdown('<div class="setting-title">Wellness 라이트</div><div class="setting-desc">차량에 접근하고 차량에서 내릴 때 조명을 켭니다</div>', unsafe_allow_html=True)
         with welcome_col2:
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.welcome_light = st.toggle("Welcome_ctrl_tgl", value=st.session_state.welcome_light, label_visibility="collapsed")
@@ -542,7 +563,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📱 [시스템 -> 상세 3. 애플리케이션 (모든 앱 보기)] 상세페이지
+# 📱 [시스템 -> 상세 3. 애플리케이션 (기본 앱 목록 목록)] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_apps":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  애플리케이션", key="back_to_sys_main_3"):
@@ -552,10 +573,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="volvo-title-row">기본 앱</div>', unsafe_allow_html=True)
     
-    # NUGU AUTO를 위한 별도 정렬 보정 컨테이너 시작
     st.markdown('<div class="system-list-zone align-arrow-center">', unsafe_allow_html=True)
-    
-    # 1. 🔍 NUGU AUTO (가이드 주신 대로 텍스트 밑으로 내림)
     col1, col2 = st.columns([4.2, 0.8])
     with col1: 
         st.markdown(
@@ -566,49 +584,108 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             unsafe_allow_html=True
         )
     with col2: 
-        # 우측 버튼 자리는 오직 깔끔한 단일 화살표만 상시 핏 고정!
+        # NUGU Auto 정보 상세 보기(sys_nugu_info) 페이지 분기 유도
         if st.button("〉", key="btn_nugu_auto", use_container_width=True):
-            pass
+            st.session_state.sub_page = "sys_nugu_info"; st.rerun()
             
-    st.markdown('</div>', unsafe_allow_html=True) # 보정 컨테이너 끝
+    st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
     
-    # 2. 🗺️ TMAP AUTO
     col3, col4 = st.columns([4.2, 0.8])
     with col3: st.markdown('<div class="text-container-fix"><div class="system-item-main">🗺️ TMAP AUTO</div></div>', unsafe_allow_html=True)
     with col4: st.button("〉", key="btn_sub_tmap", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 3. 🎵 FLO
     col5, col6 = st.columns([4.2, 0.8])
     with col5: st.markdown('<div class="text-container-fix"><div class="system-item-main">🎵 FLO</div></div>', unsafe_allow_html=True)
     with col6: st.button("〉", key="btn_sub_flo", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 4. 🍈 Melon
     col7, col8 = st.columns([4.2, 0.8])
     with col7: st.markdown('<div class="text-container-fix"><div class="system-item-main">🍈 Melon</div></div>', unsafe_allow_html=True)
     with col8: st.button("〉", key="btn_sub_melon", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 5. 📞 전화
     col9, col10 = st.columns([4.2, 0.8])
     with col9: st.markdown('<div class="text-container-fix"><div class="system-item-main">📞 전화</div></div>', unsafe_allow_html=True)
     with col10: st.button("〉", key="btn_sub_phone", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 6. 💬 메시지
     col11, col12 = st.columns([4.2, 0.8])
     with col11: st.markdown('<div class="text-container-fix"><div class="system-item-main">💬 메시지</div></div>', unsafe_allow_html=True)
     with col12: st.button("〉", key="btn_sub_msg", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 7. 🌐 오디오 및 비디오 앱 오버레이
     col13, col14 = st.columns([4.2, 0.8])
     with col13: st.markdown('<div class="text-container-fix"><div class="system-item-main">🌐 오디오 및 비디오 앱 오버레이</div></div>', unsafe_allow_html=True)
     with col14: st.button("〉", key="btn_sub_overlay", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 🔍 [시스템 -> 애플리케이션 -> NUGU Auto 앱 정보] 세부 페이지 (신규 추가!)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_nugu_info":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  앱 정보", key="back_to_sys_apps"):
+        st.session_state.sub_page = "sys_apps"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    # 중앙 정렬 앱 타이틀 명시
+    st.markdown('<div style="text-align: center; font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 25px;">NUGU Auto</div>', unsafe_allow_html=True)
+
+    # 🔳 상단 순정형 기능 액션 버튼 존
+    st.markdown('<div class="app-action-zone">', unsafe_allow_html=True)
+    act_col1, act_col2 = st.columns(2)
+    with act_col1:
+        # 사용 중지 상태 스위칭 인터랙션 정의
+        btn_label = "사용" if not st.session_state.nugu_enabled else "사용 중지"
+        if st.button(btn_label, key="btn_nugu_toggle_action", use_container_width=True):
+            st.session_state.nugu_enabled = not st.session_state.nugu_enabled
+            st.rerun()
+    with act_col2:
+        # 클릭 시 아무 반응 없는 강제 종료 버튼
+        st.button("강제 종료", key="btn_nugu_force_stop", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
+
+    # 하부 리스트 구성
+    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+    
+    # 알림 토글
+    col_al1, col_al2 = st.columns([4.2, 0.8])
+    with col_al1: st.markdown('<div class="text-container-fix"><div class="system-item-main" style="margin-top: 6px;">알림</div></div>', unsafe_allow_html=True)
+    with col_al2: st.session_state.nugu_alarm = st.toggle("tgl_nugu_alarm", value=st.session_state.nugu_alarm, label_visibility="collapsed")
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
+
+    # 권한 항목
+    col_pr1, col_pr2 = st.columns([4.2, 0.8])
+    with col_pr1: st.markdown('<div class="text-container-fix"><div class="system-item-main">권한</div><div class="system-item-sub">근처 기기, 마이크, 알림, 연락처, 위치, 전화, 통화 기록, SMS 및 추가 권한 1개</div></div>', unsafe_allow_html=True)
+    with col_pr2: st.button("〉", key="btn_nugu_permission", use_container_width=True)
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
+
+    # 저장용량 및 캐시
+    col_st1, col_st2 = st.columns([4.2, 0.8])
+    with col_st1: st.markdown('<div class="text-container-fix"><div class="system-item-main">저장용량 및 캐시</div><div class="system-item-sub">내부 저장소의 94.87MB</div></div>', unsafe_allow_html=True)
+    with col_st2: st.button("〉", key="btn_nugu_storage", use_container_width=True)
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
+
+    # 앱 성능 우선순위 지정 토글
+    col_pf1, col_pf2 = st.columns([4.2, 0.8])
+    with col_pf1: st.markdown('<div class="text-container-fix"><div class="system-item-main">앱 성능 우선순위 지정</div><div class="system-item-sub">시스템 리소스를 사용하여 앱 성능 우선순위를 지정합니다.</div></div>', unsafe_allow_html=True)
+    with col_pf2: st.session_state.nugu_perf = st.toggle("tgl_nugu_perf", value=st.session_state.nugu_perf, label_visibility="collapsed")
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
+
+    # 권한을 삭제하고 여유 공간 확보 토글
+    col_cl1, col_cl2 = st.columns([4.2, 0.8])
+    with col_cl1: st.markdown('<div class="text-container-fix"><div class="system-item-main" style="margin-top: 6px;">권한을 삭제하고 여유 공간 확보</div></div>', unsafe_allow_html=True)
+    with col_cl2: st.session_state.nugu_permission_clear = st.toggle("tgl_nugu_clear", value=st.session_state.nugu_permission_clear, label_visibility="collapsed")
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
+
+    # 버전 표기
+    st.markdown('<div class="text-container-fix" style="padding-left: 4px;"><div class="system-item-sub" style="font-size: 14px;">버전: 2.0.133</div></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
