@@ -25,15 +25,16 @@ st.markdown(
         color: #ffffff !important;
     }}
     
-    /* 전체 세로 길이를 시원하게 뽑기 위해 최대 너비와 최소 세로 높이 최적화 */
+    /* 💡 padding-top을 4rem으로 늘려 전체적인 요소를 아래로 내렸습니다 */
     .block-container {{
         max-width: 480px !important;
-        padding-top: 2rem !important; 
+        padding-top: 4rem !important; 
         padding-bottom: 3rem !important;
         margin: 0 auto;
         min-height: 850px; 
     }}
     
+    /* 최상단 상태바 여백 조정 */
     .volvo-status-bar {{
         display: flex;
         justify-content: space-between;
@@ -61,7 +62,7 @@ st.markdown(
         border-bottom: 3px solid #ffffff !important;
     }}
     
-    /* 📱 퀵 컨트롤 전용 카드 디자인 - 세로 길이 대폭 확장 */
+    /* 📱 퀵 컨트롤 전용 카드 디자인 */
     .volvo-card-content {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
@@ -76,12 +77,12 @@ st.markdown(
         width: 100%;
     }}
     .side-btn {{
-        height: 185px; /* 늘어난 롱 배율 높이 */
+        height: 185px; 
         font-size: 15px;
         line-height: 1.5;
     }}
     .center-box {{
-        height: 400px; /* 메인 센터 박스 롱 배율 높이 */
+        height: 400px; 
         font-size: 24px;
         letter-spacing: 5px;
         font-family: 'Times New Roman', Times, serif;
@@ -192,16 +193,17 @@ if st.session_state.current_tab == "설정":
         st.markdown('<div class="volvo-set-card">연결</div>', unsafe_allow_html=True)
 
     # 3라인: 프로필 / 개인정보 보호 / 시스템
-    row3_col1, row3_col2, row3_col3 = st.columns([1, 1.2, 1])
+    # 💡 개인정보 보호가 한 줄로 예쁘게 들어가도록 가운데 열 배율을 [1, 1.5, 1]로 확장하고 폰트 크기 미세 조정
+    row3_col1, row3_col2, row3_col3 = st.columns([1, 1.5, 1])
     with row3_col1:
         st.markdown('<div class="volvo-set-card" style="font-size: 14px;">프로필</div>', unsafe_allow_html=True)
     with row3_col2:
-        st.markdown('<div class="volvo-set-card" style="font-size: 14px;">개인정보<br>보호</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card" style="font-size: 13.5px; white-space: nowrap;">개인정보 보호</div>', unsafe_allow_html=True)
     with row3_col3:
         st.markdown('<div class="volvo-set-card" style="font-size: 14px;">시스템</div>', unsafe_allow_html=True)
 
 # 📊 [상태] 탭 내용
-elif st.session_state.current_tab == "상태":
+elif st.session_state.current_tab == "상태 text":
     st.subheader("📊 차량 상태")
     st.write("차량 진단 및 정보를 확인합니다.")
 
@@ -210,7 +212,6 @@ else:
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
 
-    # 🛠️ 깨졌던 st.write 코드를 완벽하게 수정하여 마진 배치
     with main_col1:
         st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
         st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True) 
