@@ -193,14 +193,14 @@ st.markdown(
     .oil-bar-fill-green {{ background-color: #00c853; height: 100%; width: 84%; border-radius: 4px 0 0 4px; }}
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
-    /* ⚙️ 설정 메인 격자 카드 */
+    /* ⚙️ 설정 메인 격자 카드 (🎯 요청 사항: 차선 유지 버튼의 반 크기인 95px로 대폭 키우고 글꼴 비율 보정!) */
     div.volvo-grid-card div.stButton > button {{
         background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
-        height: 135px !important;
-        font-size: 16px !important;
+        height: 95px !important;
+        font-size: 17px !important;
         font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         width: 100% !important;
@@ -358,7 +358,7 @@ if st.session_state.current_tab == "상태" and st.session_state.sub_page == "ma
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ⭕ [상태 -> 타이어 공기압] 상세 서브 뷰 (🎯 1번 사진 완벽 반영!)
+# ⭕ [상태 -> 타이어 공기압] 상세 서브 뷰
 elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "status_tire":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  타이어 공기압", key="back_to_status_main_tire"):
@@ -366,24 +366,17 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 순정 상단 서브 헤더 배치
-    st.markdown('<div class="tire-status-header">✔️ &nbsp; 모든 타이어 압력 정상</div>', unsafe_allow_html=True)
-    
-    # 중앙 큰 초록색 체크 원형 그래픽
+    st.markdown('<div class="tire-status-header"></div> &nbsp; 모든 타이어 압력 정상', unsafe_allow_html=True)
     st.markdown('<div class="tire-check-circle-green"><span class="tire-check-icon-green">✓</span></div>', unsafe_allow_html=True)
-    
     st.write("<div style='margin-top: 40px;'></div>", unsafe_allow_html=True)
     
-    # 기준 공기압 업데이트 버튼 구역
     st.markdown('<div class="tire-action-zone">', unsafe_allow_html=True)
     st.button("기준 공기압 업데이트", key="btn_update_tire_pressure_dummy")
     st.markdown('</div>', unsafe_allow_html=True)
-    
-    # 하단 볼보 블루 권장문구 안내
     st.markdown('<div class="tire-bottom-notice"><span class="tire-blue-text">Volvo 권장</span> 타이어 공기압 수치를 확인하십시오</div>', unsafe_allow_html=True)
 
 
-# 🔧 [상태 -> 진단] 상세 서브 뷰 (🎯 2번 사진 완벽 반영!)
+# 🔧 [상태 -> 진단] 상세 서브 뷰
 elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "status_diag":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  진단", key="back_to_status_main_diag"):
@@ -392,8 +385,6 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="diag-container">', unsafe_allow_html=True)
-    
-    # 항목 1: 서비스 시기
     st.markdown(
         '<div class="diag-row-item">'
         '<div class="diag-icon-zone">🔧</div>'
@@ -405,8 +396,6 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
         '<div class="diag-divider"></div>', 
         unsafe_allow_html=True
     )
-    
-    # 항목 2: 오일 레벨 및 순정형 게이지 바 구현
     st.markdown(
         '<div class="diag-row-item">'
         '<div class="diag-icon-zone">🛢️</div>'
@@ -420,7 +409,6 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
         '<div class="diag-divider"></div>',
         unsafe_allow_html=True
     )
-    
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -1132,7 +1120,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.components.v1.html(denied_permissions_html, height=60)
 
 
-# ⚙️ [설정] 메인 격자 맵 화면
+# ⚙️ [설정] 메인 격자 맵 화면 (🎯 세로 높이 리사이징 핏 적용 완료!)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     row1_col1, row1_col2 = st.columns(2)
