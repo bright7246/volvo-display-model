@@ -1,14 +1,13 @@
 import streamlit as st
 
-# 1. 페이지 설정 (최대한 디스플레이 화면처럼 보이도록 너비 조정)
+# 1. 페이지 설정
 st.set_page_config(
     page_title="Volvo Main Display",
-    page_icon="🚗",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
 
-# 2. 디자인을 볼보 UI와 똑같이 만들기 위한 통합 CSS 스타일 설정
+# 2. 볼보 UI 스타일을 맞추기 위한 CSS 커스텀
 st.markdown(
     """
     <style>
@@ -36,16 +35,7 @@ st.markdown(
         margin-bottom: 10px;
     }
 
-    /* 상단 메뉴 탭 컨테이너 */
-    .volvo-tabs {
-        display: flex;
-        justify-content: space-between;
-        border-bottom: 1px solid #2d333c;
-        padding-bottom: 5px;
-        margin-bottom: 20px;
-    }
-
-    /* 투명 버튼을 탭 메뉴 글자 위에 덮어씌우기 위한 스타일 */
+    /* 스트림릿 기본 버튼 스타일 초기화 및 볼보 탭 메뉴화 */
     .stButton > button {
         background-color: transparent !important;
         color: #8e959e !important;
@@ -65,19 +55,18 @@ st.markdown(
         border-bottom: 3px solid #ffffff !important;
     }
 
-    /* 마우스 올렸을 때 배경 투명 유지 */
     .stButton > button:hover {
         background-color: transparent !important;
         color: #ffffff !important;
     }
 
-    /* 슬라이더 커스텀 (볼보 슬라이더 스타일) */
+    /* 슬라이더 스타일 */
     div[data-testid="stSlider"] {
         padding-top: 10px;
         padding-bottom: 20px;
     }
 
-    /* 중앙 아이콘 버튼 디자인 (원형 배경 + 밑에 글씨) */
+    /* 텍스트형 원형 버튼 컨테이너 */
     .volvo-btn-container {
         display: flex;
         flex-direction: column;
@@ -87,7 +76,7 @@ st.markdown(
         text-align: center;
     }
 
-    /* 파란색 활성화 원형 아이콘 (차선유지보조, 스타트스톱 등) */
+    /* 파란색 활성화 원형 (그림 없이 빈 원 또는 은은한 배경만) */
     .icon-circle-blue {
         width: 60px;
         height: 60px;
@@ -96,12 +85,10 @@ st.markdown(
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        box-shadow: 0 4px 10px rgba(0,160,233,0.3);
         margin-bottom: 8px;
     }
 
-    /* 회색 비활성화 원형 아이콘 (알람줄이기, 헤드레스트 등) */
+    /* 회색 비활성화 원형 */
     .icon-circle-grey {
         width: 60px;
         height: 60px;
@@ -110,7 +97,6 @@ st.markdown(
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
         margin-bottom: 8px;
     }
 
@@ -119,6 +105,17 @@ st.markdown(
         color: #e1e2e3;
         font-weight: 500;
         margin-top: 4px;
+    }
+
+    /* 중앙 대형 VOLVO 텍스트 스타일 */
+    .center-volvo-text {
+        text-align: center;
+        font-size: 45px;
+        font-weight: 300;
+        color: #ffffff;
+        letter-spacing: 8px;
+        padding: 40px 0;
+        font-family: 'Times New Roman', Times, serif;
     }
 
     /* 하단 공조장치 바 디자인 */
@@ -134,8 +131,8 @@ st.markdown(
     }
 
     .bottom-item {
-        font-size: 16px;
-        font-weight: bold;
+        font-size: 15px;
+        font-weight: 500;
         color: #ffffff;
         text-align: center;
     }
@@ -151,11 +148,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 세션 상태 초기화 (현재 탭 저장용)
+# 세션 상태 초기화
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
-# --- 1. 최상단 상태바 (오전 08:46 | LTE) ---
+# --- 1. 최상단 상태바 ---
 st.markdown(
     '''
     <div class="volvo-status-bar">
@@ -166,7 +163,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- 2. 상단 메뉴 탭 (버튼 자체를 밑줄 디자인 탭으로 변경) ---
+# --- 2. 상단 메뉴 탭 ---
 top_col1, top_col2, top_col3 = st.columns(3)
 
 with top_col1:
@@ -187,95 +184,82 @@ with top_col3:
         st.session_state.current_tab = "상태"
         st.rerun()
 
-# 탭 메뉴 아래에 구분선 추가
+# 구분선
 st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; margin-bottom: 20px;"></div>', unsafe_allow_html=True)
 
 
 # --- 3. 화면 분기 처리 ---
 
-# [분기 A] 사용자가 상단에서 '설정'을 눌렀을 때 나오는 페이지
 if st.session_state.current_tab == "설정":
     st.subheader("⚙️ 볼보 시스템 설정")
-    st.write("임시 모델의 설정 화면입니다. 다양한 차량 옵션을 여기에 추가할 수 있습니다.")
-    
+    st.write("다양한 차량 옵션을 설정할 수 있는 페이지입니다.")
     if st.button("⬅️ 메인 화면(퀵 컨트롤)으로 돌아가기"):
         st.session_state.current_tab = "퀵 컨트롤"
         st.rerun()
 
-# [분기 B] 첫 페이지 메인 화면 (퀵 컨트롤)
+elif st.session_state.current_tab == "상태":
+    st.subheader("📊 차량 상태")
+    st.write("차량의 현재 상태 및 진단 정보를 확인합니다.")
+
 else:
-    # 밝기 조절 슬라이더 (사진 1번의 가로 슬라이더 바 재현)
+    # 밝기 조절 슬라이더
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, value=85)
 
-    # 중앙 레이아웃 분할 (좌측 버튼 2개 / 중앙 차량 탑뷰 / 우측 버튼 2개)
+    # 중앙 레이아웃 (그림 없이 글자만 남김)
     main_col1, main_col2, main_col3 = st.columns([1, 1.2, 1])
 
-    # 좌측 영역 (파란색 활성화 버튼들)
+    # 좌측 영역 (그림 지우고 깔끔한 원과 글자만)
     with main_col1:
-        # 차선유지 보조
         st.markdown(
             '''
             <div class="volvo-btn-container">
-                <div class="icon-circle-blue">🛣️</div>
+                <div class="icon-circle-blue"></div>
                 <div class="btn-label">차선유지 보조</div>
             </div>
-            ''', unsafe_allow_html=True
-        )
-        # Start/Stop
-        st.markdown(
-            '''
             <div class="volvo-btn-container">
-                <div class="icon-circle-blue">🅰️</div>
+                <div class="icon-circle-blue"></div>
                 <div class="btn-label">Start/Stop</div>
             </div>
             ''', unsafe_allow_html=True
         )
 
-    # 중앙 영역 (제공해주신 볼보 차량의 은색 탑뷰 이미지 느낌을 재현)
+    # 중앙 영역 (차량 그림 지우고 정갈한 폰트의 VOLVO 문구 배치)
     with main_col2:
-        st.write("")
-        st.markdown(
-            """
-            <div style="text-align: center; padding: 10px 0;">
-                <span style="font-size: 90px; filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.6));">🚘</span>
-                <p style="margin-top: 15px; font-weight: bold; color: #8e959e; letter-spacing: 1px; font-size: 13px;">VOLVO XC60</p>
-            </div>
-            """, unsafe_allow_html=True
-        )
-
-    # 우측 영역 (회색 버튼들)
-    with main_col3:
-        # 알람 줄이기
         st.markdown(
             '''
-            <div class="volvo-btn-container">
-                <div class="icon-circle-grey">🚗</div>
-                <div class="btn-label">알람 줄이기</div>
+            <div class="center-volvo-text">
+                VOLVO
             </div>
             ''', unsafe_allow_html=True
         )
-        # 헤드레스트 접기
+
+    # 우측 영역 (그림 지우고 깔끔한 원과 글자만)
+    with main_col3:
         st.markdown(
             '''
             <div class="volvo-btn-container">
-                <div class="icon-circle-grey">💺</div>
+                <div class="icon-circle-grey"></div>
+                <div class="btn-label">알람 줄이기</div>
+            </div>
+            <div class="volvo-btn-container">
+                <div class="icon-circle-grey"></div>
                 <div class="btn-label">헤드레스트 접기</div>
             </div>
             ''', unsafe_allow_html=True
         )
 
-    # --- 4. 하단 공조 장치 바 (사진 12번 완벽 재현) ---
+    # --- 4. 하단 공조 장치 바 (우측 하단 차량모양 -> '설정' 텍스트로 변경) ---
     st.markdown(
         '''
         <div class="volvo-bottom-bar">
-            <div class="bottom-item" style="color: #8e959e; font-size: 20px;">㗊</div>
+            <div class="bottom-item" style="color: #8e959e; font-size: 18px;">㗊</div>
             <div class="bottom-item">💺 LO</div>
             <div class="bottom-item">
                 🌀
                 <span class="bottom-sub-label">공기 재순환</span>
             </div>
             <div class="bottom-item">LO 💺</div>
-            <div class="bottom-item" style="font-size: 20px;">🚘</div>
+            <div class="bottom-item" style="color: #ffffff; font-size: 14px; font-weight: bold; cursor: pointer;">설정</div>
         </div>
         ''', 
         unsafe_allow_html=True
