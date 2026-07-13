@@ -38,7 +38,7 @@ border_color = "rgb(42, 49, 61)"
 if "brightness_slider" in st.query_params:
     st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
 
-# 2. [골든 룰] 스타일 정의 (중앙 스크린 일체형 배경 도색 작업)
+# 2. [골든 룰] 스타일 정의 (회색 바탕 스크린 가변 확장 수술 완료)
 st.markdown(
     f"""
     <style>
@@ -48,7 +48,7 @@ st.markdown(
         color: #ffffff !important;
     }}
     
-    /* 📱 [요구사항 반영] 사진의 빨간 점선 내부 영역을 지정 색상(card_color)으로 통째로 도색 */
+    /* 📱 [개선 핵심] height를 고정하지 않고 auto로 두어, 하위 메뉴가 길어져도 바탕색이 끝까지 채우도록 수정 */
     .block-container {{
         max-width: 480px !important;
         background-color: {card_color} !important;
@@ -57,9 +57,12 @@ st.markdown(
         padding-left: 25px !important;
         padding-right: 25px !important;
         margin: 0 auto;
-        min-height: 900px; 
+        min-height: 900px !important; 
+        height: auto !important; /* 💡 콘텐츠 길이에 맞게 무한 확장 */
+        display: flex !important;
+        flex-direction: column !important;
         box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
-        border-radius: 16px; /* 실제 하드웨어 태블릿 느낌 마감 */
+        border-radius: 16px; 
     }}
     
     /* 상단 시계 및 상태바 */
@@ -93,7 +96,7 @@ st.markdown(
         border-bottom: 2px solid #ffffff !important;
     }}
     
-    /* 📱 퀵 컨트롤 전용 카드 스타일 (중앙 판넬과 깊이감 분리를 위한 조절) */
+    /* 📱 퀵 컨트롤 전용 카드 스타일 */
     .volvo-card-content {{
         background-color: rgb(22, 27, 35) !important;
         border: 1px solid {border_color} !important;
@@ -137,7 +140,7 @@ st.markdown(
         padding-left: 5px;
     }}
     
-    /* 🛠️ [B 세팅] 서브페이지 내부 상자들 (일체화된 스크린 위에 정돈되도록 투명도/배색 최적화) */
+    /* 🛠️ [B 세팅] 서브페이지 내부 상자들 */
     div.subpage-content-zone div[data-testid="stVerticalBlockBorderWrapper"] {{
         background-color: rgba(18, 22, 28, 0.4) !important;
         border: 1px solid {border_color} !important;
@@ -197,8 +200,18 @@ st.markdown(
     div[data-testid="stCheckboxToggleHoverTarget"] div[aria-checked="true"] {{ background-color: #00A3E0 !important; }}
     .back-btn-box button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 18px !important; font-weight: bold !important; padding: 0 !important; box-shadow: none !important; }}
     
-    /* 하단 공조 바 */
-    .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 40px; border: 1px solid #232830; }}
+    /* 하단 공조 바 (가변형 스크린에 맞춰 밀려나도록 마진 및 고정 플로우 해제) */
+    .volvo-bottom-bar {{ 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        background-color: #111418; 
+        padding: 14px 18px; 
+        border-radius: 12px; 
+        margin-top: auto !important; /* 💡 무조건 스크린 최하단 바닥에 달라붙게 만듦 */
+        padding-top: 14px !important;
+        border: 1px solid #232830; 
+    }}
     .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
     .bottom-sub-label {{ font-size: 9px; color: #8e959e !important; display: block; margin-top: 2px; }}
     </style>
@@ -442,6 +455,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">정보</div><div class="system-item-sub">Android 13</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">접근성</div><div class="system-item-sub">자막 환경설정</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
+    st.write("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
 
 
 # ⚙️ [설정] 메인 탭 화면 (골든 룰 완전 사수 구역)
