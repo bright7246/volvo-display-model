@@ -1,6 +1,5 @@
 import streamlit as st
-from datetime import datetime
-import pytz
+from datetime import datetime, timedelta
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -17,7 +16,7 @@ if "current_tab" not in st.session_state:
 if "brightness" not in st.session_state:
     st.session_state.brightness = 85
 
-# 💡 슬라이더 값에 연동되는 RGB 배경색 계산 (부드러운 다크 모드 톤 변환)
+# 💡 밝기 슬라이더 값에 연동되는 RGB 배경색 계산
 bg_base = 12 + int(st.session_state.brightness * 0.25)     
 card_base = 20 + int(st.session_state.brightness * 0.3)    
 border_base = 30 + int(st.session_state.brightness * 0.35) 
@@ -26,16 +25,15 @@ bg_color = f"rgb({bg_base}, {bg_base+4}, {bg_base+10})"
 card_color = f"rgb({card_base}, {card_base+6}, {card_base+16})"
 border_color = f"rgb({border_base}, {border_base+7}, {border_base+17})"
 
-# 2. 볼보 UI 레이아웃 및 동적 CSS 주입
+# 💡 스트림릿의 CSS 캐싱 버그를 깨뜨리기 위해 슬라이더 값에 맞춘 고유 스타일 태그 생성
 st.markdown(
     f"""
     <style>
     .stApp {{
         background-color: {bg_color} !important;
-        color: #ffffff;
-        transition: background-color 0.1s ease;
+        color: #ffffff !important;
+        transition: background-color 0.1s ease-in-out;
     }}
-    /* 💡 패딩을 최적화하여 상단바가 절대 가려지거나 잘리지 않도록 배치 */
     .block-container {{
         max-width: 450px !important;
         padding-top: 2.5rem !important; 
@@ -87,15 +85,15 @@ st.markdown(
     .volvo-rect-btn {{
         width: 100px;
         height: 130px;
-        background-color: {card_color};
-        border: 1px solid {border_color};
+        background-color: {card_color} !important;
+        border: 1px solid {border_color} !important;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 14px; 
         font-weight: bold;
-        color: #ffffff;
+        color: #ffffff !important;
         text-align: center;
         line-height: 1.4;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -104,8 +102,8 @@ st.markdown(
     .center-volvo-box {{
         width: 130px; 
         height: 280px;
-        background-color: {card_color};
-        border: 1px solid {border_color};
+        background-color: {card_color} !important;
+        border: 1px solid {border_color} !important;
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -116,7 +114,7 @@ st.markdown(
     .center-volvo-text {{
         font-size: 24px;
         font-weight: 400;
-        color: #ffffff;
+        color: #ffffff !important;
         letter-spacing: 5px;
         font-family: 'Times New Roman', Times, serif;
         text-align: center;
@@ -135,7 +133,7 @@ st.markdown(
     .bottom-item {{
         font-size: 14px;
         font-weight: 500;
-        color: #ffffff;
+        color: #ffffff !important;
         text-align: center;
         display: flex;
         flex-direction: column;
@@ -144,7 +142,7 @@ st.markdown(
     }}
     .bottom-sub-label {{
         font-size: 9px;
-        color: #8e959e;
+        color: #8e959e !important;
         display: block;
         margin-top: 1px;
     }}
@@ -158,20 +156,20 @@ st.markdown(
         justify-content: center;
         font-size: 11px;
         font-weight: bold;
-        color: #ffffff;
+        color: #ffffff !important;
     }}
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# --- 1. 최상단 상태바 (💡 파이썬 코드로 안전하게 한국 시간 연동 및 잘림 현상 해결) ---
-tz = pytz.timezone('Asia/Seoul')
-now = datetime.now(tz)
-ampm = "오후" if now.hour >= 12 else "오전"
-display_hour = now.hour % 12
+# --- 1. 최상단 상태바 (💡 내장 내비게이션 기능만을 이용해 한국시간 계산) ---
+utc_now = datetime.utcnow()
+kor_now = utc_now + timedelta(hours=9) # UTC+9 한국 표준시
+ampm = "오후" if kor_now.hour >= 12 else "오전"
+display_hour = kor_now.hour % 12
 display_hour = 12 if display_hour == 0 else display_hour
-time_string = f"{ampm} {display_hour:02d}:{now.minute:02d}"
+time_string = f"{ampm} {display_hour:02d}:{kor_now.minute:02d}"
 
 st.markdown(
     f'<div class="volvo-status-bar"><span>{time_string}</span><span>📶 LTE</span></div>', 
@@ -218,7 +216,7 @@ else:
     # 💡 밝기 조절 슬라이더
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, key="brightness")
 
-    # 중앙 메인 레이아웃 (박스 밑 지저분한 텍스트 완벽히 제거 버전)
+    # 중앙 메인 레이아웃 
     main_html = f"""
     <div class="volvo-main-grid">
         <div class="grid-column">
