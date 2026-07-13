@@ -11,15 +11,14 @@ st.set_page_config(
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
-# 💡 3번 요구사항: 슬라이더 값에 따라 배경 밝기(알파값/색상)를 계산
-# 기본 스트림릿 슬라이더가 렌더링되기 전에 값을 읽어오기 위해 변수 설정
+# 💡 오류 원인 해결: 여기서 슬라이더 값을 안전하게 제어합니다.
 if "brightness" not in st.session_state:
     st.session_state.brightness = 85
 
-# 밝기 값(0~100)을 기반으로 RGB 색상 동적 계산 (0일 때 아주 어두움, 100일 때 밝아짐)
-bg_base = 15 + int(st.session_state.brightness * 0.2) # 15 ~ 35 범위
-card_base = 25 + int(st.session_state.brightness * 0.25) # 25 ~ 50 범위
-border_base = 35 + int(st.session_state.brightness * 0.3) # 35 ~ 65 범위
+# 밝기 값(0~100)을 기반으로 RGB 배경색 동적 계산
+bg_base = 15 + int(st.session_state.brightness * 0.2)
+card_base = 25 + int(st.session_state.brightness * 0.25)
+border_base = 35 + int(st.session_state.brightness * 0.3)
 
 bg_color = f"rgb({bg_base}, {bg_base+4}, {bg_base+10})"
 card_color = f"rgb({card_base}, {card_base+6}, {card_base+16})"
@@ -29,22 +28,17 @@ border_color = f"rgb({border_base}, {border_base+7}, {border_base+17})"
 st.markdown(
     f"""
     <style>
-    /* 💡 동적으로 계산된 밝기 반영 */
     .stApp {{
         background-color: {bg_color} !important;
         color: #ffffff;
         transition: background-color 0.3s ease;
     }}
-    
-    /* 💡 1번 요구사항: 상단에 여백(padding-top)을 넉넉히 주어 상태바가 가려지지 않고 아래로 내려오게 조치 */
     .block-container {{
         max-width: 450px !important;
         padding-top: 3.5rem !important; 
         padding-bottom: 1.5rem;
         margin: 0 auto;
     }}
-    
-    /* 상단 상태 바 */
     .volvo-status-bar {{
         display: flex;
         justify-content: space-between;
@@ -56,7 +50,6 @@ st.markdown(
         padding: 5px 10px;
         margin-bottom: 5px;
     }}
-    
     .stButton > button {{
         background-color: transparent !important;
         color: #8e959e !important;
@@ -73,8 +66,6 @@ st.markdown(
         font-weight: bold !important;
         border-bottom: 3px solid #ffffff !important;
     }}
-    
-    /* 중앙 그리드 설정 */
     .volvo-main-grid {{
         display: flex;
         justify-content: space-between;
@@ -90,8 +81,6 @@ st.markdown(
         justify-content: center;
         width: 30%;
     }}
-    
-    /* 사각형 박스 버튼 스타일 */
     .volvo-rect-btn {{
         width: 90px;
         height: 125px;
@@ -109,10 +98,8 @@ st.markdown(
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         transition: background-color 0.3s, border-color 0.3s;
     }}
-    
-    /* 💡 2번 요구사항: VOLVO 박스를 가로로 좀 더 넓히고 세로로 길쭉하게 배치 */
     .center-volvo-box {{
-        width: 130px; /* 기존 110px에서 가로 폭을 넓힘 */
+        width: 130px; 
         height: 270px;
         background-color: {card_color};
         border: 1px solid {border_color};
@@ -123,8 +110,6 @@ st.markdown(
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         transition: background-color 0.3s, border-color 0.3s;
     }}
-    
-    /* 💡 2번 요구사항: VOLVO 글자를 세로가 아닌 가로로 정상 출력 */
     .center-volvo-text {{
         font-size: 24px;
         font-weight: 400;
@@ -134,7 +119,6 @@ st.markdown(
         text-align: center;
         white-space: nowrap;
     }}
-    
     .btn-bottom-label {{
         font-size: 11px;
         color: #8e959e;
@@ -142,8 +126,6 @@ st.markdown(
         text-align: center;
         white-space: nowrap;
     }}
-    
-    /* 하단 공조바 */
     .volvo-bottom-bar {{
         display: flex;
         justify-content: space-between;
@@ -163,7 +145,7 @@ st.markdown(
         flex-direction: column;
         align-items: center;
         justify-content: center;
-    }
+    }}
     .bottom-sub-label {{
         font-size: 9px;
         color: #8e959e;
@@ -187,7 +169,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 1. 최상단 상태바 (이제 가려지지 않고 깔끔하게 아래로 내려옴) ---
+# --- 1. 최상단 상태바 ---
 st.markdown('<div class="volvo-status-bar"><span>오전 08:46</span><span>📶 LTE</span></div>', unsafe_allow_html=True)
 
 # --- 2. 상단 메뉴 탭 ---
@@ -227,21 +209,19 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 else:
-    # 💡 밝기 조절 슬라이더 (움직이면 세션 상태에 저장되어 실시간 배경 밝기 변경됨)
+    # 💡 정상적인 슬라이더 배치 (key 값을 한 번만 선언하여 에러를 방지했습니다)
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, key="brightness")
 
-    # 중앙 메인 레이아웃 (가로형 VOLVO 문구 및 세로형 박스 격자화)
+    # 중앙 메인 레이아웃
     main_html = f"""
     <div class="volvo-main-grid">
         <div class="grid-column">
             <div style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">차선<br>유지</div><div class="btn-bottom-label">차선유지 보조</div></div>
             <div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">Start<br>Stop</div><div class="btn-bottom-label">Start/Stop</div></div>
         </div>
-        
         <div class="center-volvo-box">
             <div class="center-volvo-text">VOLVO</div>
         </div>
-        
         <div class="grid-column">
             <div style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">알람<br>줄이기</div><div class="btn-bottom-label">알람 줄이기</div></div>
             <div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">헤드<br>레스트</div><div class="btn-bottom-label">헤드레스트 접기</div></div>
