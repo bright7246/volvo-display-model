@@ -1,5 +1,6 @@
 import streamlit as st
-import streamlit.components.v1 as components
+from datetime import datetime
+import pytz
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -16,7 +17,7 @@ if "current_tab" not in st.session_state:
 if "brightness" not in st.session_state:
     st.session_state.brightness = 85
 
-# 실시간 밝기 값 연동을 위한 RGB 색상 계산
+# 💡 슬라이더 값에 연동되는 RGB 배경색 계산 (부드러운 다크 모드 톤 변환)
 bg_base = 12 + int(st.session_state.brightness * 0.25)     
 card_base = 20 + int(st.session_state.brightness * 0.3)    
 border_base = 30 + int(st.session_state.brightness * 0.35) 
@@ -34,11 +35,23 @@ st.markdown(
         color: #ffffff;
         transition: background-color 0.1s ease;
     }}
+    /* 💡 패딩을 최적화하여 상단바가 절대 가려지거나 잘리지 않도록 배치 */
     .block-container {{
         max-width: 450px !important;
-        padding-top: 1.5rem !important; 
+        padding-top: 2.5rem !important; 
         padding-bottom: 1.5rem;
         margin: 0 auto;
+    }}
+    .volvo-status-bar {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-size: 14px;
+        color: #ffffff !important;
+        font-weight: 500;
+        padding: 5px 12px;
+        margin-bottom: 10px;
     }}
     .stButton > button {{
         background-color: transparent !important;
@@ -152,30 +165,17 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 1. 최상단 상태바 (💡 스트림릿 컴포넌트 기능으로 스크립트 강제 분리 및 노출 오류 해결) ---
-components.html(
-    """
-    <div style="display: flex; justify-content: space-between; align-items: center; font-family: 'Helvetica Neue', sans-serif; font-size: 13px; color: #ffffff; font-weight: 500; padding: 2px 5px;">
-        <span id="live-clock">오전 00:00</span>
-        <span>📶 LTE</span>
-    </div>
-    <script>
-    function updateClock() {
-        var now = new Date();
-        var hours = now.getHours();
-        var minutes = now.getMinutes();
-        var ampm = hours >= 12 ? '오후' : '오전';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        var strTime = ampm + ' ' + (hours < 10 ? '0' + hours : hours) + ':' + minutes;
-        document.getElementById('live-clock').innerHTML = strTime;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-    </script>
-    """,
-    height=25,
+# --- 1. 최상단 상태바 (💡 파이썬 코드로 안전하게 한국 시간 연동 및 잘림 현상 해결) ---
+tz = pytz.timezone('Asia/Seoul')
+now = datetime.now(tz)
+ampm = "오후" if now.hour >= 12 else "오전"
+display_hour = now.hour % 12
+display_hour = 12 if display_hour == 0 else display_hour
+time_string = f"{ampm} {display_hour:02d}:{now.minute:02d}"
+
+st.markdown(
+    f'<div class="volvo-status-bar"><span>{time_string}</span><span>📶 LTE</span></div>', 
+    unsafe_allow_html=True
 )
 
 # --- 2. 상단 메뉴 탭 ---
@@ -215,10 +215,10 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 else:
-    # 밝기 조절 슬라이더
+    # 💡 밝기 조절 슬라이더
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, key="brightness")
 
-    # 중앙 메인 레이아웃 (💡 불필요한 하단 레이블 문구 완벽 제거)
+    # 중앙 메인 레이아웃 (박스 밑 지저분한 텍스트 완벽히 제거 버전)
     main_html = f"""
     <div class="volvo-main-grid">
         <div class="grid-column">
