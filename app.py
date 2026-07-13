@@ -12,7 +12,7 @@ st.set_page_config(
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
-# 💡 볼보 순정 느낌의 고급스러운 고정 다크 톤 배색 지정
+# 볼보 순정 느낌의 고급스러운 고정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
@@ -57,7 +57,7 @@ st.markdown(
         border-bottom: 3px solid #ffffff !important;
     }}
     
-    /* 볼보 스타일 카드 내부 텍스트 및 박스 디자인 */
+    /* 볼보 스타일 카드 디자인 */
     .volvo-card-content {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
@@ -84,6 +84,24 @@ st.markdown(
         font-weight: 400;
     }}
     
+    /* 설정 탭 전용 카드 디자인 */
+    .volvo-set-card {{
+        background-color: {card_color} !important;
+        border: 1px solid {border_color} !important;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #ffffff !important;
+        font-weight: bold;
+        font-size: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        width: 100%;
+        height: 90px;
+        margin-bottom: 12px;
+    }}
+    
     /* 하단 바 디자인 */
     .volvo-bottom-bar {{
         display: flex;
@@ -107,23 +125,12 @@ st.markdown(
         display: block;
         margin-top: 2px;
     }}
-    .bottom-setting-circle {{
-        width: 38px;
-        height: 38px;
-        background-color: #383e47;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        font-weight: bold;
-    }}
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-# --- 1. 최상단 상태바 (한국시간 기준) ---
+# --- 1. 최상단 상태바 ---
 utc_now = datetime.utcnow()
 kor_now = utc_now + timedelta(hours=9)
 ampm = "오후" if kor_now.hour >= 12 else "오전"
@@ -161,48 +168,63 @@ st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; ma
 
 
 # --- 3. 화면 분기 처리 ---
-if st.session_state.current_tab == "설정":
-    st.subheader("⚙️ 볼보 시스템 설정")
-    st.write("차량 시스템 옵션 설정 페이지입니다.")
-    if st.button("⬅️ 메인 화면으로 돌아가기"):
-        st.session_state.current_tab = "퀵 컨트롤"
-        st.rerun()
 
+# ⚙️ [설정] 탭 내용
+if st.session_state.current_tab == "설정":
+    # 1라인: 주행 / 컨트롤
+    row1_col1, row1_col2 = st.columns(2)
+    with row1_col1:
+        st.markdown('<div class="volvo-set-card">주행</div>', unsafe_allow_html=True)
+    with row1_col2:
+        st.markdown('<div class="volvo-set-card">컨트롤</div>', unsafe_allow_html=True)
+
+    # 2라인: 사운드 / 연결
+    row2_col1, row2_col2 = st.columns(2)
+    with row2_col1:
+        st.markdown('<div class="volvo-set-card">사운드</div>', unsafe_allow_html=True)
+    with row2_col2:
+        st.markdown('<div class="volvo-set-card">연결</div>', unsafe_allow_html=True)
+
+    # 3라인: 프로필 / 개인정보 보호 / 시스템
+    row3_col1, row3_col2, row3_col3 = st.columns([1, 1.2, 1])
+    with row3_col1:
+        st.markdown('<div class="volvo-set-card" style="font-size: 14px;">프로필</div>', unsafe_allow_html=True)
+    with row3_col2:
+        st.markdown('<div class="volvo-set-card" style="font-size: 14px;">개인정보 보호</div>', unsafe_allow_html=True)
+    with row3_col3:
+        st.markdown('<div class="volvo-set-card" style="font-size: 14px;">시스템</div>', unsafe_allow_html=True)
+
+# 📊 [상태] 탭 내용
 elif st.session_state.current_tab == "상태":
     st.subheader("📊 차량 상태")
     st.write("차량 진단 및 정보를 확인합니다.")
 
+# 📱 [퀵 컨트롤] 탭 내용 (기본값)
 else:
-    # 💡 복잡했던 슬라이더 및 여백 초기화
     st.write("") 
-
-    # 순수 스트림릿 컬럼 레이아웃으로 완벽 배치
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
 
-    # 좌측 버튼 레이아웃
     with main_col1:
         st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
         st.write("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True) 
         st.markdown('<div class="volvo-card-content side-btn">Start<br>Stop</div>', unsafe_allow_html=True)
 
-    # 중앙 VOLVO 긴 세로 박스
     with main_col2:
         st.markdown('<div class="volvo-card-content center-box">VOLVO</div>', unsafe_allow_html=True)
 
-    # 우측 버튼 레이아웃
     with main_col3:
         st.markdown('<div class="volvo-card-content side-btn">알람<br>줄이기</div>', unsafe_allow_html=True)
         st.write("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="volvo-card-content side-btn">헤드<br>레스트</div>', unsafe_allow_html=True)
 
-    # --- 4. 하단 공조 장치 바 ---
-    bottom_html = (
-        '<div class="volvo-bottom-bar">'
-        '<div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>'
-        '<div class="bottom-item">💺 LO</div>'
-        '<div class="bottom-item"><span style="font-size: 16px;">🌀</span><span class="bottom-sub-label">공기 재순환</span></div>'
-        '<div class="bottom-item">LO 💺</div>'
-        '<div class="bottom-item"><div class="bottom-setting-circle">설정</div></div>'
-        '</div>'
-    )
-    st.markdown(bottom_html, unsafe_allow_html=True)
+# --- 4. 하단 공조 장치 바 (모든 탭 공통 노출) ---
+bottom_html = (
+    '<div class="volvo-bottom-bar">'
+    '<div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>'
+    '<div class="bottom-item">💺 LO</div>'
+    '<div class="bottom-item"><span style="font-size: 16px;">🌀</span><span class="bottom-sub-label">공기 재순환</span></div>'
+    '<div class="bottom-item">LO 💺</div>'
+    '<div class="bottom-item" style="font-size: 16px; opacity: 0.9;">🚗</div>'
+    '</div>'
+)
+st.markdown(bottom_html, unsafe_allow_html=True)
