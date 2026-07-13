@@ -22,7 +22,7 @@ if "start_stop" not in st.session_state: st.session_state.start_stop = True
 if "lane_keeping" not in st.session_state: st.session_state.lane_keeping = True
 if "ready_to_drive" not in st.session_state: st.session_state.ready_to_drive = True
 
-# [컨트롤 설정 신규 데이터]
+# [컨트롤 설정 데이터]
 if "interior_brightness" not in st.session_state: st.session_state.interior_brightness = 80
 if "interior_light_dim" not in st.session_state: st.session_state.interior_light_dim = "높음"
 
@@ -31,7 +31,7 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 2. [골든 룰] 스타일 정의 (디자인 철벽 방어 및 슬라이더/3분할 버튼 커스텀)
+# 2. [골든 룰] 스타일 정의 (디자인 절대 보존 및 슬라이더 배경 제거/여백 밸런스 수술)
 st.markdown(
     f"""
     <style>
@@ -138,11 +138,13 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🎚️ 슬라이더 볼보 스카이블루 강제 이식 */
+    /* 🎚️ [버그 컷] 슬라이더 자체 연한 배경색 완전 지우기 및 볼보 블루 커스텀 */
+    div[data-testid="stSlider"] {{ background-color: transparent !important; background: transparent !important; }}
+    div[data-testid="stSlider"] > div {{ background-color: transparent !important; }}
     div[data-testid="stSlider"] div[aria-label] {{ background-color: #00A3E0 !important; }}
     div[data-testid="stSlider"] div[data-testid="stSliderTrack"] > div {{ background-color: #00A3E0 !important; }}
     
-    /* 🔗 알약형 통합 세그먼트 가로 정렬 바 (3분할 대응) */
+    /* 🔗 알약형 통합 세그먼트 가로 정렬 바 */
     div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{
         gap: 0px !important;
         background-color: #1a1f27 !important;
@@ -174,9 +176,10 @@ st.markdown(
     /* 카드 내부 구분선 및 모두보기 */
     .card-divider {{
         border-top: 1px solid #333b46;
-        margin-top: 18px;
-        margin-bottom: 12px;
+        margin-top: 20px;
+        margin-bottom: 0px;
     }}
+    /* 💡 [여백 밸런스 수술] 모두보기 위아래 패딩 간격을 대칭으로 균일하게 배치 */
     .more-link {{
         display: flex;
         justify-content: space-between;
@@ -184,7 +187,8 @@ st.markdown(
         font-weight: bold;
         color: #ffffff;
         cursor: pointer;
-        padding-top: 4px;
+        padding-top: 14px;
+        padding-bottom: 6px;
     }}
     
     /* 뒤로가기 링크 박스 */
@@ -325,7 +329,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 컨트롤] 서브 페이지 (사용자 지정 A/B 세팅 적용)
+# 🎛️ [설정 -> 컨트롤] 서브 페이지 (여백 균형 및 배경 슬라이더 이물질 완벽 교정 완료)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
@@ -335,14 +339,10 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
-    # ----------------------------------------------------
-    # [A 세팅]: 제목줄 (조명 및 디스플레이)
-    # ----------------------------------------------------
+    # [A 세팅]: 제목줄
     st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
     
-    # ----------------------------------------------------
-    # [B 세팅]: 단 하나의 큰 회색 카드 박스 안에 종속
-    # ----------------------------------------------------
+    # [B 세팅]: 1번 사진 전용 정갈한 단일 상자 몰아넣기 마감
     with st.container(border=True):
         # 1. 내부 밝기 슬라이더 항목
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
@@ -351,7 +351,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             value=st.session_state.interior_brightness, label_visibility="collapsed"
         )
         
-        st.write("<div style='margin-top:20px;'></div>", unsafe_allow_html=True)
+        st.write("<div style='margin-top:15px;'></div>", unsafe_allow_html=True)
         
         # 2. 내부 조명 감도 3분할 알약 항목
         st.markdown('<div class="setting-title">내부 조명 감도</div>', unsafe_allow_html=True)
@@ -371,7 +371,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                 st.session_state.interior_light_dim = "높음"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 3. 구분선 및 모두 보기 링크 마감
+        # 3. 마감 구분선 및 완벽 마감 모두 보기 링크
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
