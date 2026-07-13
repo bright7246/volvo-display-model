@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 
-# 1. 페이지 설정 (황금 규격 고정)
+# 1. 페이지 설정 (3번 사진의 황금 규격 고정)
 st.set_page_config(
     page_title="Volvo Main Display",
     layout="centered",
@@ -27,7 +27,7 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 2. [골든 룰] 스타일 정의 (디자인 철벽 방어 및 주행 페이지 순정 핏 매칭)
+# 2. [골든 룰] 스타일 정의 (디자인 철벽 방어 및 주행 서브페이지 박스 색상 완벽 강제 주입)
 st.markdown(
     f"""
     <style>
@@ -111,14 +111,14 @@ st.markdown(
         white-space: pre-line !important;
     }}
     
-    /* 🚗 [주행 서브페이지 변조] 스트림릿 컨테이너 테두리를 없애고 1번 사진의 완전한 순정 카드로 교정 */
-    div.volvo-driving-node div[data-testid="stVerticalBlockBorderWrapper"] {{
+    /* 🚗 [핵심 수정!!] 주행 상세 설정 내부의 모든 st.container를 1번 사진 카드 색상으로 강제 정복 */
+    div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"] {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
-        padding: 18px !important;
-        margin-bottom: 15px !important;
+        padding: 16px !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        margin-bottom: 5px !important;
     }}
     
     .back-btn-box button {{
@@ -141,16 +141,17 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🔗 [버튼 한 줄 정렬 핵심 기술] 버튼 사이의 공백을 없애고 단일 구조로 통합 */
+    /* 🔗 [알약형 통합 바 핏 수술] 가로 정렬 블록 사이 여백 제로화 */
     div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{
         gap: 0px !important;
-        background-color: #1b2129 !important;
+        background-color: #1a1f27 !important;
         border-radius: 25px !important;
-        padding: 3px !important;
-        border: 1px solid {border_color} !important;
+        padding: 4px !important;
+        border: 1px solid #333b46 !important;
+        margin-top: 10px !important;
     }}
     
-    /* 주행 세그먼트형 버튼 활성화 (순정 스카이블루 일체형) */
+    /* 주행 세그먼트형 버튼 활성화 (순정 스카이블루 일체형 알약) */
     div.volvo-segment-row div.stButton > button[id^="active-seg"] {{
         background-color: #00A3E0 !important;
         color: #ffffff !important;
@@ -158,9 +159,9 @@ st.markdown(
         border-radius: 22px !important;
         font-weight: bold !important;
         height: 40px !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
     }}
-    /* 주행 세그먼트형 버튼 비활성화 (투명 바탕으로 일체화) */
+    /* 주행 세그먼트형 버튼 비활성화 (배경 투명화 처리) */
     div.volvo-segment-row div.stButton > button[id^="inactive-seg"] {{
         background-color: transparent !important;
         color: #727a85 !important;
@@ -226,7 +227,7 @@ if st.session_state.sub_page == "main":
 
 # --- 3. 화면 분기 처리 ---
 
-# 🚗 [설정 -> 주행] 서브 페이지 (네모칸 1번 사진 색상 베이스 & 세그먼트 완전 단일화)
+# 🚗 [설정 -> 주행] 서브 페이지 (박스 색상 1번 사진 완벽 동기화 + 알약 가로바 버튼 결합 완료)
 if st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  주행", key="back_to_settings"):
@@ -238,7 +239,6 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     # 대구획 1: 운전자 지원 시스템
     st.markdown('<div class="sub-section-title">운전자 지원 시스템</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="volvo-driving-node">', unsafe_allow_html=True)
     with st.container(border=True):
         pa_col1, pa_col2 = st.columns([3.6, 1])
         with pa_col1:
@@ -250,16 +250,14 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         with pa_col2:
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.pilot_assist = st.toggle("PA_tgl", value=st.session_state.pilot_assist, label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # 대구획 2: 주행 역학
     st.markdown('<div class="sub-section-title">주행 역학</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="volvo-driving-node">', unsafe_allow_html=True)
-    # 주행 모드 박스 (하나의 알약 라인 안에서 토글되도록 마감)
+    # 주행 모드 박스 (알약 디자인 적용)
     with st.container(border=True):
         st.markdown('<div class="setting-title">주행 모드</div>', unsafe_allow_html=True)
-        st.markdown('<div class="setting-desc" style="margin-bottom:14px;">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="setting-desc">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         dm_col1, dm_col2 = st.columns(2)
@@ -275,10 +273,9 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
                 st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # 스티어링 감도 박스 (하나의 알약 라인 안에서 토글되도록 마감)
+    # 스티어링 감도 박스 (알약 디자인 적용)
     with st.container(border=True):
         st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
-        st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
         
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         sf_col1, sf_col2 = st.columns(2)
@@ -306,12 +303,10 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         with ss_col2:
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.start_stop = st.toggle("SS_tgl", value=st.session_state.start_stop, label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # 대구획 3: 안전 어시스트
     st.markdown('<div class="sub-section-title">안전 어시스트</div>', unsafe_allow_html=True)
     
-    st.markdown('<div class="volvo-driving-node">', unsafe_allow_html=True)
     # 차선유지 보조 시스템 박스
     with st.container(border=True):
         lk_col1, lk_col2 = st.columns([3.6, 1])
@@ -337,10 +332,9 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         with rd_col2:
             st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
             st.session_state.ready_to_drive = st.toggle("RD_tgl", value=st.session_state.ready_to_drive, label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ⚙️ [설정] 메인 탭 화면 (기존 고유 레이아웃 보존 구역)
+# ⚙️ [설정] 메인 탭 화면 (골든 룰 보존 구역)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
