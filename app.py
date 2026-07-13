@@ -7,7 +7,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# 2. 볼보 UI의 세로형 비율과 버튼 디자인을 위한 CSS 설정
+# 2. 볼보 UI의 세로형 사각형 박스 레이아웃을 위한 CSS 설정
 st.markdown(
     """
     <style>
@@ -21,16 +21,20 @@ st.markdown(
         padding-bottom: 1.5rem;
         margin: 0 auto;
     }
+    
+    /* 💡 1. 상단 상태 바 글자색을 밝게 수정하여 확실히 보이도록 조치 */
     .volvo-status-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-family: 'Helvetica Neue', sans-serif;
         font-size: 13px;
-        color: #e1e2e3;
+        color: #ffffff !important; /* 선명한 흰색 */
+        font-weight: 500;
         padding: 5px 10px;
         margin-bottom: 5px;
     }
+    
     .stButton > button {
         background-color: transparent !important;
         color: #8e959e !important;
@@ -47,12 +51,14 @@ st.markdown(
         font-weight: bold !important;
         border-bottom: 3px solid #ffffff !important;
     }
+    
+    /* 중앙 그리드 설정 */
     .volvo-main-grid {
         display: flex;
         justify-content: space-between;
         align-items: center; 
         margin: 30px 0;
-        min-height: 240px;
+        min-height: 280px;
         width: 100%;
     }
     .grid-column {
@@ -60,43 +66,57 @@ st.markdown(
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 30%;
+        width: 32%;
     }
-    .volvo-circle-btn {
-        width: 65px;
-        height: 65px;
-        background-color: #383e47; 
-        border-radius: 50%;
+    
+    /* 💡 2. 동그라미를 세로가 길쭉한 사각형 박스(가로2:세로3 비율)로 변경 */
+    .volvo-rect-btn {
+        width: 90px;
+        height: 125px;
+        background-color: #252b35; /* 살짝 밝은 차콜그레이 박스 */
+        border: 1px solid #323945; /* 은은한 테두리 */
+        border-radius: 12px; /* 모서리 부드럽게 */
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px; 
+        font-size: 13px; 
         font-weight: bold;
         color: #ffffff;
         text-align: center;
-        line-height: 1.3;
+        line-height: 1.4;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
-    .btn-bottom-label {
-        font-size: 11px;
-        color: #8e959e;
-        margin-top: 6px;
-        text-align: center;
-        white-space: nowrap;
-    }
-    .center-volvo-container {
+    
+    /* 💡 3. 중앙 VOLVO 텍스트도 비슷한 사각형 박스 형태로 감싸기 */
+    .center-volvo-box {
+        width: 110px;
+        height: 270px; /* 양옆 사각형 2개를 합친 높이와 밸런스를 맞춤 */
+        background-color: #1e232b;
+        border: 1px solid #2d3440;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40%;
     }
     .center-volvo-text {
-        font-size: 36px;
+        font-size: 26px;
         font-weight: 300;
         color: #ffffff;
-        letter-spacing: 6px;
+        letter-spacing: 4px;
         font-family: 'Times New Roman', Times, serif;
+        transform: rotate(0deg); /* 필요시 세로 정렬 회전 가능 */
         text-align: center;
     }
+    
+    .btn-bottom-label {
+        font-size: 11px;
+        color: #8e959e;
+        margin-top: 8px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    
+    /* 하단 공조바 */
     .volvo-bottom-bar {
         display: flex;
         justify-content: space-between;
@@ -144,7 +164,7 @@ st.markdown(
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
-# --- 1. 최상단 상태바 ---
+# --- 1. 최상단 상태바 (보이도록 폰트 컬러 최적화) ---
 st.markdown('<div class="volvo-status-bar"><span>오전 08:46</span><span>📶 LTE</span></div>', unsafe_allow_html=True)
 
 # --- 2. 상단 메뉴 탭 ---
@@ -188,17 +208,24 @@ else:
     # 밝기 조절 슬라이더
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, value=85)
 
-    # 💡 스트림릿 오작동 방지를 위해 문자열의 모든 들여쓰기를 제거하여 한 줄로 붙여넣었습니다.
+    # 중앙 메인 레이아웃 (세로형 사각형 카드 격자화)
     main_html = (
         '<div class="volvo-main-grid">'
+        ''
         '<div class="grid-column">'
-        '<div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-circle-btn">차선<br>유지</div><div class="btn-bottom-label">차선유지 보조</div></div>'
-        '<div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-circle-btn">S / S</div><div class="btn-bottom-label">Start/Stop</div></div>'
+        '<div style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">차선<br>유지</div><div class="btn-bottom-label">차선유지 보조</div></div>'
+        '<div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">Start<br>Stop</div><div class="btn-bottom-label">Start/Stop</div></div>'
         '</div>'
-        '<div class="center-volvo-container"><div class="center-volvo-text">VOLVO</div></div>'
+        
+        ''
+        '<div class="center-volvo-box">'
+        '<div class="center-volvo-text">V<br>O<br>L<br>V<br>O</div>'
+        '</div>'
+        
+        ''
         '<div class="grid-column">'
-        '<div style="margin-bottom: 25px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-circle-btn">알람<br>줄이기</div><div class="btn-bottom-label">알람 줄이기</div></div>'
-        '<div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-circle-btn">헤드<br>레스트</div><div class="btn-bottom-label">헤드레스트 접기</div></div>'
+        '<div style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">알람<br>줄이기</div><div class="btn-bottom-label">알람 줄이기</div></div>'
+        '<div style="display: flex; flex-direction: column; align-items: center;"><div class="volvo-rect-btn">헤드<br>레스트</div><div class="btn-bottom-label">헤드레스트 접기</div></div>'
         '</div>'
         '</div>'
     )
