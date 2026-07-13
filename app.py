@@ -38,7 +38,7 @@ border_color = "rgb(42, 49, 61)"
 if "brightness_slider" in st.query_params:
     st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
 
-# 2. [골든 룰] 스타일 정의
+# 2. [골든 룰] 스타일 정의 (동일선상 정렬을 위한 핏 라이징 CSS)
 st.markdown(
     f"""
     <style>
@@ -143,7 +143,21 @@ st.markdown(
     }}
     
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
-    .setting-title-mid {{ font-size: 15px; font-weight: bold; color: #ffffff; line-height: 38px; }} /* 버튼과 높이 맞추기용 */
+    
+    /* 💡 [동일선상 수술] 텍스트가 버튼/토글의 수직 센터 라인과 완벽하게 일치하도록 라인 높이와 패딩 튜닝 */
+    .setting-title-align-btn {{ 
+        font-size: 15px; 
+        font-weight: bold; 
+        color: #ffffff; 
+        padding-top: 6px; 
+    }}
+    .setting-title-align-tgl {{ 
+        font-size: 15px; 
+        font-weight: bold; 
+        color: #ffffff; 
+        padding-top: 2px; 
+    }}
+    
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
     /* 컴포넌트 너비 확장 규칙 고정 */
@@ -482,27 +496,26 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
     # ----------------------------------------------------
-    # ⚙️ 단락 3: 더 보기 섹션 (3번 사진 요구사항 반영 완벽 빌드업)
+    # 단락 3: 더 보기 섹션 (동일선상 수직 정렬 완벽 반영 버전)
     # ----------------------------------------------------
     st.markdown('<div class="volvo-title-row">더 보기</div>', unsafe_allow_html=True)
     with st.container(border=True):
-        # 1. 헤드레스트 접기 항목 ([접기] 단독 커스텀 버튼)
+        # 1. 헤드레스트 접기 항목 ([접기] 버튼과 동일선상 정렬 수술)
         hr_col1, hr_col2 = st.columns([2.8, 1.8])
         with hr_col1:
-            st.markdown('<div class="setting-title-mid">헤드레스트 접기</div>', unsafe_allow_html=True)
+            st.markdown('<div class="setting-title-align-btn">헤드레스트 접기</div>', unsafe_allow_html=True)
         with hr_col2:
             st.markdown('<div class="volvo-fold-btn-zone">', unsafe_allow_html=True)
             st.button("접기", key="btn_headrest_fold", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
             
-        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
+        st.write("<div style='margin-top:16px;'></div>", unsafe_allow_html=True)
         
-        # 2. 무선 장치 충전 항목
+        # 2. 무선 장치 충전 항목 (토글 알약 버튼과 동일선상 정렬 수술)
         wire_col1, wire_col2 = st.columns([3.6, 1])
         with wire_col1:
-            st.markdown('<div class="setting-title-mid">무선 장치 충전</div>', unsafe_allow_html=True)
+            st.markdown('<div class="setting-title-align-tgl">무선 장치 충전</div>', unsafe_allow_html=True)
         with wire_col2:
-            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.wireless_charging = st.toggle("Wireless_tgl", value=st.session_state.wireless_charging, label_visibility="collapsed")
             
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
