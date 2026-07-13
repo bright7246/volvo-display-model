@@ -31,7 +31,11 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 2. [골든 룰] 스타일 정의 (디자인 절대 보존 및 슬라이더 흰 배경 박멸 CSS)
+# Query Parameter를 활용한 커스텀 슬라이더 값 실시간 동기화 처리
+if "brightness_slider" in st.query_params:
+    st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
+
+# 2. [골든 룰] 스타일 정의 (지저분한 요소 차단 및 완벽한 커스텀 슬라이더 스타일)
 st.markdown(
     f"""
     <style>
@@ -138,34 +142,51 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🎚️ [흰색 배경 박멸 완료] 스트림릿 슬라이더의 모든 배경 요소를 투명화하고 순정 라인만 노출 */
-    div[data-testid="stSlider"] {{ 
-        background: transparent !important; 
-        background-color: transparent !important; 
-        padding: 0px !important;
+    /* 🎚️ 완전히 새로 설계한 하이엔드 100% 순정스타일 슬라이더 컨테이너 */
+    .slider-container-custom {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 10px 0;
+        background: transparent !important;
     }}
-    div[data-testid="stSlider"] > div {{ 
-        background: transparent !important; 
-        background-color: transparent !important; 
+    .slider-wrapper {{
+        position: relative;
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
     }}
-    /* 하얀 도화지 원흉 클래스를 직접 골라내어 투명 처리 */
-    div[data-testid="stSlider"] .st-an, div[data-testid="stSlider"] .st-ao {{ 
-        background-color: transparent !important; 
+    /* 카드 배경색과 완벽 동화되는 깔끔한 가로선 Track */
+    .slider-custom {{
+        -webkit-appearance: none;
+        width: 100%;
+        height: 4px;
+        border-radius: 2px;
+        background: #4a525d !important;
+        outline: none;
+        margin: 0;
     }}
-    /* 슬라이더 라인 트랙 자체를 얇고 고급스러운 연회색 선으로 변경 */
-    div[data-testid="stSlider"] div[data-testid="stSliderTrack"] > div {{ 
-        background-color: #4a525d !important; 
-        height: 4px !important;
+    /* 깔끔한 순백색 원형 조절 노브 Thumb */
+    .slider-custom::-webkit-slider-thumb {{
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ffffff !important;
+        cursor: pointer;
+        transition: transform 0.1s;
     }}
-    div[data-testid="stSlider"] div[data-testid="stSliderTrack"] > div > div {{ 
-        background-color: #4a525d !important; 
-    }}
-    /* 조절 단추(Thumb)만 정갈한 순백색으로 고정 */
-    div[data-testid="stSlider"] div[aria-label] {{ 
-        background-color: #ffffff !important; 
-        width: 16px !important;
-        height: 16px !important;
-        border: none !important;
+    /* 절대 깨지지 않는 확고한 우측 정렬 숫자 표기 플러그 */
+    .slider-val-box {{
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffffff;
+        min-width: 35px;
+        text-align: right;
+        font-family: 'Helvetica Neue', sans-serif;
     }}
     
     /* 🔗 알약형 통합 세그먼트 가로 정렬 바 */
@@ -200,10 +221,10 @@ st.markdown(
     /* 카드 내부 구분선 및 모두보기 */
     .card-divider {{
         border-top: 1px solid #333b46;
-        margin-top: 25px;
+        margin-top: 20px;
         margin-bottom: 0px;
     }}
-    /* 💡 [여백 3배 진짜 확보] 모두 보기 아래쪽 여백을 45px로 확실하게 밀어내어 넉넉히 정렬 */
+    /* 💡 [요구사항 반영] 모두보기 여백을 이전의 황금 밸런스 대칭 구조로 완벽 원복 */
     .more-link {{
         display: flex;
         justify-content: space-between;
@@ -211,8 +232,8 @@ st.markdown(
         font-weight: bold;
         color: #ffffff;
         cursor: pointer;
-        padding-top: 18px;
-        padding-bottom: 45px; 
+        padding-top: 14px;
+        padding-bottom: 6px; 
     }}
     
     /* 뒤로가기 링크 박스 */
@@ -353,7 +374,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 컨트롤] 서브 페이지 (새하얀 덩어리 박멸 버전에 하단 3배 마감 완벽화)
+# 🎛️ [설정 -> 컨트롤] 서브 페이지 (흰색 덩어리 삭제 및 완벽한 가로선 슬라이더 폼 고정)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
@@ -362,22 +383,39 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    
-    # [A 세팅]: 제목줄
     st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
     
-    # [B 세팅] 카드 칸
     with st.container(border=True):
-        # 1. 내부 밝기 슬라이더 항목
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
-        st.session_state.interior_brightness = st.slider(
-            "interior_bright_slider", min_value=0, max_value=100, 
-            value=st.session_state.interior_brightness, label_visibility="collapsed"
-        )
         
-        st.write("<div style='margin-top:15px;'></div>", unsafe_allow_html=True)
+        # 💡 [버그 원천 박멸] 버그 덩어리 st.slider를 버리고 순수 HTML/JS 조합으로 완벽한 UI 형태 구현
+        slider_html = f"""
+        <div class="slider-container-custom">
+            <div class="slider-wrapper">
+                <input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" 
+                       class="slider-custom" id="brightnessRange"
+                       oninput="document.getElementById('sliderVal').innerText = this.value">
+            </div>
+            <div class="slider-val-box" id="sliderVal">{st.session_state.interior_brightness}</div>
+        </div>
         
-        # 2. 내부 조명 감도 3분할 알약 항목
+        <script>
+        var timeout = null;
+        var slider = document.getElementById("brightnessRange");
+        slider.addEventListener("change", function() {{
+            const url = new URL(window.location.href);
+            url.searchParams.set("brightness_slider", this.value);
+            window.parent.postMessage({{
+                type: "streamlit:set_query_params",
+                queryParams: {{"brightness_slider": this.value}}
+            }}, "*");
+        }});
+        </script>
+        """
+        st.components.v1.html(slider_html, height=45)
+        
+        st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
+        
         st.markdown('<div class="setting-title">내부 조명 감도</div>', unsafe_allow_html=True)
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         dim_col1, dim_col2, dim_col3 = st.columns(3)
@@ -395,7 +433,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                 st.session_state.interior_light_dim = "높음"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 3. 구분선 및 대폭 넓어진 하단 밸런스 마감 모두보기 링크
+        # 3. 구분선 및 원복된 여백 밸런스 마감 모두 보기 링크
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
