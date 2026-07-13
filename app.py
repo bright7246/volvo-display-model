@@ -36,19 +36,22 @@ border_color = "rgb(42, 49, 61)"
 st.markdown(
     f"""
     <style>
+    /* 전체 앱 배경 지정 */
     .stApp {{
         background-color: {bg_color} !important;
         color: #ffffff !important;
     }}
     
+    /* 모바일 디스플레이 규격 컨테이너 제한 */
     .block-container {{
         max-width: 480px !important;
-        padding-top: 4rem !important; 
-        padding-bottom: 3rem !important;
+        padding-top: 2.5rem !important; 
+        padding-bottom: 2rem !important;
         margin: 0 auto;
         min-height: 850px; 
     }}
     
+    /* 상단 시계 및 LTE 상태바 */
     .volvo-status-bar {{
         display: flex;
         justify-content: space-between;
@@ -61,25 +64,26 @@ st.markdown(
         margin-bottom: 25px;
     }}
     
-    /* 📌 상단 메인 탭 메뉴 전용 스타일 (서브페이지 버튼들과 명확히 격리) */
-    .tab-zone button {{
+    /* 📌 상단 메인 탭 메뉴 (3번 사진의 깔끔한 텍스트+밑줄 스타일) */
+    div.tab-zone div[data-testid="stHorizontalBlock"] div.stButton > button {{
         background-color: transparent !important;
         color: #8e959e !important;
         border: none !important;
-        font-size: 15px !important;
+        font-size: 16px !important;
         font-weight: 500 !important;
         padding: 8px 0 !important;
         width: 100% !important;
         box-shadow: none !important;
-    }}
-    .tab-zone button[kind="primary"] {{
-        color: #ffffff !important;
-        font-weight: bold !important;
-        border-bottom: 3px solid #ffffff !important;
         border-radius: 0px !important;
     }}
+    /* 활성화된 탭의 흰색 글자 및 하단 깔끔한 밑줄 */
+    div.tab-zone div[data-testid="stHorizontalBlock"] div.stButton > button[kind="primary"] {{
+        color: #ffffff !important;
+        font-weight: bold !important;
+        border-bottom: 2px solid #ffffff !important;
+    }}
     
-    /* 📱 퀵 컨트롤 전용 카드 */
+    /* 📱 퀵 컨트롤 전용 카드 스타일 */
     .volvo-card-content {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
@@ -96,22 +100,19 @@ st.markdown(
     .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
     .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
     
-    /* ⚙️ 설정 메인 카드 버튼 스타일 - 투명화 버그 완벽 수정 */
-    div[data-testid="stVVerticalBlockBorderWrapper"] .volvo-grid-btn button {{
+    /* ⚙️ 설정 메인 카드 버튼 (3번 사진의 균형 잡힌 사각형 박스 레이아웃) */
+    div.volvo-grid-btn div.stButton > button {{
         background-color: {card_color} !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
-        height: 125px !important;
+        height: 135px !important;
         font-size: 16px !important;
         font-weight: bold !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
     }}
     
-    /* 🚗 주행 상세 세그먼트형 활성화 버튼 (볼보 순정 스카이블루 컬러 매칭) */
+    /* 🚗 주행 상세 세그먼트형 버튼 활성화 (순정 스카이블루) */
     div.stButton > button[id^="active-btn"] {{
         background-color: #00A3E0 !important;
         color: #ffffff !important;
@@ -120,7 +121,7 @@ st.markdown(
         font-weight: bold !important;
         height: 45px !important;
     }}
-    /* 🚗 주행 상세 세그먼트형 비활성화 버튼 */
+    /* 🚗 주행 상세 세그먼트형 버튼 비활성화 */
     div.stButton > button[id^="inactive-btn"] {{
         background-color: #28303d !important;
         color: #8e959e !important;
@@ -129,7 +130,7 @@ st.markdown(
         height: 45px !important;
     }}
     
-    /* 서브 서크션 구분 가이드 */
+    /* 서브 섹션 타이틀 및 폰트 정의 */
     .sub-section-title {{
         font-size: 14px;
         color: #8e959e;
@@ -150,7 +151,7 @@ st.markdown(
         line-height: 1.4;
     }}
     
-    /* 하단 바 */
+    /* 하단 공조 바 디자인 */
     .volvo-bottom-bar {{
         display: flex;
         justify-content: space-between;
@@ -171,7 +172,7 @@ st.markdown(
 # --- 1. 최상단 상태바 ---
 utc_now = datetime.utcnow()
 kor_now = utc_now + timedelta(hours=9)
-ampm = "오후" if kor_now.hour >= 12 else "오전"
+ampm = "오전" if kor_now.hour < 12 else "오후"
 display_hour = kor_now.hour % 12
 display_hour = 12 if display_hour == 0 else display_hour
 time_string = f"{ampm} {display_hour:02d}:{kor_now.minute:02d}"
@@ -181,7 +182,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- 2. 상단 메뉴 탭 ---
+# --- 2. 상단 메뉴 탭 (정확히 격리 처리) ---
 if st.session_state.sub_page == "main":
     st.markdown('<div class="tab-zone">', unsafe_allow_html=True)
     top_col1, top_col2, top_col3 = st.columns(3)
@@ -230,7 +231,6 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
 
     # 2. 주행 역학
     st.markdown('<div class="sub-section-title"> 주행 역학</div>', unsafe_allow_html=True)
-    
     st.markdown('<div class="setting-title">주행 모드</div>', unsafe_allow_html=True)
     st.markdown('<div class="setting-desc" style="margin-bottom:12px;">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
     
@@ -281,7 +281,6 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
 
     # 3. 안전 어시스트
     st.markdown('<div class="sub-section-title"> 안전 어시스트</div>', unsafe_allow_html=True)
-    
     lk_col1, lk_col2 = st.columns([3.5, 1])
     with lk_col1:
         st.markdown(
@@ -307,7 +306,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         st.session_state.ready_to_drive = st.toggle("RD_toggle", value=st.session_state.ready_to_drive, label_visibility="collapsed")
 
 
-# ⚙️ [설정] 메인 탭 내용 (박스 스타일 부활!)
+# ⚙️ [설정] 메인 탭 화면 (3번 사진의 완벽한 박스 형태 복원)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
@@ -336,7 +335,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('</div>', unsafe_allow_html=True)
 
     # 3라인: 프로필 / 개인정보 보호 / 시스템
-    row3_col1, row3_col2, row3_col3 = st.columns([1, 1.5, 1])
+    row3_col1, row3_col2, row3_col3 = st.columns([1, 1.3, 1])
     with row3_col1:
         st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
         st.button("프로필", key="btn_profile_route", use_container_width=True)
@@ -350,12 +349,12 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.button("시스템", key="btn_system_route", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-# 📊 [상태] 탭 내용
+# 📊 [상태] 탭 화면
 elif st.session_state.current_tab == "상태":
     st.subheader("📊 차량 상태")
     st.write("차량 진단 및 정보를 확인합니다.")
 
-# 📱 [퀵 컨트롤] 탭 내용
+# 📱 [퀵 컨트롤] 탭 화면
 else:
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
