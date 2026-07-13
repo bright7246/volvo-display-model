@@ -8,11 +8,27 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# 세션 상태 초기화
+# 세션 상태 초기화 (서브 페이지 이동용 변수 추가)
 if "current_tab" not in st.session_state:
-    st.session_state.current_tab = "퀵 컨트롤"
+    st.session_state.current_tab = "설정"
+if "sub_page" not in st.session_state:
+    st.session_state.sub_page = "main"
 
-# 볼보 순정 느낌의 고급스러운 고정 다크 톤 배색 지정
+# 토글/버튼 상태 기억용 세션 상태
+if "pilot_assist" not in st.session_state:
+    st.session_state.pilot_assist = True
+if "drive_mode" not in st.session_state:
+    st.session_state.drive_mode = "Standard"
+if "steering_feel" not in st.session_state:
+    st.session_state.steering_feel = "부드러움"
+if "start_stop" not in st.session_state:
+    st.session_state.start_stop = True
+if "lane_keeping" not in st.session_state:
+    st.session_state.lane_keeping = True
+if "ready_to_drive" not in st.session_state:
+    st.session_state.ready_to_drive = True
+
+# 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
@@ -25,7 +41,6 @@ st.markdown(
         color: #ffffff !important;
     }}
     
-    /* 💡 padding-top을 4rem으로 늘려 전체적인 요소를 아래로 내렸습니다 */
     .block-container {{
         max-width: 480px !important;
         padding-top: 4rem !important; 
@@ -34,7 +49,6 @@ st.markdown(
         min-height: 850px; 
     }}
     
-    /* 최상단 상태바 여백 조정 */
     .volvo-status-bar {{
         display: flex;
         justify-content: space-between;
@@ -46,6 +60,8 @@ st.markdown(
         padding: 5px 10px;
         margin-bottom: 25px;
     }}
+    
+    /* 탭 메뉴 스타일 */
     .stButton > button {{
         background-color: transparent !important;
         color: #8e959e !important;
@@ -62,7 +78,7 @@ st.markdown(
         border-bottom: 3px solid #ffffff !important;
     }}
     
-    /* 📱 퀵 컨트롤 전용 카드 디자인 */
+    /* 📱 퀵 컨트롤 전용 카드 */
     .volvo-card-content {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
@@ -76,38 +92,52 @@ st.markdown(
         box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         width: 100%;
     }}
-    .side-btn {{
-        height: 185px; 
-        font-size: 15px;
-        line-height: 1.5;
-    }}
-    .center-box {{
-        height: 400px; 
-        font-size: 24px;
-        letter-spacing: 5px;
-        font-family: 'Times New Roman', Times, serif;
-        font-weight: 400;
-    }}
+    .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
+    .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
     
-    /* ⚙️ 설정 탭 전용 카드 디자인 */
-    .volvo-set-card {{
+    /* ⚙️ 설정 메인 카드 스타일 */
+    .volvo-set-card-btn button {{
         background-color: {card_color} !important;
-        border: 1px solid {border_color} !important;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
         color: #ffffff !important;
-        font-weight: bold;
-        font-size: 16px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        width: 100%;
-        height: 125px; 
-        margin-bottom: 18px; 
+        border: 1px solid {border_color} !important;
+        border-radius: 14px !important;
+        height: 125px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
     }}
     
-    /* 하단 바 디자인 */
+    /* 🚗 [주행 설정] 상세 페이지 스타일 구획 */
+    .sub-section-title {{
+        font-size: 14px;
+        color: #8e959e;
+        font-weight: bold;
+        margin-top: 25px;
+        margin-bottom: 10px;
+        padding-left: 5px;
+    }}
+    
+    /* 순정 느낌의 설정 박스 레이아웃 */
+    .setting-row-box {{
+        background-color: {card_color};
+        border: 1px solid {border_color};
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 12px;
+    }}
+    .setting-title {{
+        font-size: 15px;
+        font-weight: bold;
+        color: #ffffff;
+        margin-bottom: 4px;
+    }}
+    .setting-desc {{
+        font-size: 12px;
+        color: #8e959e;
+        line-height: 1.4;
+    }}
+    
+    /* 하단 바 */
     .volvo-bottom-bar {{
         display: flex;
         justify-content: space-between;
@@ -118,18 +148,8 @@ st.markdown(
         margin-top: 50px; 
         border: 1px solid #232830;
     }}
-    .bottom-item {{
-        font-size: 14px;
-        font-weight: 500;
-        color: #ffffff !important;
-        text-align: center;
-    }}
-    .bottom-sub-label {{
-        font-size: 9px;
-        color: #8e959e !important;
-        display: block;
-        margin-top: 2px;
-    }}
+    .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
+    .bottom-sub-label {{ font-size: 9px; color: #8e959e !important; display: block; margin-top: 2px; }}
     </style>
     """,
     unsafe_allow_html=True,
@@ -148,62 +168,176 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- 2. 상단 메뉴 탭 ---
-top_col1, top_col2, top_col3 = st.columns(3)
-
-with top_col1:
-    is_active = "primary" if st.session_state.current_tab == "퀵 컨트롤" else "secondary"
-    if st.button("퀵 컨트롤", key="tab_quick", type=is_active, use_container_width=True):
-        st.session_state.current_tab = "퀵 컨트롤"
-        st.rerun()
-
-with top_col2:
-    is_active = "primary" if st.session_state.current_tab == "설정" else "secondary"
-    if st.button("설정", key="tab_settings", type=is_active, use_container_width=True):
-        st.session_state.current_tab = "설정"
-        st.rerun()
-
-with top_col3:
-    is_active = "primary" if st.session_state.current_tab == "상태" else "secondary"
-    if st.button("상태", key="tab_status", type=is_active, use_container_width=True):
-        st.session_state.current_tab = "상태"
-        st.rerun()
-
-st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; margin-bottom: 25px;"></div>', unsafe_allow_html=True)
+# --- 2. 상단 메뉴 탭 (주행 서브 페이지가 아닐 때만 표시) ---
+if st.session_state.sub_page == "main":
+    top_col1, top_col2, top_col3 = st.columns(3)
+    with top_col1:
+        is_active = "primary" if st.session_state.current_tab == "퀵 컨트롤" else "secondary"
+        if st.button("퀵 컨트롤", key="tab_quick", type=is_active, use_container_width=True):
+            st.session_state.current_tab = "퀵 컨트롤"
+            st.rerun()
+    with top_col2:
+        is_active = "primary" if st.session_state.current_tab == "설정" else "secondary"
+        if st.button("설정", key="tab_settings", type=is_active, use_container_width=True):
+            st.session_state.current_tab = "설정"
+            st.rerun()
+    with top_col3:
+        is_active = "primary" if st.session_state.current_tab == "상태" else "secondary"
+        if st.button("상태", key="tab_status", type=is_active, use_container_width=True):
+            st.session_state.current_tab = "상태"
+            st.rerun()
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; margin-bottom: 25px;"></div>', unsafe_allow_html=True)
 
 
 # --- 3. 화면 분기 처리 ---
 
-# ⚙️ [설정] 탭 내용
-if st.session_state.current_tab == "설정":
+# 🚗 [주행] 상세 서브 페이지 화면
+if st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
+    # 뒤로가기 (< 주행) 버튼 영역
+    if st.button("〈  주행", key="back_to_settings"):
+        st.session_state.sub_page = "main"
+        st.rerun()
+        
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    # 1. 운전자 지원 시스템
+    st.markdown('<div class="sub-section-title">운전자 지원 시스템</div>', unsafe_allow_html=True)
+    
+    # Pilot Assist 설정 로우
+    pa_col1, pa_col2 = st.columns([3.5, 1])
+    with pa_col1:
+        st.markdown(
+            '<div class="setting-title">Pilot Assist 기본 설정</div>'
+            '<div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>',
+            unsafe_allow_html=True
+        )
+    with pa_col2:
+        st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+        st.session_state.pilot_assist = st.toggle("PA_toggle", value=st.session_state.pilot_assist, label_visibility="collapsed")
+
+    # 2. 주행 역학
+    st.markdown('<div class="sub-section-title">🛸 주행 역학</div>', unsafe_allow_html=True)
+    
+    # 주행 모드 세그먼트형 레이아웃
+    st.markdown('<div class="setting-title">주행 모드</div>', unsafe_allow_html=True)
+    st.markdown('<div class="setting-desc" style="margin-bottom:10px;">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
+    dm_col1, dm_col2 = st.columns(2)
+    with dm_col1:
+        if st.button("Standard", type="primary" if st.session_state.drive_mode == "Standard" else "secondary", use_container_width=True):
+            st.session_state.drive_mode = "Standard"
+            st.rerun()
+    with dm_col2:
+        if st.button("Off-road", type="primary" if st.session_state.drive_mode == "Off-road" else "secondary", use_container_width=True):
+            st.session_state.drive_mode = "Off-road"
+            st.rerun()
+
+    st.write("<div style='margin-top:15px;'></div>", unsafe_allow_html=True)
+
+    # 스티어링 감도 세그먼트형 레이아웃
+    st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
+    sf_col1, sf_col2, sf_col3 = st.columns(3)
+    with sf_col1:
+        if st.button("부드러움", type="primary" if st.session_state.steering_feel == "부드러움" else "secondary", use_container_width=True):
+            st.session_state.steering_feel = "부드러움"
+            st.rerun()
+    with sf_col2:
+        if st.button("단단함", type="primary" if st.session_state.steering_feel == "단단함" else "secondary", use_container_width=True):
+            st.session_state.steering_feel = "단단함"
+            st.rerun()
+    with sf_col3:
+        if st.button("스포츠", type="primary" if st.session_state.steering_feel == "스포츠" else "secondary", use_container_width=True):
+            st.session_state.steering_feel = "스포츠"
+            st.rerun()
+
+    st.write("<div style='margin-top:15px;'></div>", unsafe_allow_html=True)
+
+    # Start/Stop 토글 로우
+    ss_col1, ss_col2 = st.columns([3.5, 1])
+    with ss_col1:
+        st.markdown(
+            '<div class="setting-title">Ⓐ Start/Stop</div>'
+            '<div class="setting-desc">정지 시 일시적으로 엔진을 끕니다. 새로 주행할 때마다 켜짐으로 재설정됩니다.</div>',
+            unsafe_allow_html=True
+        )
+    with ss_col2:
+        st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+        st.session_state.start_stop = st.toggle("SS_toggle", value=st.session_state.start_stop, label_visibility="collapsed")
+
+    # 3. 안전 어시스트
+    st.markdown('<div class="sub-section-title">🛡️ 안전 어시스트</div>', unsafe_allow_html=True)
+    
+    # 차선유지 보조 시스템 토글 로우
+    lk_col1, lk_col2 = st.columns([3.5, 1])
+    with lk_col1:
+        st.markdown(
+            '<div class="setting-title">차선유지 보조 시스템</div>'
+            '<div class="setting-desc">갑작스런 차선 이탈을 방지하도록 도와줍니다.</div>',
+            unsafe_allow_html=True
+        )
+    with lk_col2:
+        st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
+        st.session_state.lane_keeping = st.toggle("LK_toggle", value=st.session_state.lane_keeping, label_visibility="collapsed")
+
+    st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+
+    # 주행 준비 알림 토글 로우
+    rd_col1, rd_col2 = st.columns([3.5, 1])
+    with rd_col1:
+        st.markdown(
+            '<div class="setting-title">주행 준비 알림</div>'
+            '<div class="setting-desc">전방 차량이 주행을 시작한 후 알림을 제공합니다.</div>',
+            unsafe_allow_html=True
+        )
+    with rd_col2:
+        st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
+        st.session_state.ready_to_drive = st.toggle("RD_toggle", value=st.session_state.ready_to_drive, label_visibility="collapsed")
+
+
+# ⚙️ [설정] 메인 탭 내용
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
     # 1라인: 주행 / 컨트롤
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
-        st.markdown('<div class="volvo-set-card">주행</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card-btn">', unsafe_allow_html=True)
+        if st.button("주행", key="btn_drive_route", use_container_width=True):
+            st.session_state.sub_page = "driving"
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with row1_col2:
-        st.markdown('<div class="volvo-set-card">컨트롤</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card-btn">', unsafe_allow_html=True)
+        st.button("컨트롤", key="btn_control_route", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # 2라인: 사운드 / 연결
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
-        st.markdown('<div class="volvo-set-card">사운드</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card-btn">', unsafe_allow_html=True)
+        st.button("사운드", key="btn_sound_route", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row2_col2:
-        st.markdown('<div class="volvo-set-card">연결</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card-btn">', unsafe_allow_html=True)
+        st.button("연결", key="btn_connect_route", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # 3라인: 프로필 / 개인정보 보호 / 시스템
-    # 💡 개인정보 보호가 한 줄로 예쁘게 들어가도록 가운데 열 배율을 [1, 1.5, 1]로 확장하고 폰트 크기 미세 조정
     row3_col1, row3_col2, row3_col3 = st.columns([1, 1.5, 1])
     with row3_col1:
-        st.markdown('<div class="volvo-set-card" style="font-size: 14px;">프로필</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card-btn">', unsafe_allow_html=True)
+        st.button("프로필", key="btn_profile_route", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row3_col2:
-        st.markdown('<div class="volvo-set-card" style="font-size: 13.5px; white-space: nowrap;">개인정보 보호</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card-btn">', unsafe_allow_html=True)
+        st.button("개인정보 보호", key="btn_privacy_route", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row3_col3:
-        st.markdown('<div class="volvo-set-card" style="font-size: 14px;">시스템</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card-btn">', unsafe_allow_html=True)
+        st.button("시스템", key="btn_system_route", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # 📊 [상태] 탭 내용
-elif st.session_state.current_tab == "상태 text":
+elif st.session_state.current_tab == "상태":
     st.subheader("📊 차량 상태")
     st.write("차량 진단 및 정보를 확인합니다.")
 
