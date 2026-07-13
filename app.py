@@ -38,23 +38,28 @@ border_color = "rgb(42, 49, 61)"
 if "brightness_slider" in st.query_params:
     st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
 
-# 2. [골든 룰] 스타일 정의 (기존 스타일 수호 및 시스템 전용 꽉 찬 리스트 CSS 플러그인 추가)
+# 2. [골든 룰] 스타일 정의 (중앙 스크린 일체형 배경 도색 작업)
 st.markdown(
     f"""
     <style>
-    /* 전체 앱 배경 */
+    /* 전체 브라우저 외곽 배경 */
     .stApp {{
         background-color: {bg_color} !important;
         color: #ffffff !important;
     }}
     
-    /* 상단 여백 보정 컨테이너 */
+    /* 📱 [요구사항 반영] 사진의 빨간 점선 내부 영역을 지정 색상(card_color)으로 통째로 도색 */
     .block-container {{
         max-width: 480px !important;
-        padding-top: 4rem !important; 
-        padding-bottom: 2rem !important;
+        background-color: {card_color} !important;
+        padding-top: 2.5rem !important; 
+        padding-bottom: 2.5rem !important;
+        padding-left: 25px !important;
+        padding-right: 25px !important;
         margin: 0 auto;
-        min-height: 850px; 
+        min-height: 900px; 
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+        border-radius: 16px; /* 실제 하드웨어 태블릿 느낌 마감 */
     }}
     
     /* 상단 시계 및 상태바 */
@@ -66,7 +71,7 @@ st.markdown(
         font-size: 14px;
         color: #ffffff !important;
         font-weight: 500;
-        padding: 5px 10px;
+        padding: 5px 0px;
         margin-bottom: 25px;
     }}
     
@@ -88,9 +93,9 @@ st.markdown(
         border-bottom: 2px solid #ffffff !important;
     }}
     
-    /* 📱 퀵 컨트롤 전용 카드 스타일 */
+    /* 📱 퀵 컨트롤 전용 카드 스타일 (중앙 판넬과 깊이감 분리를 위한 조절) */
     .volvo-card-content {{
-        background-color: {card_color} !important;
+        background-color: rgb(22, 27, 35) !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px;
         display: flex;
@@ -99,7 +104,7 @@ st.markdown(
         text-align: center;
         color: #ffffff !important;
         font-weight: bold;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         width: 100%;
     }}
     .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
@@ -107,14 +112,14 @@ st.markdown(
     
     /* ⚙️ 설정 메인 카드 버튼 스타일 */
     div.volvo-grid-card div.stButton > button {{
-        background-color: {card_color} !important;
+        background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
         height: 135px !important;
         font-size: 16px !important;
         font-weight: bold !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         width: 100% !important;
         display: flex !important;
         align-items: center !important;
@@ -132,14 +137,14 @@ st.markdown(
         padding-left: 5px;
     }}
     
-    /* 🛠️ [B 세팅] 서브페이지 내부 st.container 상자 강제 제어 */
+    /* 🛠️ [B 세팅] 서브페이지 내부 상자들 (일체화된 스크린 위에 정돈되도록 투명도/배색 최적화) */
     div.subpage-content-zone div[data-testid="stVerticalBlockBorderWrapper"] {{
-        background-color: {card_color} !important;
+        background-color: rgba(18, 22, 28, 0.4) !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
         padding: 18px !important;
         margin-bottom: 5px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
     }}
     
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
@@ -147,7 +152,7 @@ st.markdown(
     .setting-title-align-tgl {{ font-size: 15px; font-weight: bold; color: #ffffff; padding-top: 2px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 💻 [시스템 페이지 전용 리스트 아이템 UI 스타일] */
+    /* 시스템 리스트 아이템 UI 스타일 */
     .system-list-zone {{
         display: flex;
         flex-direction: column;
@@ -160,28 +165,15 @@ st.markdown(
         align-items: center;
         width: 100%;
         padding: 14px 8px;
-        border-bottom: 1px solid #232830;
+        border-bottom: 1px solid #333b46;
         cursor: pointer;
     }}
     .system-list-item:last-child {{
         border-bottom: none;
     }}
-    .system-item-main {{
-        font-size: 15px;
-        font-weight: 500;
-        color: #ffffff;
-    }}
-    .system-item-sub {{
-        font-size: 12px;
-        color: #8e959e;
-        margin-top: 3px;
-    }}
-    .system-arrow {{
-        color: #5d646e;
-        font-size: 15px;
-        font-weight: bold;
-        padding-right: 4px;
-    }}
+    .system-item-main {{ font-size: 15px; font-weight: 500; color: #ffffff; }}
+    .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 3px; }}
+    .system-arrow {{ color: #5d646e; font-size: 15px; font-weight: bold; padding-right: 4px; }}
     
     /* 컴포넌트 너비 확장 규칙 고정 */
     div[data-testid="stHtmlBlock"] {{ width: 100% !important; }}
@@ -206,7 +198,7 @@ st.markdown(
     .back-btn-box button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 18px !important; font-weight: bold !important; padding: 0 !important; box-shadow: none !important; }}
     
     /* 하단 공조 바 */
-    .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 50px; border: 1px solid #232830; }}
+    .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 40px; border: 1px solid #232830; }}
     .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
     .bottom-sub-label {{ font-size: 9px; color: #8e959e !important; display: block; margin-top: 2px; }}
     </style>
@@ -424,7 +416,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 💻 [설정 -> 시스템] 서브 페이지 (두 장의 사진 요구사항 100% 반영)
+# 💻 [설정 -> 시스템] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "system":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  시스템", key="back_to_settings_sys"):
@@ -432,40 +424,23 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 1번 사진: 보안 상태 구역
     st.markdown('<div class="volvo-title-row">보안 상태</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin-bottom: 10px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin-bottom: 10px;"></div>', unsafe_allow_html=True)
 
-    # 1번 사진: 일반 구역 (가로 리스트 라인 형태)
     st.markdown('<div class="volvo-title-row">일반</div>', unsafe_allow_html=True)
-    
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    
-    # 언어 및 입력
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">언어 및 입력</div><div class="system-item-sub">한국어(대한민국)</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 날짜 및 시간
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">날짜 및 시간</div><div class="system-item-sub">2026년 7월 13일, 24시간 시계</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 단위
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">단위</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 애플리케이션
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">애플리케이션</div><div class="system-item-sub">앱 권한</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 계정
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">계정</div><div class="system-item-sub">연결된 계정</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 알림
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">알림</div><div class="system-item-sub">애플리케이션 알림</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 2번 사진: 시스템 정보 구역 추가 연결
     st.markdown('<div class="volvo-title-row" style="margin-top: 30px;">시스템 정보</div>', unsafe_allow_html=True)
-    
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    
-    # 정보 (Android 13)
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">정보</div><div class="system-item-sub">Android 13</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 접근성
     st.markdown('<div class="system-list-item"><div><div class="system-item-main">접근성</div><div class="system-item-sub">자막 환경설정</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -513,7 +488,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     with row3_col3:
         with st.container(border=False):
             st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            # 💡 시스템 버튼 분기점 활성화
             if st.button("시스템", key="btn_system_go", use_container_width=True):
                 st.session_state.sub_page = "system"; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
