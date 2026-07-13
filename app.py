@@ -14,6 +14,15 @@ if "current_tab" not in st.session_state:
 if "sub_page" not in st.session_state:
     st.session_state.sub_page = "main"
 
+# URL 쿼리 파라미터를 통한 페이지 이동 및 슬라이더 연동 제어
+query_params = st.query_params
+if "nav" in query_params:
+    st.session_state.sub_page = query_params["nav"]
+    st.session_state.current_tab = "설정"  # 설정 내 메뉴 이동시 탭 고정
+if "tab" in query_params:
+    st.session_state.current_tab = query_params["tab"]
+    st.session_state.sub_page = "main"
+
 # [주행 설정 데이터]
 if "pilot_assist" not in st.session_state: st.session_state.pilot_assist = True
 if "drive_mode" not in st.session_state: st.session_state.drive_mode = "Standard"
@@ -56,9 +65,8 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 내부 밝기 쿼리 파라미터 연동
-if "brightness_slider" in st.query_params:
-    st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
+if "brightness_slider" in query_params:
+    st.session_state.interior_brightness = int(query_params["brightness_slider"])
 
 # 2. 볼보 헤리티지 UI 스타일 정의
 st.markdown(
@@ -193,18 +201,27 @@ st.markdown(
     .oil-bar-fill-green {{ background-color: #00c853; height: 100%; width: 84%; border-radius: 4px 0 0 4px; }}
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
-    /* ⚙️ 설정 메인 격자 카드 (🎯 요청 사항: 차선 유지 버튼의 반 크기인 95px로 대폭 키우고 글꼴 비율 보정!) */
-    div.volvo-grid-card div.stButton > button {{
+    /* 🎯 [설정] 메인 격자 카드 HTML 전용 스타일 커스텀 */
+    .volvo-html-grid-btn {{
         background-color: rgb(22, 27, 35) !important;
-        color: #ffffff !important;
         border: 1px solid {border_color} !important;
-        border-radius: 14px !important;
-        height: 95px !important;
-        font-size: 17px !important;
+        border-radius: 14px;
+        height: 92px; /* 185px의 딱 절반 크기로 고정 적용 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #ffffff !important;
+        font-size: 16px !important;
         font-weight: bold !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-        width: 100% !important;
-        white-space: pre-line !important;
+        text-decoration: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        width: 100%;
+        box-sizing: border-box;
+        transition: background-color 0.2s;
+    }}
+    .volvo-html-grid-btn:hover {{
+        background-color: rgb(32, 39, 50) !important;
     }}
     
     /* 🛠️ 세팅 박스 타이틀 */
@@ -321,14 +338,17 @@ if st.session_state.sub_page == "main":
     with top_col1:
         is_active = "primary" if st.session_state.current_tab == "퀵 컨트롤" else "secondary"
         if st.button("퀵 컨트롤", key="tab_quick", type=is_active, use_container_width=True):
+            st.query_params.clear()
             st.session_state.current_tab = "퀵 컨트롤"; st.rerun()
     with top_col2:
         is_active = "primary" if st.session_state.current_tab == "설정" else "secondary"
         if st.button("설정", key="tab_settings", type=is_active, use_container_width=True):
+            st.query_params.clear()
             st.session_state.current_tab = "설정"; st.session_state.sub_page = "main"; st.rerun()
     with top_col3:
         is_active = "primary" if st.session_state.current_tab == "상태" else "secondary"
         if st.button("상태", key="tab_status", type=is_active, use_container_width=True):
+            st.query_params.clear()
             st.session_state.current_tab = "상태"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; margin-bottom: 25px;"></div>', unsafe_allow_html=True)
@@ -416,6 +436,7 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  주행", key="back_to_settings"):
+        st.query_params.clear()
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -490,6 +511,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
+        st.query_params.clear()
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -764,6 +786,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "system":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  시스템", key="back_to_settings_sys"):
+        st.query_params.clear()
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -1120,45 +1143,36 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.components.v1.html(denied_permissions_html, height=60)
 
 
-# ⚙️ [설정] 메인 격자 맵 화면 (🎯 세로 높이 리사이징 핏 적용 완료!)
+# ⚙️ [설정] 메인 격자 맵 화면 (🎯 HTML 순정형 리사이징 버튼으로 전면 교체!)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+    
+    # 1행: 주행, 컨트롤
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
-        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        if st.button("주행", key="btn_drive_go", use_container_width=True):
-            st.session_state.sub_page = "driving"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<a href="/?nav=driving" target="_self" class="volvo-html-grid-btn">주행</a>', unsafe_allow_html=True)
     with row1_col2:
-        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        if st.button("컨트롤", key="btn_control_go", use_container_width=True):
-            st.session_state.sub_page = "control"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<a href="/?nav=control" target="_self" class="volvo-html-grid-btn">컨트롤</a>', unsafe_allow_html=True)
 
+    st.write("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+
+    # 2행: 사운드, 연결
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
-        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        st.button("사운드", key="btn_sound_go", use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<a href="#" target="_self" class="volvo-html-grid-btn">사운드</a>', unsafe_allow_html=True)
     with row2_col2:
-        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        st.button("연결", key="btn_connect_go", use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<a href="#" target="_self" class="volvo-html-grid-btn">연결</a>', unsafe_allow_html=True)
 
+    st.write("<div style='margin-top: 12px;'></div>", unsafe_allow_html=True)
+
+    # 3행: 프로필, 개인정보보호, 시스템
     row3_col1, row3_col2, row3_col3 = st.columns(3)
     with row3_col1:
-        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        st.button("프로필", key="btn_profile_go", use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<a href="#" target="_self" class="volvo-html-grid-btn">프로필</a>', unsafe_allow_html=True)
     with row3_col2:
-        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        st.button("개인정보\n보호", key="btn_privacy_go", use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<a href="#" target="_self" class="volvo-html-grid-btn">개인정보<br>보호</a>', unsafe_allow_html=True)
     with row3_col3:
-        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        if st.button("시스템", key="btn_system_go", use_container_width=True):
-            st.session_state.sub_page = "system"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<a href="/?nav=system" target="_self" class="volvo-html-grid-btn">시스템</a>', unsafe_allow_html=True)
 
 
 # 📱 [퀵 컨트롤] 탭 구조 보존
