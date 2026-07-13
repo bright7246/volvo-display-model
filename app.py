@@ -12,32 +12,21 @@ st.set_page_config(
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
-# 밝기 조절 기본값 세팅
-if "brightness" not in st.session_state:
-    st.session_state.brightness = 85
+# 💡 볼보 순정 느낌의 고급스러운 고정 다크 톤 배색 지정
+bg_color = "rgb(18, 22, 28)"
+card_color = "rgb(28, 34, 44)"
+border_color = "rgb(42, 49, 61)"
 
-# 💡 실시간 밝기 변화를 위해 슬라이더 값을 기반으로 색상 계산
-b_val = st.session_state.brightness
-bg_base = 12 + int(b_val * 0.25)     
-card_base = 20 + int(b_val * 0.3)    
-border_base = 30 + int(b_val * 0.35) 
-
-bg_color = f"rgb({bg_base}, {bg_base+4}, {bg_base+10})"
-card_color = f"rgb({card_base}, {card_base+6}, {card_base+16})"
-border_color = f"rgb({border_base}, {border_base+7}, {border_base+17})"
-
-# 💡 [핵심] 캐싱 버그를 부수기 위해 매번 고유한 밝기 ID 스타일 적용
 st.markdown(
     f"""
     <style>
     .stApp {{
         background-color: {bg_color} !important;
         color: #ffffff !important;
-        transition: background-color 0.1s ease-out;
     }}
     .block-container {{
         max-width: 450px !important;
-        padding-top: 3.5rem !important; 
+        padding-top: 2.5rem !important; 
         padding-bottom: 1.5rem;
         margin: 0 auto;
     }}
@@ -81,7 +70,6 @@ st.markdown(
         font-weight: bold;
         box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         width: 100%;
-        transition: background-color 0.1s, border-color 0.1s;
     }}
     .side-btn {{
         height: 130px;
@@ -135,7 +123,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 1. 최상단 상태바 (한국시간 기준 고정) ---
+# --- 1. 최상단 상태바 (한국시간 기준) ---
 utc_now = datetime.utcnow()
 kor_now = utc_now + timedelta(hours=9)
 ampm = "오후" if kor_now.hour >= 12 else "오전"
@@ -185,18 +173,16 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 else:
-    # 💡 밝기 조절 슬라이더
-    st.slider("☀️ 밝기 조절", min_value=0, max_value=100, key="brightness")
+    # 💡 복잡했던 슬라이더 및 여백 초기화
+    st.write("") 
 
-    st.write("") # 간격 채우기용 여백
-
-    # --- 💡 [핵심 변경] HTML 그리드를 버리고 스트림릿 순수 레이아웃 컬럼으로 배치하여 코드 튀어남 방지 ---
+    # 순수 스트림릿 컬럼 레이아웃으로 완벽 배치
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
 
     # 좌측 버튼 레이아웃
     with main_col1:
         st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
-        st.write("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True) # 박스 간격 간 패딩
+        st.write("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True) 
         st.markdown('<div class="volvo-card-content side-btn">Start<br>Stop</div>', unsafe_allow_html=True)
 
     # 중앙 VOLVO 긴 세로 박스
@@ -212,11 +198,4 @@ else:
     # --- 4. 하단 공조 장치 바 ---
     bottom_html = (
         '<div class="volvo-bottom-bar">'
-        '<div class="bottom-item" style="color: #8e959e; font-size: 16px; cursor: pointer;">㗊</div>'
-        '<div class="bottom-item">💺 LO</div>'
-        '<div class="bottom-item"><span style="font-size: 16px;">🌀</span><span class="bottom-sub-label">공기 재순환</span></div>'
-        '<div class="bottom-item">LO 💺</div>'
-        '<div class="bottom-item"><div class="bottom-setting-circle">설정</div></div>'
-        '</div>'
-    )
-    st.markdown(bottom_html, unsafe_allow_html=True)
+        '<div class="bottom-item" style="color: #8e959e; font-size:
