@@ -234,23 +234,6 @@ st.markdown(
         font-weight: bold;
         color: #ffffff;
     }}
-    .permission-item-row-custom {{
-        display: flex;
-        align-items: center;
-        padding: 10px 4px;
-        width: 100%;
-    }}
-    .permission-icon-custom {{
-        font-size: 20px;
-        margin-right: 16px;
-        color: #8e959e;
-        width: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }}
-    .permission-title {{ font-size: 15px; font-weight: 500; color: #ffffff; }}
-    .permission-subtext {{ font-size: 12px; color: #8e959e; margin-top: 3px; }}
     
     /* 슬라이더 스타일 */
     .slider-container-custom {{ display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 5px 0; background: transparent !important; }}
@@ -269,6 +252,7 @@ st.markdown(
     .more-link {{ display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #ffffff; cursor: pointer; padding-top: 14px; padding-bottom: 12px; }}
 
     /* 뒤로가기 버튼 박스 */
+    .back-btn-box {{ display: flex; align-items: center; justify-content: space-between; width: 100%; }}
     .back-btn-box button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 18px !important; font-weight: bold !important; padding: 0 !important; box-shadow: none !important; }}
     div[data-testid="stCheckboxToggleHoverTarget"] div[aria-checked="true"] {{ background-color: #00A3E0 !important; }}
 
@@ -611,7 +595,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📱 [시스템 -> 상세 3. 애플리케이션 (기본 앱 목록 목록)] 상세페이지
+# 📱 [시스템 -> 상세 3. 애플리케이션 (기본 앱 목록)] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_apps":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  애플리케이션", key="back_to_sys_main_3"):
@@ -621,7 +605,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="volvo-title-row">기본 앱</div>', unsafe_allow_html=True)
     
-    # 💥 [해결 완료] 외부 레이아웃 래퍼를 컬럼 바깥에 정상 배치
     st.markdown('<div class="system-list-zone align-arrow-center">', unsafe_allow_html=True)
     col1, col2 = st.columns([4.2, 0.8])
     with col1: 
@@ -751,99 +734,94 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="volvo-title-row" style="margin-top: 10px; margin-bottom: 10px;">허용됨</div>', unsafe_allow_html=True)
     
+    # 🎯 [버그 수정 핵심] 마크다운 문자열 인젝션 대신 컴포넌트 객체로 격리하여 안전하게 출력
     allowed_permissions_html = """
-    <div class="system-list-zone">
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">💠</div>
-            <div class="permission-text-box">
-                <div class="permission-title">근처 기기</div>
-                <div class="permission-subtext">지난 24시간 이내에 액세스함</div>
+    <style>
+    .perm-wrap { font-family: 'Helvetica Neue', sans-serif; background-color: transparent; color: #ffffff; padding: 0; margin: 0; }
+    .item-row { display: flex; align-items: center; padding: 12px 4px; width: 100%; box-sizing: border-box; }
+    .item-icon { font-size: 20px; margin-right: 16px; color: #8e959e; width: 24px; text-align: center; }
+    .item-title { font-size: 15px; font-weight: 500; color: #ffffff; }
+    .item-sub { font-size: 12px; color: #8e959e; margin-top: 3px; }
+    .divider { border-bottom: 1px solid #232830; margin: 4px 0; }
+    </style>
+    <div class="perm-wrap">
+        <div class="item-row">
+            <div class="item-icon">💠</div>
+            <div>
+                <div class="item-title">근처 기기</div>
+                <div class="item-sub">지난 24시간 이내에 액세스함</div>
             </div>
         </div>
-        <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
-        
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">🎤</div>
-            <div class="permission-text-box">
-                <div class="permission-title">마이크</div>
+        <div class="divider"></div>
+        <div class="item-row">
+            <div class="item-icon">🎤</div>
+            <div class="item-title">마이크</div>
+        </div>
+        <div class="divider"></div>
+        <div class="item-row">
+            <div class="item-icon">🔔</div>
+            <div class="item-title">알림</div>
+        </div>
+        <div class="divider"></div>
+        <div class="item-row">
+            <div class="item-icon">👤</div>
+            <div class="item-title">연락처</div>
+        </div>
+        <div class="divider"></div>
+        <div class="item-row">
+            <div class="item-icon">📍</div>
+            <div>
+                <div class="item-title">위치</div>
+                <div class="item-sub">08:48에 마지막으로 액세스함 • 항상 허용됨</div>
             </div>
         </div>
-        <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
-        
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">🔔</div>
-            <div class="permission-text-box">
-                <div class="permission-title">알림</div>
+        <div class="divider"></div>
+        <div class="item-row">
+            <div class="item-icon">📞</div>
+            <div>
+                <div class="item-title">전화</div>
+                <div class="item-sub">지난 24시간 이내에 액세스함</div>
             </div>
         </div>
-        <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
-        
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">👤</div>
-            <div class="permission-text-box">
-                <div class="permission-title">연락처</div>
-            </div>
+        <div class="divider"></div>
+        <div class="item-row">
+            <div class="item-icon">🕒</div>
+            <div class="item-title">통화 기록</div>
         </div>
-        <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
-        
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">📍</div>
-            <div class="permission-text-box">
-                <div class="permission-title">위치</div>
-                <div class="permission-subtext">08:48에 마지막으로 액세스함 • 항상 허용됨</div>
-            </div>
+        <div class="divider"></div>
+        <div class="item-row">
+            <div class="item-icon">💬</div>
+            <div class="item-title">SMS</div>
         </div>
-        <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
-        
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">📞</div>
-            <div class="permission-text-box">
-                <div class="permission-title">전화</div>
-                <div class="permission-subtext">지난 24시간 이내에 액세스함</div>
-            </div>
-        </div>
-        <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
-        
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">🕒</div>
-            <div class="permission-text-box">
-                <div class="permission-title">통화 기록</div>
-            </div>
-        </div>
-        <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
-        
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">💬</div>
-            <div class="permission-text-box">
-                <div class="permission-title">SMS</div>
-            </div>
-        </div>
-        <div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>
-        
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom">⚙️</div>
-            <div class="permission-text-box">
-                <div class="permission-title">추가 권한</div>
-                <div class="permission-subtext">1개 더보기</div>
+        <div class="divider"></div>
+        <div class="item-row">
+            <div class="item-icon">⚙️</div>
+            <div>
+                <div class="item-title">추가 권한</div>
+                <div class="item-sub">1개 더보기</div>
             </div>
         </div>
     </div>
     """
-    st.markdown(allowed_permissions_html, unsafe_allow_html=True)
+    st.components.v1.html(allowed_permissions_html, height=500, scrolling=True)
     
-    st.markdown('<div class="volvo-title-row" style="margin-top: 25px; margin-bottom: 10px;">허용되지 않음</div>', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row" style="margin-top: 5px; margin-bottom: 10px;">허용되지 않음</div>', unsafe_allow_html=True)
     
     denied_permissions_html = """
-    <div class="system-list-zone">
-        <div class="permission-item-row-custom">
-            <div class="permission-icon-custom" style="opacity: 0.4;">🚫</div>
-            <div class="permission-text-box">
-                <div class="permission-title" style="color: #8e959e;">거부된 권한 없음</div>
-            </div>
+    <style>
+    .denied-wrap { font-family: 'Helvetica Neue', sans-serif; background-color: transparent; }
+    .item-row { display: flex; align-items: center; padding: 12px 4px; }
+    .item-icon { font-size: 20px; margin-right: 16px; opacity: 0.4; width: 24px; text-align: center; }
+    .item-title { font-size: 15px; font-weight: 500; color: #8e959e; }
+    </style>
+    <div class="denied-wrap">
+        <div class="item-row">
+            <div class="item-icon">🚫</div>
+            <div class="item-title">거부된 권한 없음</div>
         </div>
     </div>
     """
-    st.markdown(denied_permissions_html, unsafe_allow_html=True)
+    st.components.v1.html(denied_permissions_html, height=60)
 
 
 # ⚙️ [설정] 메인 격자 맵 화면
