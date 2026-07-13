@@ -8,7 +8,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# 2. 디자인을 볼보 UI와 100% 똑같이 만들기 위한 통합 CSS 스타일 설정
+# 2. 디자인을 볼보 UI와 똑같이 만들기 위한 통합 CSS 스타일 설정
 st.markdown(
     """
     <style>
@@ -33,6 +33,7 @@ st.markdown(
         font-size: 14px;
         color: #e1e2e3;
         padding: 5px 10px;
+        margin-bottom: 10px;
     }
 
     /* 상단 메뉴 탭 컨테이너 */
@@ -40,25 +41,34 @@ st.markdown(
         display: flex;
         justify-content: space-between;
         border-bottom: 1px solid #2d333c;
-        padding-bottom: 10px;
+        padding-bottom: 5px;
         margin-bottom: 20px;
     }
 
-    /* 탭 메뉴 글자 스타일 */
-    .tab-item {
-        flex: 1;
-        text-align: center;
-        font-size: 16px;
-        font-weight: 500;
-        color: #8e959e;
-        padding: 10px 0;
+    /* 투명 버튼을 탭 메뉴 글자 위에 덮어씌우기 위한 스타일 */
+    .stButton > button {
+        background-color: transparent !important;
+        color: #8e959e !important;
+        border: none !important;
+        font-size: 16px !important;
+        font-weight: 500 !important;
+        padding: 10px 0 !important;
+        width: 100% !important;
+        border-radius: 0px !important;
+        box-shadow: none !important;
     }
     
-    /* 활성화된 탭 하단 흰색 바 */
-    .tab-item.active {
-        color: #ffffff;
-        font-weight: bold;
-        border-bottom: 3px solid #ffffff;
+    /* 활성화된 탭 스타일 (흰색 글씨 + 하단 흰색 밑줄) */
+    .stButton > button[kind="primary"] {
+        color: #ffffff !important;
+        font-weight: bold !important;
+        border-bottom: 3px solid #ffffff !important;
+    }
+
+    /* 마우스 올렸을 때 배경 투명 유지 */
+    .stButton > button:hover {
+        background-color: transparent !important;
+        color: #ffffff !important;
     }
 
     /* 슬라이더 커스텀 (볼보 슬라이더 스타일) */
@@ -156,30 +166,29 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# --- 2. 상단 메인 메뉴 탭 (퀵 컨트롤 / 설정 / 상태) ---
-# 실제 차량 화면처럼 버튼을 누르면 밑줄(Active)이 이동하고 화면이 전환되게 구성
+# --- 2. 상단 메뉴 탭 (버튼 자체를 밑줄 디자인 탭으로 변경) ---
 top_col1, top_col2, top_col3 = st.columns(3)
 
 with top_col1:
-    if st.button("퀵 컨트롤", use_container_width=True):
+    is_active = "primary" if st.session_state.current_tab == "퀵 컨트롤" else "secondary"
+    if st.button("퀵 컨트롤", key="tab_quick", type=is_active, use_container_width=True):
         st.session_state.current_tab = "퀵 컨트롤"
+        st.rerun()
 
 with top_col2:
-    # 💡 요구사항 반영: '설정' 버튼을 누르면 설정 페이지로 진입
-    if st.button("⚙️ 설정 진입", use_container_width=True, type="primary"):
+    is_active = "primary" if st.session_state.current_tab == "설정" else "secondary"
+    if st.button("설정", key="tab_settings", type=is_active, use_container_width=True):
         st.session_state.current_tab = "설정"
+        st.rerun()
 
 with top_col3:
-    if st.button("상태", use_container_width=True):
+    is_active = "primary" if st.session_state.current_tab == "상태" else "secondary"
+    if st.button("상태", key="tab_status", type=is_active, use_container_width=True):
         st.session_state.current_tab = "상태"
+        st.rerun()
 
-# 현재 어떤 탭이 선택되었는지 시각적 가이드 표시
-if st.session_state.current_tab == "퀵 컨트롤":
-    st.markdown('<div class="volvo-tabs"><div class="tab-item active">퀵 컨트롤</div><div class="tab-item">설정</div><div class="tab-item">상태</div></div>', unsafe_allow_html=True)
-elif st.session_state.current_tab == "설정":
-    st.markdown('<div class="volvo-tabs"><div class="tab-item">퀵 컨트롤</div><div class="tab-item active">설정</div><div class="tab-item">상태</div></div>', unsafe_allow_html=True)
-else:
-    st.markdown('<div class="volvo-tabs"><div class="tab-item">퀵 컨트롤</div><div class="tab-item">설정</div><div class="tab-item active">상태</div></div>', unsafe_allow_html=True)
+# 탭 메뉴 아래에 구분선 추가
+st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; margin-bottom: 20px;"></div>', unsafe_allow_html=True)
 
 
 # --- 3. 화면 분기 처리 ---
