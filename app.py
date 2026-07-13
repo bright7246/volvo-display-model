@@ -12,7 +12,7 @@ st.set_page_config(
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
-# 볼보 순정 느낌의 고급스러운 고정 다크 톤 배색 지정
+# 💡 볼보 순정 느낌의 고급스러운 고정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
@@ -173,10 +173,36 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 else:
+    # 💡 복잡했던 슬라이더 및 여백 초기화
     st.write("") 
 
-    # 순수 스트림릿 컬럼 레이아웃 배치
+    # 순수 스트림릿 컬럼 레이아웃으로 완벽 배치
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
 
     # 좌측 버튼 레이아웃
     with main_col1:
+        st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
+        st.write("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True) 
+        st.markdown('<div class="volvo-card-content side-btn">Start<br>Stop</div>', unsafe_allow_html=True)
+
+    # 중앙 VOLVO 긴 세로 박스
+    with main_col2:
+        st.markdown('<div class="volvo-card-content center-box">VOLVO</div>', unsafe_allow_html=True)
+
+    # 우측 버튼 레이아웃
+    with main_col3:
+        st.markdown('<div class="volvo-card-content side-btn">알람<br>줄이기</div>', unsafe_allow_html=True)
+        st.write("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="volvo-card-content side-btn">헤드<br>레스트</div>', unsafe_allow_html=True)
+
+    # --- 4. 하단 공조 장치 바 ---
+    bottom_html = (
+        '<div class="volvo-bottom-bar">'
+        '<div class="bottom-item" style="color: #8e959e; font-size: 16px;">㗊</div>'
+        '<div class="bottom-item">💺 LO</div>'
+        '<div class="bottom-item"><span style="font-size: 16px;">🌀</span><span class="bottom-sub-label">공기 재순환</span></div>'
+        '<div class="bottom-item">LO 💺</div>'
+        '<div class="bottom-item"><div class="bottom-setting-circle">설정</div></div>'
+        '</div>'
+    )
+    st.markdown(bottom_html, unsafe_allow_html=True)
