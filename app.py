@@ -14,6 +14,11 @@ if "current_tab" not in st.session_state:
 if "sub_page" not in st.session_state:
     st.session_state.sub_page = "main"
 
+# URL 쿼리 파라미터를 통한 제어 (필요시 확장용)
+query_params = st.query_params
+if "brightness_slider" in query_params:
+    st.session_state.interior_brightness = int(query_params["brightness_slider"])
+
 # [주행 설정 데이터]
 if "pilot_assist" not in st.session_state: st.session_state.pilot_assist = True
 if "drive_mode" not in st.session_state: st.session_state.drive_mode = "Standard"
@@ -55,10 +60,6 @@ if "nugu_permission_clear" not in st.session_state: st.session_state.nugu_permis
 bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
-
-# 내부 밝기 쿼리 파라미터 연동
-if "brightness_slider" in st.query_params:
-    st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
 
 # 2. 볼보 헤리티지 UI 스타일 정의
 st.markdown(
@@ -121,9 +122,7 @@ st.markdown(
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         width: 100%;
     }}
-    
-    /* 🎯 퀵 컨트롤 및 설정 공통 185px 크기 클래스 */
-    .side-btn {{ height: 185px; font-size: 16px; line-height: 1.5; }}
+    .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
     .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
 
     /* 📊 상태 탭 메인 스타일 */
@@ -195,19 +194,40 @@ st.markdown(
     .oil-bar-fill-green {{ background-color: #00c853; height: 100%; width: 84%; border-radius: 4px 0 0 4px; }}
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
-    /* ⚙️ 퀴이드 인터랙션을 연동할 투명 가상 Streamlit 버튼 스타일링 (번쩍임 예방 및 절대 좌표 클릭 유도) */
-    div.volvo-grid-overlay div.stButton > button {{
+    /* 🎯 [설정] 탭 전용 레이아웃 가상 래퍼 바인딩 고정 */
+    .grid-wrapper-box-half {{
+        position: relative;
+        width: 100%;
+        height: 92px; /* 퀵컨트롤 185px의 완벽한 절반 크기 적용 */
+        background-color: rgb(22, 27, 35) !important;
+        border: 1px solid {border_color} !important;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #ffffff !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        box-sizing: border-box;
+    }}
+    
+    /* 투명 가상 클릭 버튼 오버레이 핏 정렬 */
+    div.volvo-grid-overlay-half div.stButton > button {{
         background-color: transparent !important;
         color: transparent !important;
         border: none !important;
-        height: 185px !important;
+        height: 92px !important;
         width: 100% !important;
         position: absolute !important;
         top: 0; left: 0;
         z-index: 10;
         box-shadow: none !important;
     }}
-    .grid-wrapper-box {{ position: relative; width: 100%; height: 185px; }}
+    div.volvo-grid-overlay-half div.stButton > button:hover {{
+        background-color: rgba(255, 255, 255, 0.04) !important;
+    }}
     
     /* 🛠️ 세팅 박스 타이틀 */
     .volvo-title-row {{ font-size: 14px; color: #8e959e; font-weight: bold; margin-top: 22px; margin-bottom: 12px; padding-left: 5px; }}
@@ -290,7 +310,7 @@ st.markdown(
     div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{ gap: 0px !important; background-color: #1a1f27 !important; border-radius: 25px !important; padding: 4px !important; border: 1px solid #333b46 !important; margin-top: 12px !important; }}
     div.volvo-segment-row div.stButton > button[kind="primary"] {{ background-color: #00A3E0 !important; color: #ffffff !important; border: none !important; border-radius: 22px !important; font-weight: bold !important; height: 40px !important; }}
     div.volvo-segment-row div.stButton > button[kind="secondary"] {{ background-color: transparent !important; color: #727a85 !important; border: none !important; border-radius: 22px !important; height: 40px !important; box-shadow: none !important; }}
-    div.volvo-fold-btn-zone div.stButton > button {{ background-color: #383e48 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; height: 38px !important; font-size: 14px !important; font-weight: bold !important; width: 100% !important; box-shadow: none !important; width: 100% !important; }}
+    div.volvo-fold-btn-zone div.stButton > button {{ background-color: #383e48 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; height: 38px !important; font-size: 14px !important; font-weight: bold !important; width: 100% !important; box-shadow: none !important; }}
 
     div.inline-segment-fix div[data-testid="stHorizontalBlock"] {{ margin-top: 0px !important; }}
 
@@ -762,7 +782,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 💻 [설정 -> 시스템] 일반 리스트 탭
+# 💻 [설정 -> 시스템] 메인 리스트 탭
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "system":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  시스템", key="back_to_settings_sys"):
@@ -1122,23 +1142,23 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.components.v1.html(denied_permissions_html, height=60)
 
 
-# ⚙️ [설정] 메인 격자 화면 (🎯 번쩍임 제로 + 퀵 컨트롤과 100% 동일한 작동 방식으로 리빌딩 완료)
+# ⚙️ [설정] 메인 격자 화면 (🎯 글자 레이아웃 이탈 이슈 해결 및 절반 높이 92px 적용 완료!)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
     
     # 1행: 주행, 컨트롤
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
-        st.markdown('<div class="grid-wrapper-box volvo-html-grid-btn side-btn">주행</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-grid-overlay">', unsafe_allow_html=True)
-        if st.button("", key="btn_go_driving_overlay", use_container_width=True):
+        st.markdown('<div class="volvo-grid-overlay-half">', unsafe_allow_html=True)
+        st.markdown('<div class="grid-wrapper-box-half">주행</div>', unsafe_allow_html=True)
+        if st.button("", key="btn_overlay_driving", use_container_width=True):
             st.session_state.sub_page = "driving"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
     with row1_col2:
-        st.markdown('<div class="grid-wrapper-box volvo-html-grid-btn side-btn">컨트롤</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-grid-overlay">', unsafe_allow_html=True)
-        if st.button("", key="btn_go_control_overlay", use_container_width=True):
+        st.markdown('<div class="volvo-grid-overlay-half">', unsafe_allow_html=True)
+        st.markdown('<div class="grid-wrapper-box-half">컨트롤</div>', unsafe_allow_html=True)
+        if st.button("", key="btn_overlay_control", use_container_width=True):
             st.session_state.sub_page = "control"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1147,15 +1167,15 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     # 2행: 사운드, 연결
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
-        st.markdown('<div class="grid-wrapper-box volvo-html-grid-btn side-btn">사운드</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-grid-overlay">', unsafe_allow_html=True)
-        st.button("", key="btn_go_sound_overlay", use_container_width=True)
+        st.markdown('<div class="volvo-grid-overlay-half">', unsafe_allow_html=True)
+        st.markdown('<div class="grid-wrapper-box-half">사운드</div>', unsafe_allow_html=True)
+        st.button("", key="btn_overlay_sound", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
     with row2_col2:
-        st.markdown('<div class="grid-wrapper-box volvo-html-grid-btn side-btn">연결</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-grid-overlay">', unsafe_allow_html=True)
-        st.button("", key="btn_go_connect_overlay", use_container_width=True)
+        st.markdown('<div class="volvo-grid-overlay-half">', unsafe_allow_html=True)
+        st.markdown('<div class="grid-wrapper-box-half">연결</div>', unsafe_allow_html=True)
+        st.button("", key="btn_overlay_connect", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     st.write("<div style='margin-top: 25px;'></div>", unsafe_allow_html=True)
@@ -1163,21 +1183,21 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     # 3행: 프로필, 개인정보 보호, 시스템
     row3_col1, row3_col2, row3_col3 = st.columns(3)
     with row3_col1:
-        st.markdown('<div class="grid-wrapper-box volvo-html-grid-btn side-btn">프로필</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-grid-overlay">', unsafe_allow_html=True)
-        st.button("", key="btn_go_profile_overlay", use_container_width=True)
+        st.markdown('<div class="volvo-grid-overlay-half">', unsafe_allow_html=True)
+        st.markdown('<div class="grid-wrapper-box-half">프로필</div>', unsafe_allow_html=True)
+        st.button("", key="btn_overlay_profile", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
     with row3_col2:
-        st.markdown('<div class="grid-wrapper-box volvo-html-grid-btn side-btn">개인정보<br>보호</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-grid-overlay">', unsafe_allow_html=True)
-        st.button("", key="btn_go_privacy_overlay", use_container_width=True)
+        st.markdown('<div class="volvo-grid-overlay-half">', unsafe_allow_html=True)
+        st.markdown('<div class="grid-wrapper-box-half">개인정보<br>보호</div>', unsafe_allow_html=True)
+        st.button("", key="btn_overlay_privacy", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
     with row3_col3:
-        st.markdown('<div class="grid-wrapper-box volvo-html-grid-btn side-btn">시스템</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-grid-overlay">', unsafe_allow_html=True)
-        if st.button("", key="btn_go_system_overlay", use_container_width=True):
+        st.markdown('<div class="volvo-grid-overlay-half">', unsafe_allow_html=True)
+        st.markdown('<div class="grid-wrapper-box-half">시스템</div>', unsafe_allow_html=True)
+        if st.button("", key="btn_overlay_system", use_container_width=True):
             st.session_state.sub_page = "system"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
