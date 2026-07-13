@@ -38,7 +38,7 @@ border_color = "rgb(42, 49, 61)"
 if "brightness_slider" in st.query_params:
     st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
 
-# 2. [골든 룰] 스타일 정의 (동일선상 정렬을 위한 핏 라이징 CSS)
+# 2. [골든 룰] 스타일 정의 (기존 스타일 수호 및 시스템 전용 꽉 찬 리스트 CSS 플러그인 추가)
 st.markdown(
     f"""
     <style>
@@ -143,159 +143,70 @@ st.markdown(
     }}
     
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
-    
-    /* 💡 [동일선상 수술] 텍스트가 버튼/토글의 수직 센터 라인과 완벽하게 일치하도록 라인 높이와 패딩 튜닝 */
-    .setting-title-align-btn {{ 
-        font-size: 15px; 
-        font-weight: bold; 
-        color: #ffffff; 
-        padding-top: 6px; 
-    }}
-    .setting-title-align-tgl {{ 
-        font-size: 15px; 
-        font-weight: bold; 
-        color: #ffffff; 
-        padding-top: 2px; 
-    }}
-    
+    .setting-title-align-btn {{ font-size: 15px; font-weight: bold; color: #ffffff; padding-top: 6px; }}
+    .setting-title-align-tgl {{ font-size: 15px; font-weight: bold; color: #ffffff; padding-top: 2px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
+    /* 💻 [시스템 페이지 전용 리스트 아이템 UI 스타일] */
+    .system-list-zone {{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: -5px;
+    }}
+    .system-list-item {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 14px 8px;
+        border-bottom: 1px solid #232830;
+        cursor: pointer;
+    }}
+    .system-list-item:last-child {{
+        border-bottom: none;
+    }}
+    .system-item-main {{
+        font-size: 15px;
+        font-weight: 500;
+        color: #ffffff;
+    }}
+    .system-item-sub {{
+        font-size: 12px;
+        color: #8e959e;
+        margin-top: 3px;
+    }}
+    .system-arrow {{
+        color: #5d646e;
+        font-size: 15px;
+        font-weight: bold;
+        padding-right: 4px;
+    }}
+    
     /* 컴포넌트 너비 확장 규칙 고정 */
-    div[data-testid="stHtmlBlock"] {{
-        width: 100% !important;
-    }}
-    iframe {{
-        width: 100% !important;
-    }}
+    div[data-testid="stHtmlBlock"] {{ width: 100% !important; }}
+    iframe {{ width: 100% !important; }}
 
-    .slider-container-custom {{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        padding: 5px 0;
-        background: transparent !important;
-    }}
-    .slider-wrapper {{
-        position: relative;
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
-        margin-right: 15px;
-    }}
-    .slider-custom {{
-        -webkit-appearance: none;
-        width: 100%;
-        height: 4px;
-        border-radius: 2px;
-        background: #4a525d !important;
-        outline: none;
-        margin: 0;
-    }}
-    .slider-custom::-webkit-slider-thumb {{
-        -webkit-appearance: none;
-        appearance: none;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: #ffffff !important;
-        cursor: pointer;
-    }}
-    .slider-val-box {{
-        font-size: 16px;
-        font-weight: bold;
-        color: #ffffff;
-        min-width: 35px;
-        text-align: right;
-        font-family: 'Helvetica Neue', sans-serif;
-    }}
+    .slider-container-custom {{ display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 5px 0; background: transparent !important; }}
+    .slider-wrapper {{ position: relative; flex-grow: 1; display: flex; align-items: center; margin-right: 15px; }}
+    .slider-custom {{ -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: #4a525d !important; outline: none; margin: 0; }}
+    .slider-custom::-webkit-slider-thumb {{ -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #ffffff !important; cursor: pointer; }}
+    .slider-val-box {{ font-size: 16px; font-weight: bold; color: #ffffff; min-width: 35px; text-align: right; font-family: 'Helvetica Neue', sans-serif; }}
     
-    /* 🔗 알약형 통합 세그먼트 가로 정렬 바 */
-    div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{
-        gap: 0px !important;
-        background-color: #1a1f27 !important;
-        border-radius: 25px !important;
-        padding: 4px !important;
-        border: 1px solid #333b46 !important;
-        margin-top: 12px !important;
-    }}
+    /* 알약형 세그먼트 바 */
+    div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{ gap: 0px !important; background-color: #1a1f27 !important; border-radius: 25px !important; padding: 4px !important; border: 1px solid #333b46 !important; margin-top: 12px !important; }}
+    div.volvo-segment-row div.stButton > button[kind="primary"] {{ background-color: #00A3E0 !important; color: #ffffff !important; border: none !important; border-radius: 22px !important; font-weight: bold !important; height: 40px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important; }}
+    div.volvo-segment-row div.stButton > button[kind="secondary"] {{ background-color: transparent !important; color: #727a85 !important; border: none !important; border-radius: 22px !important; height: 40px !important; box-shadow: none !important; }}
+    div.volvo-fold-btn-zone div.stButton > button {{ background-color: #383e48 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; height: 38px !important; font-size: 14px !important; font-weight: bold !important; width: 100% !important; box-shadow: none !important; }}
     
-    div.volvo-segment-row div.stButton > button[kind="primary"] {{
-        background-color: #00A3E0 !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 22px !important;
-        font-weight: bold !important;
-        height: 40px !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
-    }}
+    .card-divider {{ border-top: 1px solid #333b46; margin-top: 20px; margin-bottom: 0px; }}
+    .more-link {{ display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #ffffff; cursor: pointer; padding-top: 14px; padding-bottom: 12px; }}
     
-    div.volvo-segment-row div.stButton > button[kind="secondary"] {{
-        background-color: transparent !important;
-        color: #727a85 !important;
-        border: none !important;
-        border-radius: 22px !important;
-        height: 40px !important;
-        box-shadow: none !important;
-    }}
-    
-    /* 🛠️ 순정느낌 '접기' 버튼 커스텀 스타일 */
-    div.volvo-fold-btn-zone div.stButton > button {{
-        background-color: #383e48 !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 8px !important;
-        height: 38px !important;
-        font-size: 14px !important;
-        font-weight: bold !important;
-        width: 100% !important;
-        box-shadow: none !important;
-    }}
-    
-    /* 카드 내부 구분선 및 모두보기 */
-    .card-divider {{
-        border-top: 1px solid #333b46;
-        margin-top: 20px;
-        margin-bottom: 0px;
-    }}
-    .more-link {{
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        font-weight: bold;
-        color: #ffffff;
-        cursor: pointer;
-        padding-top: 14px;
-        padding-bottom: 12px; 
-    }}
-    
-    /* 토글 컬러 볼보 순정 파란색 매칭 테마 */
-    div[data-testid="stCheckboxToggleHoverTarget"] div[aria-checked="true"] {{
-        background-color: #00A3E0 !important;
-    }}
-    
-    /* 뒤로가기 링크 박스 */
-    .back-btn-box button {{
-        background-color: transparent !important;
-        color: #ffffff !important;
-        border: none !important;
-        font-size: 18px !important;
-        font-weight: bold !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-    }}
+    div[data-testid="stCheckboxToggleHoverTarget"] div[aria-checked="true"] {{ background-color: #00A3E0 !important; }}
+    .back-btn-box button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 18px !important; font-weight: bold !important; padding: 0 !important; box-shadow: none !important; }}
     
     /* 하단 공조 바 */
-    .volvo-bottom-bar {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #111418;
-        padding: 14px 18px;
-        border-radius: 12px;
-        margin-top: 50px; 
-        border: 1px solid #232830;
-    }}
+    .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 50px; border: 1px solid #232830; }}
     .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
     .bottom-sub-label {{ font-size: 9px; color: #8e959e !important; display: block; margin-top: 2px; }}
     </style>
@@ -422,9 +333,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
-    # ----------------------------------------------------
-    # 단락 1: 조명 및 디스플레이
-    # ----------------------------------------------------
     st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
@@ -471,9 +379,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
-    # ----------------------------------------------------
-    # 단락 2: 잠금 섹션
-    # ----------------------------------------------------
     st.markdown('<div class="volvo-title-row">🔒 잠금</div>', unsafe_allow_html=True)
     with st.container(border=True):
         alarm_col1, alarm_col2 = st.columns([3.6, 1])
@@ -495,12 +400,8 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
-    # ----------------------------------------------------
-    # 단락 3: 더 보기 섹션 (동일선상 수직 정렬 완벽 반영 버전)
-    # ----------------------------------------------------
     st.markdown('<div class="volvo-title-row">더 보기</div>', unsafe_allow_html=True)
     with st.container(border=True):
-        # 1. 헤드레스트 접기 항목 ([접기] 버튼과 동일선상 정렬 수술)
         hr_col1, hr_col2 = st.columns([2.8, 1.8])
         with hr_col1:
             st.markdown('<div class="setting-title-align-btn">헤드레스트 접기</div>', unsafe_allow_html=True)
@@ -511,7 +412,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             
         st.write("<div style='margin-top:16px;'></div>", unsafe_allow_html=True)
         
-        # 2. 무선 장치 충전 항목 (토글 알약 버튼과 동일선상 정렬 수술)
         wire_col1, wire_col2 = st.columns([3.6, 1])
         with wire_col1:
             st.markdown('<div class="setting-title-align-tgl">무선 장치 충전</div>', unsafe_allow_html=True)
@@ -521,6 +421,51 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 💻 [설정 -> 시스템] 서브 페이지 (두 장의 사진 요구사항 100% 반영)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "system":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  시스템", key="back_to_settings_sys"):
+        st.session_state.sub_page = "main"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    # 1번 사진: 보안 상태 구역
+    st.markdown('<div class="volvo-title-row">보안 상태</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #232830; margin-bottom: 10px;"></div>', unsafe_allow_html=True)
+
+    # 1번 사진: 일반 구역 (가로 리스트 라인 형태)
+    st.markdown('<div class="volvo-title-row">일반</div>', unsafe_allow_html=True)
+    
+    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+    
+    # 언어 및 입력
+    st.markdown('<div class="system-list-item"><div><div class="system-item-main">언어 및 입력</div><div class="system-item-sub">한국어(대한민국)</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    # 날짜 및 시간
+    st.markdown('<div class="system-list-item"><div><div class="system-item-main">날짜 및 시간</div><div class="system-item-sub">2026년 7월 13일, 24시간 시계</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    # 단위
+    st.markdown('<div class="system-list-item"><div><div class="system-item-main">단위</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    # 애플리케이션
+    st.markdown('<div class="system-list-item"><div><div class="system-item-main">애플리케이션</div><div class="system-item-sub">앱 권한</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    # 계정
+    st.markdown('<div class="system-list-item"><div><div class="system-item-main">계정</div><div class="system-item-sub">연결된 계정</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    # 알림
+    st.markdown('<div class="system-list-item"><div><div class="system-item-main">알림</div><div class="system-item-sub">애플리케이션 알림</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # 2번 사진: 시스템 정보 구역 추가 연결
+    st.markdown('<div class="volvo-title-row" style="margin-top: 30px;">시스템 정보</div>', unsafe_allow_html=True)
+    
+    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+    
+    # 정보 (Android 13)
+    st.markdown('<div class="system-list-item"><div><div class="system-item-main">정보</div><div class="system-item-sub">Android 13</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    # 접근성
+    st.markdown('<div class="system-list-item"><div><div class="system-item-main">접근성</div><div class="system-item-sub">자막 환경설정</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -568,7 +513,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     with row3_col3:
         with st.container(border=False):
             st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            st.button("시스템", key="btn_system_go", use_container_width=True)
+            # 💡 시스템 버튼 분기점 활성화
+            if st.button("시스템", key="btn_system_go", use_container_width=True):
+                st.session_state.sub_page = "system"; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
 # 📊 [상태] 탭 화면
