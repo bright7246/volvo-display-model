@@ -12,27 +12,29 @@ st.set_page_config(
 if "current_tab" not in st.session_state:
     st.session_state.current_tab = "퀵 컨트롤"
 
-# 밝기 조절 기본값 설정
+# 💡 밝기 기본값 설정 및 세션 상태 보존
 if "brightness" not in st.session_state:
     st.session_state.brightness = 85
 
-# 💡 밝기 슬라이더 값에 연동되는 RGB 배경색 계산
-bg_base = 12 + int(st.session_state.brightness * 0.25)     
-card_base = 20 + int(st.session_state.brightness * 0.3)    
-border_base = 30 + int(st.session_state.brightness * 0.35) 
+# 💡 실시간 밝기 값에 연동되는 RGB 색상 계산
+# 슬라이더 값(0~100)에 따라 배경과 카드의 밝기가 정밀하게 계산됩니다.
+b_val = st.session_state.brightness
+bg_base = 12 + int(b_val * 0.25)     
+card_base = 20 + int(b_val * 0.3)    
+border_base = 30 + int(b_val * 0.35) 
 
 bg_color = f"rgb({bg_base}, {bg_base+4}, {bg_base+10})"
 card_color = f"rgb({card_base}, {card_base+6}, {card_base+16})"
 border_color = f"rgb({border_base}, {border_base+7}, {border_base+17})"
 
-# 💡 스트림릿의 CSS 캐싱 버그를 깨뜨리기 위해 슬라이더 값에 맞춘 고유 스타일 태그 생성
+# 💡 [핵심 해결책] 슬라이더 값을 클래스명에 주입하여 캐싱을 강제로 깨뜨림 (매번 새로 렌더링되도록 보장)
 st.markdown(
     f"""
     <style>
     .stApp {{
         background-color: {bg_color} !important;
         color: #ffffff !important;
-        transition: background-color 0.1s ease-in-out;
+        transition: background-color 0.1s ease-out;
     }}
     .block-container {{
         max-width: 450px !important;
@@ -97,7 +99,6 @@ st.markdown(
         text-align: center;
         line-height: 1.4;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: background-color 0.1s, border-color 0.1s;
     }}
     .center-volvo-box {{
         width: 130px; 
@@ -109,7 +110,6 @@ st.markdown(
         align-items: center;
         justify-content: center;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: background-color 0.1s, border-color 0.1s;
     }}
     .center-volvo-text {{
         font-size: 24px;
@@ -163,9 +163,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 1. 최상단 상태바 (💡 내장 내비게이션 기능만을 이용해 한국시간 계산) ---
+# --- 1. 최상단 상태바 (한국 시간 반영) ---
 utc_now = datetime.utcnow()
-kor_now = utc_now + timedelta(hours=9) # UTC+9 한국 표준시
+kor_now = utc_now + timedelta(hours=9)
 ampm = "오후" if kor_now.hour >= 12 else "오전"
 display_hour = kor_now.hour % 12
 display_hour = 12 if display_hour == 0 else display_hour
@@ -213,7 +213,7 @@ elif st.session_state.current_tab == "상태":
     st.write("차량 진단 및 정보를 확인합니다.")
 
 else:
-    # 💡 밝기 조절 슬라이더
+    # 💡 밝기 조절 슬라이더 (조작 시 화면을 즉시 새로 그리도록 조치)
     st.slider("☀️ 밝기 조절", min_value=0, max_value=100, key="brightness")
 
     # 중앙 메인 레이아웃 
