@@ -138,7 +138,7 @@ st.markdown(
     .setting-title-align-tgl {{ font-size: 15px; font-weight: bold; color: #ffffff; padding-top: 2px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 📋 시스템 및 하위 리스트 통합 레이아웃 정렬 */
+    /* 📋 리스트 통합 레이아웃 정렬 */
     .system-list-zone {{ display: flex; flex-direction: column; width: 100%; }}
     
     /* 텍스트 컬럼 상하 정렬 보정 */
@@ -146,18 +146,18 @@ st.markdown(
         display: flex;
         flex-direction: column;
         justify-content: center;
-        height: 48px; /* 일정한 높이 유지 */
+        min-height: 48px;
     }}
     .system-item-main {{ font-size: 15px; font-weight: 500; color: #ffffff; line-height: 1.2; }}
     .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 4px; line-height: 1.2; }}
     
-    /* 🏷️ 우측 추가 문구 전용 스타일 */
-    .notice-text {{
-        font-size: 11px;
-        color: #ff4b4b; /* 인지가 잘 되도록 붉은 톤 어시스트 컬러 사용 (원하는 색상으로 변경 가능) */
+    /* 🏷️ NUGU AUTO 밑에 추가될 서브 안내 문구 스타일 */
+    .app-notice-desc {{
+        font-size: 13px;
+        color: #8e959e; 
+        margin-top: 6px;
         font-weight: normal;
-        margin-right: 6px;
-        white-space: nowrap;
+        line-height: 1.3;
     }}
     
     /* 🎯 우측 화살표 버튼 크기 균일화 공통 스타일 */
@@ -177,6 +177,11 @@ st.markdown(
         justify-content: flex-end !important;
     }}
     div.system-list-zone div.stButton > button:hover {{ color: #ffffff !important; }}
+    
+    /* NUGU AUTO 처럼 밑에 서브문구가 있어 칸이 커진 항목용 화살표 세로정렬 강제 보정 */
+    div.align-arrow-center div.stButton > button {{
+        height: 68px !important;
+    }}
     
     /* 슬라이더 스타일 */
     .slider-container-custom {{ display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 5px 0; background: transparent !important; }}
@@ -546,16 +551,28 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="volvo-title-row">기본 앱</div>', unsafe_allow_html=True)
-    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
-    # 1. 🔍 NUGU AUTO (요청하신 우측 텍스트 문구 삽입 및 정렬)
+    # NUGU AUTO를 위한 별도 정렬 보정 컨테이너 시작
+    st.markdown('<div class="system-list-zone align-arrow-center">', unsafe_allow_html=True)
+    
+    # 1. 🔍 NUGU AUTO (가이드 주신 대로 텍스트 밑으로 내림)
     col1, col2 = st.columns([4.2, 0.8])
     with col1: 
-        st.markdown('<div class="text-container-fix"><div class="system-item-main">🔍 NUGU AUTO</div></div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="text-container-fix">'
+            '<div class="system-item-main">🔍 NUGU AUTO</div>'
+            '<div class="app-notice-desc">( 현재 이 버튼만 활성화 가능 )</div>'
+            '</div>', 
+            unsafe_allow_html=True
+        )
     with col2: 
-        # 화살표(〉) 왼쪽에 작고 정갈한 커스텀 텍스트 태그 결합
-        if st.button("현재 이 버튼만 활성화 가능 〉", key="btn_nugu_auto", use_container_width=True):
-            pass # 활성화 로직 필요 시 추후 추가 가능
+        # 우측 버튼 자리는 오직 깔끔한 단일 화살표만 상시 핏 고정!
+        if st.button("〉", key="btn_nugu_auto", use_container_width=True):
+            pass
+            
+    st.markdown('</div>', unsafe_allow_html=True) # 보정 컨테이너 끝
+    
+    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
     
     # 2. 🗺️ TMAP AUTO
