@@ -35,7 +35,7 @@ border_color = "rgb(42, 49, 61)"
 if "brightness_slider" in st.query_params:
     st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
 
-# 2. [골든 룰] 스타일 정의 (지저분한 요소 차단 및 완벽한 커스텀 슬라이더 스타일)
+# 2. [골든 룰] 스타일 정의
 st.markdown(
     f"""
     <style>
@@ -142,7 +142,7 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🎚️ 완전히 새로 설계한 하이엔드 100% 순정스타일 슬라이더 컨테이너 */
+    /* 🎚️ [요구사항 반영] 슬라이더 바 최대값(가로 길이)을 아래 버튼의 '높음' 영역 끝까지 확장 */
     .slider-container-custom {{
         display: flex;
         align-items: center;
@@ -156,9 +156,8 @@ st.markdown(
         flex-grow: 1;
         display: flex;
         align-items: center;
-        margin-right: 20px;
+        margin-right: 8px; /* 숫자가 레이아웃 우측 끝에 붙도록 마진 최소화 */
     }}
-    /* 카드 배경색과 완벽 동화되는 깔끔한 가로선 Track */
     .slider-custom {{
         -webkit-appearance: none;
         width: 100%;
@@ -168,7 +167,6 @@ st.markdown(
         outline: none;
         margin: 0;
     }}
-    /* 깔끔한 순백색 원형 조절 노브 Thumb */
     .slider-custom::-webkit-slider-thumb {{
         -webkit-appearance: none;
         appearance: none;
@@ -177,9 +175,7 @@ st.markdown(
         border-radius: 50%;
         background: #ffffff !important;
         cursor: pointer;
-        transition: transform 0.1s;
     }}
-    /* 절대 깨지지 않는 확고한 우측 정렬 숫자 표기 플러그 */
     .slider-val-box {{
         font-size: 16px;
         font-weight: bold;
@@ -224,7 +220,7 @@ st.markdown(
         margin-top: 20px;
         margin-bottom: 0px;
     }}
-    /* 💡 [요구사항 반영] 모두보기 여백을 이전의 황금 밸런스 대칭 구조로 완벽 원복 */
+    /* 💡 [요구사항 반영] 모두 보기 아래쪽 공백을 직전 상태의 딱 절반인 12px로 완벽 튜닝 */
     .more-link {{
         display: flex;
         justify-content: space-between;
@@ -233,7 +229,7 @@ st.markdown(
         color: #ffffff;
         cursor: pointer;
         padding-top: 14px;
-        padding-bottom: 6px; 
+        padding-bottom: 12px; 
     }}
     
     /* 뒤로가기 링크 박스 */
@@ -374,7 +370,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 컨트롤] 서브 페이지 (흰색 덩어리 삭제 및 완벽한 가로선 슬라이더 폼 고정)
+# 🎛️ [설정 -> 컨트롤] 서브 페이지 (가로 길이 극대화 및 하단 여백 반절 축소 완료)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
@@ -388,7 +384,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     with st.container(border=True):
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
         
-        # 💡 [버그 원천 박멸] 버그 덩어리 st.slider를 버리고 순수 HTML/JS 조합으로 완벽한 UI 형태 구현
+        # 💡 버튼 크기 마감과 동일한 핏으로 와이드하게 작동하는 커스텀 슬라이더
         slider_html = f"""
         <div class="slider-container-custom">
             <div class="slider-wrapper">
@@ -400,7 +396,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </div>
         
         <script>
-        var timeout = null;
         var slider = document.getElementById("brightnessRange");
         slider.addEventListener("change", function() {{
             const url = new URL(window.location.href);
@@ -433,7 +428,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                 st.session_state.interior_light_dim = "높음"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 3. 구분선 및 원복된 여백 밸런스 마감 모두 보기 링크
+        # 구분선 및 12px 간격으로 최적화 마감된 모두 보기 영역
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
