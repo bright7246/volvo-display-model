@@ -27,7 +27,7 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 2. [골든 룰] 스타일 정의 (디자인 철벽 방어 및 분리 버그 해결)
+# 2. [골든 룰] 스타일 정의 (디자인 철벽 방어 및 주행 페이지 순정 핏 매칭)
 st.markdown(
     f"""
     <style>
@@ -111,13 +111,14 @@ st.markdown(
         white-space: pre-line !important;
     }}
     
-    /* 🚗 [주행 서브페이지 버그 해결 핵심] 스트림릿 컨테이너를 회색 카드로 강제 변조 */
+    /* 🚗 [주행 서브페이지 변조] 스트림릿 컨테이너 테두리를 없애고 1번 사진의 완전한 순정 카드로 교정 */
     div.volvo-driving-node div[data-testid="stVerticalBlockBorderWrapper"] {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
-        border-radius: 12px !important;
+        border-radius: 14px !important;
         padding: 18px !important;
         margin-bottom: 15px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
     }}
     
     .back-btn-box button {{
@@ -140,22 +141,33 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 주행 세그먼트형 버튼 활성화 (순정 스카이블루) */
-    div.stButton > button[id^="active-seg"] {{
+    /* 🔗 [버튼 한 줄 정렬 핵심 기술] 버튼 사이의 공백을 없애고 단일 구조로 통합 */
+    div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{
+        gap: 0px !important;
+        background-color: #1b2129 !important;
+        border-radius: 25px !important;
+        padding: 3px !important;
+        border: 1px solid {border_color} !important;
+    }}
+    
+    /* 주행 세그먼트형 버튼 활성화 (순정 스카이블루 일체형) */
+    div.volvo-segment-row div.stButton > button[id^="active-seg"] {{
         background-color: #00A3E0 !important;
         color: #ffffff !important;
-        border: 1px solid #00A3E0 !important;
-        border-radius: 20px !important;
+        border: none !important;
+        border-radius: 22px !important;
         font-weight: bold !important;
-        height: 42px !important;
+        height: 40px !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
     }}
-    /* 주행 세그먼트형 버튼 비활성화 */
-    div.stButton > button[id^="inactive-seg"] {{
-        background-color: #232a35 !important;
-        color: #8e959e !important;
-        border: 1px solid {border_color} !important;
-        border-radius: 20px !important;
-        height: 42px !important;
+    /* 주행 세그먼트형 버튼 비활성화 (투명 바탕으로 일체화) */
+    div.volvo-segment-row div.stButton > button[id^="inactive-seg"] {{
+        background-color: transparent !important;
+        color: #727a85 !important;
+        border: none !important;
+        border-radius: 22px !important;
+        height: 40px !important;
+        box-shadow: none !important;
     }}
     
     /* 하단 공조 바 */
@@ -214,7 +226,7 @@ if st.session_state.sub_page == "main":
 
 # --- 3. 화면 분기 처리 ---
 
-# 🚗 [설정 -> 주행] 서브 페이지 (박스가 글자들을 완벽히 감싸도록 올-수정)
+# 🚗 [설정 -> 주행] 서브 페이지 (네모칸 1번 사진 색상 베이스 & 세그먼트 완전 단일화)
 if st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  주행", key="back_to_settings"):
@@ -226,7 +238,6 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     # 대구획 1: 운전자 지원 시스템
     st.markdown('<div class="sub-section-title">운전자 지원 시스템</div>', unsafe_allow_html=True)
     
-    # 💡 volvo-driving-node 클래스로 묶어 파이썬 컴포넌트들을 통째로 박스 내부에 가둠
     st.markdown('<div class="volvo-driving-node">', unsafe_allow_html=True)
     with st.container(border=True):
         pa_col1, pa_col2 = st.columns([3.6, 1])
@@ -245,10 +256,12 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('<div class="sub-section-title">주행 역학</div>', unsafe_allow_html=True)
     
     st.markdown('<div class="volvo-driving-node">', unsafe_allow_html=True)
-    # 주행 모드 박스
+    # 주행 모드 박스 (하나의 알약 라인 안에서 토글되도록 마감)
     with st.container(border=True):
         st.markdown('<div class="setting-title">주행 모드</div>', unsafe_allow_html=True)
-        st.markdown('<div class="setting-desc" style="margin-bottom:12px;">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="setting-desc" style="margin-bottom:14px;">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
+        
+        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         dm_col1, dm_col2 = st.columns(2)
         with dm_col1:
             btn_id = "active-seg-std" if st.session_state.drive_mode == "Standard" else "inactive-seg-std"
@@ -260,11 +273,14 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
             if st.button("Off-road", key=btn_id, use_container_width=True):
                 st.session_state.drive_mode = "Off-road"
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    # 스티어링 감도 박스
+    # 스티어링 감도 박스 (하나의 알약 라인 안에서 토글되도록 마감)
     with st.container(border=True):
         st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
         st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+        
+        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         sf_col1, sf_col2 = st.columns(2)
         with sf_col1:
             btn_id = "active-seg-sf1" if st.session_state.steering_feel == "부드러움" else "inactive-seg-sf1"
@@ -276,6 +292,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
             if st.button("단단함", key=btn_id, use_container_width=True):
                 st.session_state.steering_feel = "단단함"
                 st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # Start/Stop 박스
     with st.container(border=True):
@@ -323,7 +340,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ⚙️ [설정] 메인 탭 화면 (1번 사진 황금 비율 박스 핏 유지)
+# ⚙️ [설정] 메인 탭 화면 (기존 고유 레이아웃 보존 구역)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
