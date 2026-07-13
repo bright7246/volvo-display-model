@@ -27,6 +27,7 @@ if "interior_brightness" not in st.session_state: st.session_state.interior_brig
 if "interior_light_dim" not in st.session_state: st.session_state.interior_light_dim = "높음"
 if "reduce_alarm_sensitivity" not in st.session_state: st.session_state.reduce_alarm_sensitivity = False
 if "welcome_light" not in st.session_state: st.session_state.welcome_light = True
+if "wireless_charging" not in st.session_state: st.session_state.wireless_charging = True
 
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
@@ -142,9 +143,10 @@ st.markdown(
     }}
     
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
+    .setting-title-mid {{ font-size: 15px; font-weight: bold; color: #ffffff; line-height: 38px; }} /* 버튼과 높이 맞추기용 */
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🎚️ 컴포넌트 너비 확장 규칙 고정 */
+    /* 컴포넌트 너비 확장 규칙 고정 */
     div[data-testid="stHtmlBlock"] {{
         width: 100% !important;
     }}
@@ -220,6 +222,19 @@ st.markdown(
         border: none !important;
         border-radius: 22px !important;
         height: 40px !important;
+        box-shadow: none !important;
+    }}
+    
+    /* 🛠️ 순정느낌 '접기' 버튼 커스텀 스타일 */
+    div.volvo-fold-btn-zone div.stButton > button {{
+        background-color: #383e48 !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 8px !important;
+        height: 38px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        width: 100% !important;
         box-shadow: none !important;
     }}
     
@@ -394,7 +409,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
     # ----------------------------------------------------
-    # 단락 1: 조명 및 디스플레이 (와이드 슬라이더 버전)
+    # 단락 1: 조명 및 디스플레이
     # ----------------------------------------------------
     st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
     with st.container(border=True):
@@ -443,11 +458,10 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
     # ----------------------------------------------------
-    # 🔒 단락 2: 잠금 섹션 (2번 사진 요구사항 완벽 반영)
+    # 단락 2: 잠금 섹션
     # ----------------------------------------------------
     st.markdown('<div class="volvo-title-row">🔒 잠금</div>', unsafe_allow_html=True)
     with st.container(border=True):
-        # 1. 알람 감도 낮추기 항목
         alarm_col1, alarm_col2 = st.columns([3.6, 1])
         with alarm_col1:
             st.markdown('<div class="setting-title">알람 감도 낮추기</div><div class="setting-desc">페리 또는 다른 교통수단 이용 시</div>', unsafe_allow_html=True)
@@ -457,7 +471,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             
         st.write("<div style='margin-top:18px;'></div>", unsafe_allow_html=True)
         
-        # 2. 웰컴 라이트 항목
         welcome_col1, welcome_col2 = st.columns([3.6, 1])
         with welcome_col1:
             st.markdown('<div class="setting-title">웰컴 라이트</div><div class="setting-desc">차량에 접근하고 차량에서 내릴 때 조명을 켭니다</div>', unsafe_allow_html=True)
@@ -465,7 +478,33 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.welcome_light = st.toggle("Welcome_ctrl_tgl", value=st.session_state.welcome_light, label_visibility="collapsed")
             
-        # 3. 구분선 및 정갈한 여백 마감 모두 보기 링크
+        st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
+
+    # ----------------------------------------------------
+    # ⚙️ 단락 3: 더 보기 섹션 (3번 사진 요구사항 반영 완벽 빌드업)
+    # ----------------------------------------------------
+    st.markdown('<div class="volvo-title-row">더 보기</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        # 1. 헤드레스트 접기 항목 ([접기] 단독 커스텀 버튼)
+        hr_col1, hr_col2 = st.columns([2.8, 1.8])
+        with hr_col1:
+            st.markdown('<div class="setting-title-mid">헤드레스트 접기</div>', unsafe_allow_html=True)
+        with hr_col2:
+            st.markdown('<div class="volvo-fold-btn-zone">', unsafe_allow_html=True)
+            st.button("접기", key="btn_headrest_fold", use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
+        
+        # 2. 무선 장치 충전 항목
+        wire_col1, wire_col2 = st.columns([3.6, 1])
+        with wire_col1:
+            st.markdown('<div class="setting-title-mid">무선 장치 충전</div>', unsafe_allow_html=True)
+        with wire_col2:
+            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+            st.session_state.wireless_charging = st.toggle("Wireless_tgl", value=st.session_state.wireless_charging, label_visibility="collapsed")
+            
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
