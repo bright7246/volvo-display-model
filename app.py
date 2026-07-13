@@ -124,21 +124,18 @@ st.markdown(
     .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
     .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
 
-    /* 📊 상태 탭 커스텀 스타일 */
+    /* 📊 상태 탭 메인 스타일 */
     .status-msg-box {{
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-size: 18px;
+        gap: 12px;
+        font-size: 17px;
         font-weight: bold;
         color: #ffffff;
         padding-top: 30px;
         padding-left: 10px;
     }}
-    .status-msg-icon {{
-        font-size: 20px;
-        color: #ffffff;
-    }}
+    .status-msg-icon {{ font-size: 19px; color: #ffffff; }}
     .car-topview-container {{
         background: radial-gradient(circle at center, rgb(36, 43, 56) 0%, rgb(22, 27, 35) 70%);
         border-radius: 20px;
@@ -149,11 +146,8 @@ st.markdown(
         margin-top: 10px;
         box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
     }}
-    .car-visual {{
-        font-size: 90px;
-        transform: rotate(-10deg);
-        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
-    }}
+    .car-visual {{ font-size: 90px; transform: rotate(-10deg); filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6)); }}
+    
     div.status-action-zone div.stButton > button {{
         background-color: rgb(34, 40, 52) !important;
         color: #ffffff !important;
@@ -164,6 +158,40 @@ st.markdown(
         font-weight: bold !important;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
     }}
+
+    /* ⭕ 타이어 공기압 서브뷰 컴포넌트 */
+    .tire-status-header {{ display: flex; align-items: center; gap: 10px; font-size: 16px; color: #ffffff; font-weight: bold; padding: 10px 4px; }}
+    .tire-check-circle-green {{
+        width: 86px; height: 86px; border-radius: 50%;
+        border: 3px solid #00c853; display: flex; align-items: center; justify-content: center;
+        margin: 70px auto 40px auto; box-shadow: 0 0 20px rgba(0,200,83,0.2);
+    }}
+    .tire-check-icon-green {{ font-size: 38px; color: #00c853; font-weight: bold; }}
+    .tire-bottom-notice {{ text-align: center; font-size: 13px; color: #8e959e; margin-top: 25px; font-weight: 500; }}
+    .tire-blue-text {{ color: #00A3E0 !important; font-weight: bold; }}
+    div.tire-action-zone div.stButton > button {{
+        background-color: rgb(40, 48, 62) !important;
+        color: #ffffff !important;
+        border: 1px solid #4f5b72 !important;
+        border-radius: 8px !important;
+        height: 52px !important;
+        font-size: 15px !important;
+        font-weight: bold !important;
+        max-width: 280px; margin: 0 auto; display: block;
+    }}
+
+    /* 🔧 진단 서브뷰 컴포넌트 */
+    .diag-container {{ display: flex; flex-direction: column; width: 100%; padding: 5px 8px; }}
+    .diag-row-item {{ display: flex; align-items: flex-start; gap: 18px; padding: 22px 4px; width: 100%; }}
+    .diag-icon-zone {{ font-size: 26px; color: #a4aab3; width: 30px; text-align: center; padding-top: 2px; }}
+    .diag-title-main {{ font-size: 17px; font-weight: bold; color: #ffffff; }}
+    .diag-desc-sub {{ font-size: 14px; color: #8e959e; margin-top: 6px; font-weight: 500; }}
+    .diag-divider {{ border-bottom: 1px solid #2d3542; width: 100%; margin: 2px 0; }}
+    
+    /* 진단 오일 상태 바 */
+    .oil-bar-bg {{ background-color: #222832; border-radius: 4px; height: 8px; width: 100%; margin-top: 18px; position: relative; border: 1px solid #333c4b; }}
+    .oil-bar-fill-green {{ background-color: #00c853; height: 100%; width: 84%; border-radius: 4px 0 0 4px; }}
+    .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
     /* ⚙️ 설정 메인 격자 카드 */
     div.volvo-grid-card div.stButton > button {{
@@ -209,13 +237,7 @@ st.markdown(
     .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 4px; line-height: 1.3; }}
     
     /* NUGU AUTO 밑 안내 문구 스타일 */
-    .app-notice-desc {{
-        font-size: 13px;
-        color: #8e959e; 
-        margin-top: 6px;
-        font-weight: normal;
-        line-height: 1.3;
-    }}
+    .app-notice-desc {{ font-size: 13px; color: #8e959e; margin-top: 6px; font-weight: normal; line-height: 1.3; }}
     
     /* 🎯 우측 화살표 버튼 크기 균일화 공통 스타일 */
     div.system-list-zone div.stButton > button {{
@@ -235,10 +257,7 @@ st.markdown(
     }}
     div.system-list-zone div.stButton > button:hover {{ color: #ffffff !important; }}
     
-    /* NUGU AUTO 처럼 밑에 서브문구가 있어 칸이 커진 항목용 화살표 세로정렬 강제 보정 */
-    div.align-arrow-center div.stButton > button {{
-        height: 68px !important;
-    }}
+    div.align-arrow-center div.stButton > button {{ height: 68px !important; }}
     
     /* 🔳 순정형 앱 관리 상단 버튼 스타일 */
     div.app-action-zone div.stButton > button {{
@@ -253,38 +272,10 @@ st.markdown(
     }}
     
     /* 🛡️ 권한 설정 화면 전용 커스텀 스타일 */
-    .right-top-text {{
-        font-size: 14px;
-        color: #8e959e;
-        text-align: right;
-        line-height: 38px;
-        font-weight: 500;
-        padding-right: 8px;
-    }}
-    .app-header-row {{
-        display: flex;
-        align-items: center;
-        padding: 10px 4px;
-        margin-bottom: 12px;
-        gap: 14px;
-    }}
-    .app-header-icon-custom {{
-        background-color: #00A3E0;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 15px;
-        font-weight: bold;
-        color: white;
-    }}
-    .app-header-title-custom {{
-        font-size: 18px;
-        font-weight: bold;
-        color: #ffffff;
-    }}
+    .right-top-text {{ font-size: 14px; color: #8e959e; text-align: right; line-height: 38px; font-weight: 500; padding-right: 8px; }}
+    .app-header-row {{ display: flex; align-items: center; padding: 10px 4px; margin-bottom: 12px; gap: 14px; }}
+    .app-header-icon-custom {{ background-color: #00A3E0; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: bold; color: white; }}
+    .app-header-title-custom {{ font-size: 18px; font-weight: bold; color: #ffffff; }}
     
     /* 슬라이더 스타일 */
     .slider-container-custom {{ display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 5px 0; background: transparent !important; }}
@@ -299,15 +290,9 @@ st.markdown(
     div.volvo-segment-row div.stButton > button[kind="secondary"] {{ background-color: transparent !important; color: #727a85 !important; border: none !important; border-radius: 22px !important; height: 40px !important; box-shadow: none !important; }}
     div.volvo-fold-btn-zone div.stButton > button {{ background-color: #383e48 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; height: 38px !important; font-size: 14px !important; font-weight: bold !important; width: 100% !important; box-shadow: none !important; }}
 
-    /* 상세 설정 전용 수평 알약형 세그먼트 커스텀 패딩 보정 */
     div.inline-segment-fix div[data-testid="stHorizontalBlock"] {{ margin-top: 0px !important; }}
 
-    /* 🎚️ 우측 토글 정렬을 위한 래퍼 (강제 우측 정렬) */
-    div.right-toggle-align div[data-testid="stComponentBlock"] {{
-        display: flex !important;
-        justify-content: flex-end !important;
-        padding-top: 2px !important;
-    }}
+    div.right-toggle-align div[data-testid="stComponentBlock"] {{ display: flex !important; justify-content: flex-end !important; padding-top: 2px !important; }}
 
     .card-divider {{ border-top: 1px solid #333b46; margin-top: 20px; margin-bottom: 0px; }}
     .more-link-btn button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 14px !important; font-weight: bold !important; padding: 14px 0 12px 0 !important; box-shadow: none !important; text-align: left !important; width: 100% !important; }}
@@ -351,37 +336,91 @@ if st.session_state.sub_page == "main":
 
 # --- 3. 화면 분기 처리 ---
 
-# 📊 [상태] 메인 탭 화면 (🎯 요청하신 순정형 업데이트/차량탑뷰 레이아웃 적용 완료!)
-if st.session_state.current_tab == "상태":
+# 📊 [상태] 메인 탭 화면
+if st.session_state.current_tab == "상태" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 5px;'></div>", unsafe_allow_html=True)
-    
-    # 상단 정보와 차량 그래픽 스플릿 구조
     view_col1, view_col2 = st.columns([1.1, 0.9])
     with view_col1:
-        st.markdown(
-            '<div class="status-msg-box">'
-            '<span class="status-msg-icon">ⓘ</span>'
-            '<span>업데이트가 없습니다</span>'
-            '</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="status-msg-box"><span class="status-msg-icon">ⓘ</span><span>업데이트가 없습니다</span></div>', unsafe_allow_html=True)
     with view_col2:
-        st.markdown(
-            '<div class="car-topview-container">'
-            '<div class="car-visual">🚙</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
+        st.markdown('<div class="car-topview-container"><div class="car-visual">🚙</div></div>', unsafe_allow_html=True)
         
     st.write("<div style='margin-top: 45px;'></div>", unsafe_allow_html=True)
     
-    # 하단 2종 진단/점검 버튼 구역
     st.markdown('<div class="status-action-zone">', unsafe_allow_html=True)
     status_btn_col1, status_btn_col2 = st.columns(2)
     with status_btn_col1:
-        st.button("(!)  타이어 공기압", key="btn_status_tire", use_container_width=True)
+        if st.button("(!)  타이어 공기압", key="btn_status_tire", use_container_width=True):
+            st.session_state.sub_page = "status_tire"; st.rerun()
     with status_btn_col2:
-        st.button("📋  진단", key="btn_status_diag", use_container_width=True)
+        if st.button("📋  진단", key="btn_status_diag", use_container_width=True):
+            st.session_state.sub_page = "status_diag"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ⭕ [상태 -> 타이어 공기압] 상세 서브 뷰 (🎯 1번 사진 완벽 반영!)
+elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "status_tire":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  타이어 공기압", key="back_to_status_main_tire"):
+        st.session_state.sub_page = "main"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    # 순정 상단 서브 헤더 배치
+    st.markdown('<div class="tire-status-header">✔️ &nbsp; 모든 타이어 압력 정상</div>', unsafe_allow_html=True)
+    
+    # 중앙 큰 초록색 체크 원형 그래픽
+    st.markdown('<div class="tire-check-circle-green"><span class="tire-check-icon-green">✓</span></div>', unsafe_allow_html=True)
+    
+    st.write("<div style='margin-top: 40px;'></div>", unsafe_allow_html=True)
+    
+    # 기준 공기압 업데이트 버튼 구역
+    st.markdown('<div class="tire-action-zone">', unsafe_allow_html=True)
+    st.button("기준 공기압 업데이트", key="btn_update_tire_pressure_dummy")
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # 하단 볼보 블루 권장문구 안내
+    st.markdown('<div class="tire-bottom-notice"><span class="tire-blue-text">Volvo 권장</span> 타이어 공기압 수치를 확인하십시오</div>', unsafe_allow_html=True)
+
+
+# 🔧 [상태 -> 진단] 상세 서브 뷰 (🎯 2번 사진 완벽 반영!)
+elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "status_diag":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  진단", key="back_to_status_main_diag"):
+        st.session_state.sub_page = "main"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="diag-container">', unsafe_allow_html=True)
+    
+    # 항목 1: 서비스 시기
+    st.markdown(
+        '<div class="diag-row-item">'
+        '<div class="diag-icon-zone">🔧</div>'
+        '<div>'
+        '<div class="diag-title-main">서비스 시기</div>'
+        '<div class="diag-desc-sub">125 일 또는 4648 km 후</div>'
+        '</div>'
+        '</div>'
+        '<div class="diag-divider"></div>', 
+        unsafe_allow_html=True
+    )
+    
+    # 항목 2: 오일 레벨 및 순정형 게이지 바 구현
+    st.markdown(
+        '<div class="diag-row-item">'
+        '<div class="diag-icon-zone">🛢️</div>'
+        '<div style="width: 100%;">'
+        '<div class="diag-title-main">오일</div>'
+        '<div class="diag-desc-sub">레벨 정상</div>'
+        '<div class="oil-bar-bg"><div class="oil-bar-fill-green"></div></div>'
+        '<div class="oil-bar-label-row"><span>최소</span><span>최대</span></div>'
+        '</div>'
+        '</div>'
+        '<div class="diag-divider"></div>',
+        unsafe_allow_html=True
+    )
+    
     st.markdown('</div>', unsafe_allow_html=True)
 
 
