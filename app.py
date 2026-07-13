@@ -656,7 +656,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                     st.session_state.interior_light_dim = "높음"; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="volvo-title-row">外部 조명</div>', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row">외부 조명</div>', unsafe_allow_html=True)
     with st.container(border=True):
         ext_col1, ext_col2 = st.columns([4.2, 0.8])
         with ext_col1:
