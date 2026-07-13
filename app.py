@@ -27,7 +27,7 @@ bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# 2. [골든 룰] 스타일 정의 (디자인 절대 보존 및 다이내믹 알약 버튼 스타일 적용)
+# 2. [골든 룰] 스타일 정의 (디자인 절대 보존 및 완벽한 알약형 가로바 동기화 CSS)
 st.markdown(
     f"""
     <style>
@@ -134,7 +134,7 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🔗 알약형 통합 세그먼트 가로 정렬 바 고정틀 */
+    /* 🔗 알약형 통합 세그먼트 가로 정렬 바 프레임 */
     div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{
         gap: 0px !important;
         background-color: #1a1f27 !important;
@@ -144,8 +144,8 @@ st.markdown(
         margin-top: 12px !important;
     }}
     
-    /* 💡 [실시간 연동 핵심] 클릭되어 활성화된 버튼 (순정 푸른색 활성화) */
-    div.volvo-segment-row div.stButton > button[id^="active-btn"] {{
+    /* 💡 활성화된 버튼 매칭 (스트림릿 고유 primary 연동형 푸른색 스위치) */
+    div.volvo-segment-row div.stButton > button[kind="primary"] {{
         background-color: #00A3E0 !important;
         color: #ffffff !important;
         border: none !important;
@@ -154,8 +154,9 @@ st.markdown(
         height: 40px !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
     }}
-    /* 💡 [실시간 연동 핵심] 꺼진 쪽 버튼 (검은색 톤으로 비활성화) */
-    div.volvo-segment-row div.stButton > button[id^="inactive-btn"] {{
+    
+    /* 💡 비활성화된 버튼 매칭 (스트림릿 고유 secondary 연동형 어두운 감추기) */
+    div.volvo-segment-row div.stButton > button[kind="secondary"] {{
         background-color: transparent !important;
         color: #727a85 !important;
         border: none !important;
@@ -231,7 +232,7 @@ if st.session_state.sub_page == "main":
 
 # --- 3. 화면 분기 처리 ---
 
-# 🚗 [설정 -> 주행] 서브 페이지 (다이내믹 ID 매칭을 통한 온/오프 토글 완료)
+# 🚗 [설정 -> 주행] 서브 페이지
 if st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  주행", key="back_to_settings"):
@@ -240,7 +241,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 전체 컨테이너 제어 권한 획득
+    # 안전 격리 컴포넌트 존 선언
     st.markdown('<div class="driving-content-zone">', unsafe_allow_html=True)
 
     # ----------------------------------------------------
@@ -264,7 +265,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     # ----------------------------------------------------
     st.markdown('<div class="volvo-title-row">주행 역학</div>', unsafe_allow_html=True)
     
-    # 주행 모드 카드 칸 (실시간 상태 연동 단일 알약바)
+    # 주행 모드 카드 칸 (실시간 좌우 반전 완벽 연동형)
     with st.container(border=True):
         st.markdown('<div class="setting-title">주행 모드</div>', unsafe_allow_html=True)
         st.markdown('<div class="setting-desc">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
@@ -272,35 +273,32 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         dm_col1, dm_col2 = st.columns(2)
         with dm_col1:
-            # 주행 모드가 Standard일 때만 active-btn ID를 부여하여 실시간 푸른색 점등
-            btn_key = "active-btn-std" if st.session_state.drive_mode == "Standard" else "inactive-btn-std"
-            if st.button("Standard", key=btn_key, use_container_width=True):
+            # 상태가 일치하면 primary(푸른색), 다르면 secondary(꺼짐) 속성을 주어 완벽 감지
+            dm_type = "primary" if st.session_state.drive_mode == "Standard" else "secondary"
+            if st.button("Standard", key="btn_seg_std", type=dm_type, use_container_width=True):
                 st.session_state.drive_mode = "Standard"
                 st.rerun()
         with dm_col2:
-            # 주행 모드가 Off-road일 때만 active-btn ID를 부여하여 실시간 푸른색 점등
-            btn_key = "active-btn-off" if st.session_state.drive_mode == "Off-road" else "inactive-btn-off"
-            if st.button("Off-road", key=btn_key, use_container_width=True):
+            dm_type = "primary" if st.session_state.drive_mode == "Off-road" else "secondary"
+            if st.button("Off-road", key="btn_seg_off", type=dm_type, use_container_width=True):
                 st.session_state.drive_mode = "Off-road"
                 st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # 스티어링 감도 카드 칸 (실시간 상태 연동 단일 알약바)
+    # 스티어링 감도 카드 칸 (실시간 좌우 반전 완벽 연동형)
     with st.container(border=True):
         st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         sf_col1, sf_col2 = st.columns(2)
         with sf_col1:
-            # 부드러움 상태일 때 푸른색 온
-            btn_key = "active-btn-sf1" if st.session_state.steering_feel == "부드러움" else "inactive-btn-sf1"
-            if st.button("부드러움", key=btn_key, use_container_width=True):
+            sf_type = "primary" if st.session_state.steering_feel == "부드러움" else "secondary"
+            if st.button("부드러움", key="btn_seg_sf1", type=sf_type, use_container_width=True):
                 st.session_state.steering_feel = "부드러움"
                 st.rerun()
         with sf_col2:
-            # 단단함 상태일 때 푸른색 온
-            btn_key = "active-btn-sf2" if st.session_state.steering_feel == "단단함" else "inactive-btn-sf2"
-            if st.button("단단함", key=btn_key, use_container_width=True):
+            sf_type = "primary" if st.session_state.steering_feel == "단단함" else "secondary"
+            if st.button("단단함", key="btn_seg_sf2", type=sf_type, use_container_width=True):
                 st.session_state.steering_feel = "단단함"
                 st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
@@ -352,7 +350,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ⚙️ [설정] 메인 탭 화면 (골든 룰 보존 구역)
+# ⚙️ [설정] 메인 탭 화면 (골든 룰 완전 사수 구역)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
