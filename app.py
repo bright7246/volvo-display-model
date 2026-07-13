@@ -151,14 +151,23 @@ st.markdown(
     .system-item-main {{ font-size: 15px; font-weight: 500; color: #ffffff; line-height: 1.2; }}
     .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 4px; line-height: 1.2; }}
     
-    /* 🎯 [버그 해결] 우측 화살표 버튼 크기를 모두 크고 동일하게 강제 통일 */
+    /* 🏷️ 우측 추가 문구 전용 스타일 */
+    .notice-text {{
+        font-size: 11px;
+        color: #ff4b4b; /* 인지가 잘 되도록 붉은 톤 어시스트 컬러 사용 (원하는 색상으로 변경 가능) */
+        font-weight: normal;
+        margin-right: 6px;
+        white-space: nowrap;
+    }}
+    
+    /* 🎯 우측 화살표 버튼 크기 균일화 공통 스타일 */
     div.system-list-zone div.stButton > button {{
         background-color: transparent !important;
         color: #8e959e !important;
         border: none !important;
-        font-size: 20px !important; /* 큰 크기로 균일하게 고정 */
+        font-size: 20px !important;
         font-weight: bold !important;
-        height: 48px !important; /* 왼쪽 텍스트 존과 높이 매칭 */
+        height: 48px !important;
         width: 100% !important;
         text-align: right !important;
         padding: 0px 8px 0px 0px !important;
@@ -396,7 +405,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 💻 [설정 -> 시스템] 메인 리스트 탭 (화살표 크기 완전 일렬 고정 통일)
+# 💻 [설정 -> 시스템] 메인 리스트 탭
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "system":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  시스템", key="back_to_settings_sys"):
@@ -404,15 +413,12 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 단락 1: 보안 상태
     st.markdown('<div class="volvo-title-row">보안 상태</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 단락 2: 일반
     st.markdown('<div class="volvo-title-row">일반</div>', unsafe_allow_html=True)
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
-    # 1. 언어 및 입력
     c1, c2 = st.columns([4.2, 0.8])
     with c1: st.markdown(f'<div class="text-container-fix"><div class="system-item-main">언어 및 입력</div><div class="system-item-sub">{st.session_state.selected_language}</div></div>', unsafe_allow_html=True)
     with c2: 
@@ -420,7 +426,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.sub_page = "sys_language"; st.rerun()
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 2. 날짜 및 시간
     c3, c4 = st.columns([4.2, 0.8])
     with c3: st.markdown(f'<div class="text-container-fix"><div class="system-item-main">날짜 및 시간</div><div class="system-item-sub">2026년 7월 13일, {"24시간 시계" if st.session_state.sys_time_24h else "12시간 시계"}</div></div>', unsafe_allow_html=True)
     with c4:
@@ -428,13 +433,11 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.sub_page = "sys_datetime"; st.rerun()
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 3. 단위
     c5, c6 = st.columns([4.2, 0.8])
     with c5: st.markdown('<div class="text-container-fix"><div class="system-item-main">단위</div></div>', unsafe_allow_html=True)
     with c6: st.button("〉", key="main_sys_unit", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 4. 애플리케이션
     c7, c8 = st.columns([4.2, 0.8])
     with c7: st.markdown('<div class="text-container-fix"><div class="system-item-main">애플리케이션</div><div class="system-item-sub">앱 권한</div></div>', unsafe_allow_html=True)
     with c8:
@@ -442,36 +445,31 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.sub_page = "sys_apps"; st.rerun()
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 5. 계정
     c9, c10 = st.columns([4.2, 0.8])
     with c9: st.markdown('<div class="text-container-fix"><div class="system-item-main">계정</div><div class="system-item-sub">연결된 계정</div></div>', unsafe_allow_html=True)
     with c10: st.button("〉", key="main_sys_account", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 6. 알림
     c11, c12 = st.columns([4.2, 0.8])
     with c11: st.markdown('<div class="text-container-fix"><div class="system-item-main">알림</div><div class="system-item-sub">애플리케이션 알림</div></div>', unsafe_allow_html=True)
     with c12: st.button("〉", key="main_sys_alarm", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 단락 3: 시스템 정보
     st.markdown('<div class="volvo-title-row" style="margin-top: 30px;">시스템 정보</div>', unsafe_allow_html=True)
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
-    # 7. 정보
     c13, c14 = st.columns([4.2, 0.8])
     with c13: st.markdown('<div class="text-container-fix"><div class="system-item-main">정보</div><div class="system-item-sub">Android 13</div></div>', unsafe_allow_html=True)
     with c14: st.button("〉", key="main_sys_info", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 8. 접근성
     c15, c16 = st.columns([4.2, 0.8])
     with c15: st.markdown('<div class="text-container-fix"><div class="system-item-main">접근성</div><div class="system-item-sub">자막 환경설정</div></div>', unsafe_allow_html=True)
     with c16: st.button("〉", key="main_sys_access", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🌐 [시스템 -> 상세 1. 언어 및 입력] 상세페이지 (큰 화살표 규격 적용)
+# 🌐 [시스템 -> 상세 1. 언어 및 입력] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_language":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  언어 및 입력", key="back_to_sys_main_1"):
@@ -499,7 +497,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ⏰ [시스템 -> 상세 2. 날짜 및 시간] 상세페이지 (큰 화살표 규격 적용)
+# ⏰ [시스템 -> 상세 2. 날짜 및 시간] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_datetime":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  날짜 및 시간", key="back_to_sys_main_2"):
@@ -539,7 +537,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📱 [시스템 -> 상세 3. 애플리케이션] 상세페이지 (큰 화살표 규격 적용)
+# 📱 [시스템 -> 상세 3. 애플리케이션 (모든 앱 보기)] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_apps":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  애플리케이션", key="back_to_sys_main_3"):
@@ -547,47 +545,53 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="volvo-title-row">최근에 연 앱</div>', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row">기본 앱</div>', unsafe_allow_html=True)
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
+    # 1. 🔍 NUGU AUTO (요청하신 우측 텍스트 문구 삽입 및 정렬)
     col1, col2 = st.columns([4.2, 0.8])
-    with col1: st.markdown('<div class="text-container-fix"><div class="system-item-main">⚙️ 설정</div><div class="system-item-sub">9초 전</div></div>', unsafe_allow_html=True)
-    with col2: st.button("〉", key="btn_app_setting", use_container_width=True)
+    with col1: 
+        st.markdown('<div class="text-container-fix"><div class="system-item-main">🔍 NUGU AUTO</div></div>', unsafe_allow_html=True)
+    with col2: 
+        # 화살표(〉) 왼쪽에 작고 정갈한 커스텀 텍스트 태그 결합
+        if st.button("현재 이 버튼만 활성화 가능 〉", key="btn_nugu_auto", use_container_width=True):
+            pass # 활성화 로직 필요 시 추후 추가 가능
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
     
+    # 2. 🗺️ TMAP AUTO
     col3, col4 = st.columns([4.2, 0.8])
-    with col3: st.markdown('<div class="text-container-fix"><div class="system-item-main">🚙 TMAP AUTO</div><div class="system-item-sub">3분 전</div></div>', unsafe_allow_html=True)
-    with col4: st.button("〉", key="btn_app_tmap", use_container_width=True)
+    with col3: st.markdown('<div class="text-container-fix"><div class="system-item-main">🗺️ TMAP AUTO</div></div>', unsafe_allow_html=True)
+    with col4: st.button("〉", key="btn_sub_tmap", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
+    # 3. 🎵 FLO
     col5, col6 = st.columns([4.2, 0.8])
-    with col5: st.markdown('<div class="text-container-fix"><div class="system-item-main">모든 앱 보기</div><div class="system-item-sub">앱 31개 모두 보기</div></div>', unsafe_allow_html=True)
-    with col6: st.button("〉", key="btn_all_apps", use_container_width=True)
+    with col5: st.markdown('<div class="text-container-fix"><div class="system-item-main">🎵 FLO</div></div>', unsafe_allow_html=True)
+    with col6: st.button("〉", key="btn_sub_flo", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
+    # 4. 🍈 Melon
     col7, col8 = st.columns([4.2, 0.8])
-    with col7: st.markdown('<div class="text-container-fix"><div class="system-item-main">권한 관리자</div><div class="system-item-sub">내 데이터에 대한 앱 액세스 권한 제어</div></div>', unsafe_allow_html=True)
-    with col8: st.button("〉", key="btn_permission_mgr", use_container_width=True)
+    with col7: st.markdown('<div class="text-container-fix"><div class="system-item-main">🍈 Melon</div></div>', unsafe_allow_html=True)
+    with col8: st.button("〉", key="btn_sub_melon", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
+    # 5. 📞 전화
     col9, col10 = st.columns([4.2, 0.8])
-    with col9: st.markdown('<div class="text-container-fix"><div class="system-item-main">기본 앱</div><div class="system-item-sub">어시스턴트용 기본 앱</div></div>', unsafe_allow_html=True)
-    with col10: st.button("〉", key="btn_default_app", use_container_width=True)
+    with col9: st.markdown('<div class="text-container-fix"><div class="system-item-main">📞 전화</div></div>', unsafe_allow_html=True)
+    with col10: st.button("〉", key="btn_sub_phone", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
+    # 6. 💬 메시지
     col11, col12 = st.columns([4.2, 0.8])
-    with col11: st.markdown('<div class="text-container-fix"><div class="system-item-main">사용하지 않는 앱</div><div class="system-item-sub">사용하지 않는 앱 2개</div></div>', unsafe_allow_html=True)
-    with col12: st.button("〉", key="btn_unused_app", use_container_width=True)
+    with col11: st.markdown('<div class="text-container-fix"><div class="system-item-main">💬 메시지</div></div>', unsafe_allow_html=True)
+    with col12: st.button("〉", key="btn_sub_msg", use_container_width=True)
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
+    # 7. 🌐 오디오 및 비디오 앱 오버레이
     col13, col14 = st.columns([4.2, 0.8])
-    with col13: st.markdown('<div class="text-container-fix"><div class="system-item-main">성능에 영향을 주는 앱</div><div class="system-item-sub">성능에 영향을 주는 앱 0개</div></div>', unsafe_allow_html=True)
-    with col14: st.button("〉", key="btn_performance_app", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col15, col16 = st.columns([4.2, 0.8])
-    with col15: st.markdown('<div class="text-container-fix"><div class="system-item-main">특수 앱 액세스</div><div class="system-item-sub">시스템 및 기타 설정</div></div>', unsafe_allow_html=True)
-    with col16: st.button("〉", key="btn_special_app", use_container_width=True)
+    with col13: st.markdown('<div class="text-container-fix"><div class="system-item-main">🌐 오디오 및 비디오 앱 오버레이</div></div>', unsafe_allow_html=True)
+    with col14: st.button("〉", key="btn_sub_overlay", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
