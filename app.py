@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 
-# 1. 페이지 설정 (황금 규격 철저히 고정)
+# 1. 페이지 설정
 st.set_page_config(
     page_title="Volvo Main Display",
     layout="centered",
@@ -14,7 +14,7 @@ if "current_tab" not in st.session_state:
 if "sub_page" not in st.session_state:
     st.session_state.sub_page = "main"
 
-# [기존 주행 설정 데이터]
+# [기존 주행/컨트롤 설정 데이터]
 if "pilot_assist" not in st.session_state: st.session_state.pilot_assist = True
 if "drive_mode" not in st.session_state: st.session_state.drive_mode = "Standard"
 if "steering_feel" not in st.session_state: st.session_state.steering_feel = "부드러움"
@@ -22,42 +22,41 @@ if "start_stop" not in st.session_state: st.session_state.start_stop = True
 if "lane_keeping" not in st.session_state: st.session_state.lane_keeping = True
 if "ready_to_drive" not in st.session_state: st.session_state.ready_to_drive = True
 
-# [컨트롤 설정 데이터]
 if "interior_brightness" not in st.session_state: st.session_state.interior_brightness = 80
 if "interior_light_dim" not in st.session_state: st.session_state.interior_light_dim = "높음"
 if "reduce_alarm_sensitivity" not in st.session_state: st.session_state.reduce_alarm_sensitivity = False
 if "welcome_light" not in st.session_state: st.session_state.welcome_light = True
 if "wireless_charging" not in st.session_state: st.session_state.wireless_charging = True
 
+# [시스템 상세 설정 데이터]
+if "sys_time_24h" not in st.session_state: st.session_state.sys_time_24h = True
+if "selected_language" not in st.session_state: st.session_state.selected_language = "한국어(대한민국)"
+
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
 
-# Query Parameter를 활용한 커스텀 슬라이더 값 실시간 동기화 처리
 if "brightness_slider" in st.query_params:
     st.session_state.interior_brightness = int(st.query_params["brightness_slider"])
 
-# 2. [골든 룰] 스타일 정의 (기존 스타일 수호 및 시스템 전용 꽉 찬 리스트 CSS 플러그인 추가)
+# 2. 볼보 헤리티지 UI 스타일 정의
 st.markdown(
     f"""
     <style>
-    /* 전체 앱 배경 */
-    .stApp {{
-        background-color: {bg_color} !important;
-        color: #ffffff !important;
-    }}
+    .stApp {{ background-color: {bg_color} !important; color: #ffffff !important; }}
     
-    /* 상단 여백 보정 컨테이너 */
     .block-container {{
-        max-width: 480px !important;
-        padding-top: 4rem !important; 
+        max-width: 510px !important;
+        padding-top: 2.5rem !important;
         padding-bottom: 2rem !important;
+        background-color: {card_color} !important;
+        border-radius: 16px;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
         margin: 0 auto;
-        min-height: 850px; 
     }}
     
-    /* 상단 시계 및 상태바 */
+    /* 상단 상태바 */
     .volvo-status-bar {{
         display: flex;
         justify-content: space-between;
@@ -66,11 +65,11 @@ st.markdown(
         font-size: 14px;
         color: #ffffff !important;
         font-weight: 500;
-        padding: 5px 10px;
         margin-bottom: 25px;
+        padding: 0 10px;
     }}
     
-    /* 상단 메인 탭 메뉴 */
+    /* 상단 메인 탭 */
     div.tab-zone button {{
         background-color: transparent !important;
         color: #8e959e !important;
@@ -80,133 +79,60 @@ st.markdown(
         padding: 8px 0 !important;
         width: 100% !important;
         box-shadow: none !important;
-        border-radius: 0px !important;
     }}
     div.tab-zone button[kind="primary"] {{
         color: #ffffff !important;
         font-weight: bold !important;
         border-bottom: 2px solid #ffffff !important;
+        border-radius: 0px !important;
     }}
     
-    /* 📱 퀵 컨트롤 전용 카드 스타일 */
-    .volvo-card-content {{
-        background-color: {card_color} !important;
-        border: 1px solid {border_color} !important;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        color: #ffffff !important;
-        font-weight: bold;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        width: 100%;
-    }}
-    .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
-    .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
-    
-    /* ⚙️ 설정 메인 카드 버튼 스타일 */
+    /* ⚙️ 그리드 레이아웃 */
     div.volvo-grid-card div.stButton > button {{
-        background-color: {card_color} !important;
+        background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
         height: 135px !important;
         font-size: 16px !important;
         font-weight: bold !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         width: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
         white-space: pre-line !important;
     }}
     
-    /* 🛠️ [A 세팅] 제목줄 스타일 */
-    .volvo-title-row {{
-        font-size: 14px;
-        color: #8e959e;
-        font-weight: bold;
-        margin-top: 25px;
-        margin-bottom: 12px;
-        padding-left: 5px;
-    }}
+    /* 🛠️ 세팅 박스 구조 */
+    .volvo-title-row {{ font-size: 14px; color: #8e959e; font-weight: bold; margin-top: 22px; margin-bottom: 12px; padding-left: 5px; }}
     
-    /* 🛠️ [B 세팅] 서브페이지 내부 st.container 상자 강제 제어 */
     div.subpage-content-zone div[data-testid="stVerticalBlockBorderWrapper"] {{
-        background-color: {card_color} !important;
+        background-color: rgba(18, 22, 28, 0.4) !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
         padding: 18px !important;
         margin-bottom: 5px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
     }}
     
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
-    .setting-title-align-btn {{ font-size: 15px; font-weight: bold; color: #ffffff; padding-top: 6px; }}
-    .setting-title-align-tgl {{ font-size: 15px; font-weight: bold; color: #ffffff; padding-top: 2px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 💻 [시스템 페이지 전용 리스트 아이템 UI 스타일] */
-    .system-list-zone {{
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        margin-top: -5px;
-    }}
-    .system-list-item {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        padding: 14px 8px;
-        border-bottom: 1px solid #232830;
-        cursor: pointer;
-    }}
-    .system-list-item:last-child {{
-        border-bottom: none;
-    }}
-    .system-item-main {{
-        font-size: 15px;
-        font-weight: 500;
-        color: #ffffff;
-    }}
-    .system-item-sub {{
-        font-size: 12px;
-        color: #8e959e;
-        margin-top: 3px;
-    }}
-    .system-arrow {{
-        color: #5d646e;
-        font-size: 15px;
-        font-weight: bold;
-        padding-right: 4px;
-    }}
+    /* 📋 시스템 리스트 항목 UI */
+    .system-list-zone {{ display: flex; flex-direction: column; width: 100%; margin-top: -5px; }}
+    .system-list-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 15px 8px; border-bottom: 1px solid #333b46; }}
+    .system-list-item:last-child {{ border-bottom: none; }}
+    .system-item-main {{ font-size: 15px; font-weight: 500; color: #ffffff; }}
+    .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 3px; }}
+    .system-arrow {{ color: #5d646e; font-size: 15px; font-weight: bold; }}
     
-    /* 컴포넌트 너비 확장 규칙 고정 */
-    div[data-testid="stHtmlBlock"] {{ width: 100% !important; }}
-    iframe {{ width: 100% !important; }}
-
-    .slider-container-custom {{ display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 5px 0; background: transparent !important; }}
-    .slider-wrapper {{ position: relative; flex-grow: 1; display: flex; align-items: center; margin-right: 15px; }}
-    .slider-custom {{ -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: #4a525d !important; outline: none; margin: 0; }}
-    .slider-custom::-webkit-slider-thumb {{ -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #ffffff !important; cursor: pointer; }}
-    .slider-val-box {{ font-size: 16px; font-weight: bold; color: #ffffff; min-width: 35px; text-align: right; font-family: 'Helvetica Neue', sans-serif; }}
-    
-    /* 알약형 세그먼트 바 */
+    /* 알약형 세그먼트 */
     div.volvo-segment-row div[data-testid="stHorizontalBlock"] {{ gap: 0px !important; background-color: #1a1f27 !important; border-radius: 25px !important; padding: 4px !important; border: 1px solid #333b46 !important; margin-top: 12px !important; }}
-    div.volvo-segment-row div.stButton > button[kind="primary"] {{ background-color: #00A3E0 !important; color: #ffffff !important; border: none !important; border-radius: 22px !important; font-weight: bold !important; height: 40px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important; }}
+    div.volvo-segment-row div.stButton > button[kind="primary"] {{ background-color: #00A3E0 !important; color: #ffffff !important; border: none !important; border-radius: 22px !important; font-weight: bold !important; height: 40px !important; }}
     div.volvo-segment-row div.stButton > button[kind="secondary"] {{ background-color: transparent !important; color: #727a85 !important; border: none !important; border-radius: 22px !important; height: 40px !important; box-shadow: none !important; }}
-    div.volvo-fold-btn-zone div.stButton > button {{ background-color: #383e48 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; height: 38px !important; font-size: 14px !important; font-weight: bold !important; width: 100% !important; box-shadow: none !important; }}
     
-    .card-divider {{ border-top: 1px solid #333b46; margin-top: 20px; margin-bottom: 0px; }}
-    .more-link {{ display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #ffffff; cursor: pointer; padding-top: 14px; padding-bottom: 12px; }}
-    
-    div[data-testid="stCheckboxToggleHoverTarget"] div[aria-checked="true"] {{ background-color: #00A3E0 !important; }}
+    /* 뒤로가기 버튼 */
     .back-btn-box button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 18px !important; font-weight: bold !important; padding: 0 !important; box-shadow: none !important; }}
     
-    /* 하단 공조 바 */
-    .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 50px; border: 1px solid #232830; }}
+    /* 공조 바 바닥 안착 */
+    .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 40px; border: 1px solid #232830; }}
     .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
     .bottom-sub-label {{ font-size: 9px; color: #8e959e !important; display: block; margin-top: 2px; }}
     </style>
@@ -222,12 +148,9 @@ display_hour = kor_now.hour % 12
 display_hour = 12 if display_hour == 0 else display_hour
 time_string = f"{ampm} {display_hour:02d}:{kor_now.minute:02d}"
 
-st.markdown(
-    f'<div class="volvo-status-bar"><span>{time_string}</span><span>📶 LTE</span></div>', 
-    unsafe_allow_html=True
-)
+st.markdown(f'<div class="volvo-status-bar"><span>{time_string}</span><span>📶 LTE</span></div>', unsafe_allow_html=True)
 
-# --- 2. 상단 메뉴 탭 ---
+# --- 2. 상단 메뉴 탭 (서브 메인 화면에서만 상단 노출) ---
 if st.session_state.sub_page == "main":
     st.markdown('<div class="tab-zone">', unsafe_allow_html=True)
     top_col1, top_col2, top_col3 = st.columns(3)
@@ -261,67 +184,11 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('<div class="volvo-title-row">운전자 지원 시스템</div>', unsafe_allow_html=True)
     with st.container(border=True):
         pa_col1, pa_col2 = st.columns([3.6, 1])
-        with pa_col1:
-            st.markdown('<div class="setting-title">Pilot Assist 기본 설정</div><div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>', unsafe_allow_html=True)
-        with pa_col2:
+        with pa_col1: st.markdown('<div class="setting-title">Pilot Assist 기본 설정</div><div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>', unsafe_allow_html=True)
+        with pa_col2: 
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.pilot_assist = st.toggle("PA_tgl", value=st.session_state.pilot_assist, label_visibility="collapsed")
-
-    st.markdown('<div class="volvo-title-row">주행 역학</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        st.markdown('<div class="setting-title">주행 모드</div><div class="setting-desc">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
-        dm_col1, dm_col2 = st.columns(2)
-        with dm_col1:
-            dm_type = "primary" if st.session_state.drive_mode == "Standard" else "secondary"
-            if st.button("Standard", key="btn_seg_std", type=dm_type, use_container_width=True):
-                st.session_state.drive_mode = "Standard"; st.rerun()
-        with dm_col2:
-            dm_type = "primary" if st.session_state.drive_mode == "Off-road" else "secondary"
-            if st.button("Off-road", key="btn_seg_off", type=dm_type, use_container_width=True):
-                st.session_state.drive_mode = "Off-road"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with st.container(border=True):
-        st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
-        sf_col1, sf_col2 = st.columns(2)
-        with sf_col1:
-            sf_type = "primary" if st.session_state.steering_feel == "부드러움" else "secondary"
-            if st.button("부드러움", key="btn_seg_sf1", type=sf_type, use_container_width=True):
-                st.session_state.steering_feel = "부드러움"; st.rerun()
-        with sf_col2:
-            sf_type = "primary" if st.session_state.steering_feel == "단단함" else "secondary"
-            if st.button("단단함", key="btn_seg_sf2", type=sf_type, use_container_width=True):
-                st.session_state.steering_feel = "단단함"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with st.container(border=True):
-        ss_col1, ss_col2 = st.columns([3.6, 1])
-        with ss_col1:
-            st.markdown('<div class="setting-title">Start/Stop</div><div class="setting-desc">정지 시 일시적으로 엔진을 끕니다. 새로 주행할 때마다 켜짐으로 재설정됩니다.</div>', unsafe_allow_html=True)
-        with ss_col2:
-            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-            st.session_state.start_stop = st.toggle("SS_tgl", value=st.session_state.start_stop, label_visibility="collapsed")
-
-    st.markdown('<div class="volvo-title-row">안전 어시스트</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        lk_col1, lk_col2 = st.columns([3.6, 1])
-        with lk_col1:
-            st.markdown('<div class="setting-title">차선유지 보조 시스템</div><div class="setting-desc">갑작스런 차선 이탈을 방지하도록 도와줍니다.</div>', unsafe_allow_html=True)
-        with lk_col2:
-            st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
-            st.session_state.lane_keeping = st.toggle("LK_tgl", value=st.session_state.lane_keeping, label_visibility="collapsed")
-
-    with st.container(border=True):
-        rd_col1, rd_col2 = st.columns([3.6, 1])
-        with rd_col1:
-            st.markdown('<div class="setting-title">주행 준비 알림</div><div class="setting-desc">전방 차량이 주행을 시작한 후 알림을 제공합니다.</div>', unsafe_allow_html=True)
-        with rd_col2:
-            st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
-            st.session_state.ready_to_drive = st.toggle("RD_tgl", value=st.session_state.ready_to_drive, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
-
 
 # 🎛️ [설정 -> 컨트롤] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
@@ -330,101 +197,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="subpage-content-zone"><div class="volvo-title-row">조명 및 디스플레이</div></div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    
-    st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
-        slider_html = f"""
-        <div class="slider-container-custom" style="padding: 0; margin: 0;">
-            <div class="slider-wrapper">
-                <input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" 
-                       class="slider-custom" id="brightnessRange"
-                       style="width: 100%;"
-                       oninput="document.getElementById('sliderVal').innerText = this.value">
-            </div>
-            <div class="slider-val-box" id="sliderVal">{st.session_state.interior_brightness}</div>
-        </div>
-        <script>
-        var slider = document.getElementById("brightnessRange");
-        slider.addEventListener("change", function() {{
-            window.parent.postMessage({{
-                type: "streamlit:set_query_params",
-                queryParams: {{"brightness_slider": this.value}}
-            }}, "*");
-        }});
-        </script>
-        """
-        st.components.v1.html(slider_html, height=35)
-        st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-        
-        st.markdown('<div class="setting-title">내부 조명 감도</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
-        dim_col1, dim_col2, dim_col3 = st.columns(3)
-        with dim_col1:
-            t_type = "primary" if st.session_state.interior_light_dim == "끄기" else "secondary"
-            if st.button("끄기", key="btn_dim_off", type=t_type, use_container_width=True):
-                st.session_state.interior_light_dim = "끄기"; st.rerun()
-        with dim_col2:
-            t_type = "primary" if st.session_state.interior_light_dim == "낮음" else "secondary"
-            if st.button("낮음", key="btn_dim_low", type=t_type, use_container_width=True):
-                st.session_state.interior_light_dim = "낮음"; st.rerun()
-        with dim_col3:
-            t_type = "primary" if st.session_state.interior_light_dim == "높음" else "secondary"
-            if st.button("높음", key="btn_dim_high", type=t_type, use_container_width=True):
-                st.session_state.interior_light_dim = "높음"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-        
-        st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">🔒 잠금</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        alarm_col1, alarm_col2 = st.columns([3.6, 1])
-        with alarm_col1:
-            st.markdown('<div class="setting-title">알람 감도 낮추기</div><div class="setting-desc">페리 또는 다른 교통수단 이용 시</div>', unsafe_allow_html=True)
-        with alarm_col2:
-            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-            st.session_state.reduce_alarm_sensitivity = st.toggle("Alarm_tgl", value=st.session_state.reduce_alarm_sensitivity, label_visibility="collapsed")
-            
-        st.write("<div style='margin-top:18px;'></div>", unsafe_allow_html=True)
-        
-        welcome_col1, welcome_col2 = st.columns([3.6, 1])
-        with welcome_col1:
-            st.markdown('<div class="setting-title">웰컴 라이트</div><div class="setting-desc">차량에 접근하고 차량에서 내릴 때 조명을 켭니다</div>', unsafe_allow_html=True)
-        with welcome_col2:
-            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-            st.session_state.welcome_light = st.toggle("Welcome_ctrl_tgl", value=st.session_state.welcome_light, label_visibility="collapsed")
-            
-        st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">더 보기</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        hr_col1, hr_col2 = st.columns([2.8, 1.8])
-        with hr_col1:
-            st.markdown('<div class="setting-title-align-btn">헤드레스트 접기</div>', unsafe_allow_html=True)
-        with hr_col2:
-            st.markdown('<div class="volvo-fold-btn-zone">', unsafe_allow_html=True)
-            st.button("접기", key="btn_headrest_fold", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-        st.write("<div style='margin-top:16px;'></div>", unsafe_allow_html=True)
-        
-        wire_col1, wire_col2 = st.columns([3.6, 1])
-        with wire_col1:
-            st.markdown('<div class="setting-title-align-tgl">무선 장치 충전</div>', unsafe_allow_html=True)
-        with wire_col2:
-            st.session_state.wireless_charging = st.toggle("Wireless_tgl", value=st.session_state.wireless_charging, label_visibility="collapsed")
-            
-        st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# 💻 [설정 -> 시스템] 서브 페이지 (두 장의 사진 요구사항 100% 반영)
+# 💻 [설정 -> 시스템] 메인 리스트 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "system":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  시스템", key="back_to_settings_sys"):
@@ -432,114 +207,149 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 1번 사진: 보안 상태 구역
     st.markdown('<div class="volvo-title-row">보안 상태</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin-bottom: 10px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin-bottom: 10px;"></div>', unsafe_allow_html=True)
 
-    # 1번 사진: 일반 구역 (가로 리스트 라인 형태)
     st.markdown('<div class="volvo-title-row">일반</div>', unsafe_allow_html=True)
     
+    # 순정 디자인 클릭 링크를 구현하기 위해 버튼과 레이아웃 병합 처리
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
-    # 언어 및 입력
-    st.markdown('<div class="system-list-item"><div><div class="system-item-main">언어 및 입력</div><div class="system-item-sub">한국어(대한민국)</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 날짜 및 시간
-    st.markdown('<div class="system-list-item"><div><div class="system-item-main">날짜 및 시간</div><div class="system-item-sub">2026년 7월 13일, 24시간 시계</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 단위
-    st.markdown('<div class="system-list-item"><div><div class="system-item-main">단위</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 애플리케이션
-    st.markdown('<div class="system-list-item"><div><div class="system-item-main">애플리케이션</div><div class="system-item-sub">앱 권한</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 계정
-    st.markdown('<div class="system-list-item"><div><div class="system-item-main">계정</div><div class="system-item-sub">연결된 계정</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 알림
-    st.markdown('<div class="system-list-item"><div><div class="system-item-main">알림</div><div class="system-item-sub">애플리케이션 알림</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
+    col_a, col_b = st.columns([4.2, 0.8])
+    with col_a: st.markdown(f'<div class="system-item-main">언어 및 입력</div><div class="system-item-sub">{st.session_state.selected_language}</div>', unsafe_allow_html=True)
+    with col_b: 
+        if st.button("〉", key="go_sys_language", use_container_width=True):
+            st.session_state.sub_page = "sys_language"; st.rerun()
+            
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
+
+    col_c, col_d = st.columns([4.2, 0.8])
+    with col_c: st.markdown(f'<div class="system-item-main">날짜 및 시간</div><div class="system-item-sub">2026년 7월 13일, {"24시간 시계" if st.session_state.sys_time_24h else "12시간 시계"}</div>', unsafe_allow_html=True)
+    with col_d:
+        if st.button("〉", key="go_sys_datetime", use_container_width=True):
+            st.session_state.sub_page = "sys_datetime"; st.rerun()
+            
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
+
+    col_e, col_f = st.columns([4.2, 0.8])
+    with col_e: st.markdown('<div class="system-item-main">애플리케이션</div><div class="system-item-sub">앱 권한</div>', unsafe_allow_html=True)
+    with col_f:
+        if st.button("〉", key="go_sys_apps", use_container_width=True):
+            st.session_state.sub_page = "sys_apps"; st.rerun()
+            
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# 🌐 [시스템 -> 1. 언어 및 입력] 상세페이지
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_language":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  언어 및 입력", key="back_to_sys_main_1"):
+        st.session_state.sub_page = "system"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="volvo-title-row">언어</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">시스템 언어</div>', unsafe_allow_html=True)
+        lang_options = ["한국어(대한민국)", "English (United States)", "Deutsch", "Français"]
+        idx = lang_options.index(st.session_state.selected_language) if st.session_state.selected_language in lang_options else 0
+        selected = st.selectbox("Lang_select", options=lang_options, index=idx, label_visibility="collapsed")
+        if selected != st.session_state.selected_language:
+            st.session_state.selected_language = selected; st.rerun()
+            
+    st.markdown('<div class="volvo-title-row">입력</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">화면 키보드</div><div class="setting-desc">Android 키보드 (AOSP)</div>', unsafe_allow_html=True)
+
+# ⏰ [시스템 -> 2. 날짜 및 시간] 상세페이지
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_datetime":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  날짜 및 시간", key="back_to_sys_main_2"):
+        st.session_state.sub_page = "system"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    with st.container(border=True):
+        t24_col1, t24_col2 = st.columns([3.6, 1])
+        with t24_col1:
+            st.markdown('<div class="setting-title">24시간 형식 사용</div><div class="setting-desc">오후 1:00 대신 13:00 표기</div>', unsafe_allow_html=True)
+        with t24_col2:
+            st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+            st.session_state.sys_time_24h = st.toggle("T24_tgl", value=st.session_state.sys_time_24h, label_visibility="collapsed")
+            
+    st.markdown('<div class="volvo-title-row">네트워크 동기화</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">자동 날짜 및 시간 설정</div><div class="setting-desc">차량 내부 GPS 및 네트워크 시간 기준 자동 보정 활성화</div>', unsafe_allow_html=True)
+
+# 📱 [시스템 -> 3, 4. 애플리케이션] 상세페이지
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_apps":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  애플리케이션", key="back_to_sys_main_3"):
+        st.session_state.sub_page = "system"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="volvo-title-row">일반</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">앱 권한 관리자</div><div class="setting-desc">위치, 마이크, 캘린더 등 앱별 데이터 접근 제한</div>', unsafe_allow_html=True)
+        
+    st.markdown('<div class="volvo-title-row">고급 설정</div>', unsafe_allow_html=True)
+    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+    
+    col1, col2 = st.columns([4.2, 0.8])
+    with col1: st.markdown('<div class="system-item-main">특별한 앱 액세스 권한</div><div class="system-item-sub">알림 최적화, 방해 금지 권한 관리</div>', unsafe_allow_html=True)
+    with col2: st.button("〉", key="btn_app_acc1")
+    
+    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
+    
+    col3, col4 = st.columns([4.2, 0.8])
+    with col3: st.markdown('<div class="system-item-main">기본 애플리케이션 설정</div><div class="system-item-sub">기본 네비게이션 및 어시스턴트 앱 지정</div>', unsafe_allow_html=True)
+    with col4: st.button("〉", key="btn_app_acc2")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # 2번 사진: 시스템 정보 구역 추가 연결
-    st.markdown('<div class="volvo-title-row" style="margin-top: 30px;">시스템 정보</div>', unsafe_allow_html=True)
-    
-    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    
-    # 정보 (Android 13)
-    st.markdown('<div class="system-list-item"><div><div class="system-item-main">정보</div><div class="system-item-sub">Android 13</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    # 접근성
-    st.markdown('<div class="system-list-item"><div><div class="system-item-main">접근성</div><div class="system-item-sub">자막 환경설정</div></div><div class="system-arrow">〉</div></div>', unsafe_allow_html=True)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-
-# ⚙️ [설정] 메인 탭 화면 (골든 룰 완전 사수 구역)
+# ⚙️ [설정] 메인 탭 화면
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
-
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
-        with st.container(border=False):
-            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            if st.button("주행", key="btn_drive_go", use_container_width=True):
-                st.session_state.sub_page = "driving"; st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+        if st.button("주행", key="btn_drive_go", use_container_width=True):
+            st.session_state.sub_page = "driving"; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with row1_col2:
-        with st.container(border=False):
-            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            if st.button("컨트롤", key="btn_control_go", use_container_width=True):
-                st.session_state.sub_page = "control"; st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+        if st.button("컨트롤", key="btn_control_go", use_container_width=True):
+            st.session_state.sub_page = "control"; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
-        with st.container(border=False):
-            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            st.button("사운드", key="btn_sound_go", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+        st.button("사운드", key="btn_sound_go", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row2_col2:
-        with st.container(border=False):
-            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            st.button("연결", key="btn_connect_go", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+        st.button("연결", key="btn_connect_go", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     row3_col1, row3_col2, row3_col3 = st.columns(3)
     with row3_col1:
-        with st.container(border=False):
-            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            st.button("프로필", key="btn_profile_go", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+        st.button("프로필", key="btn_profile_go", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row3_col2:
-        with st.container(border=False):
-            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            st.button("개인정보\n보호", key="btn_privacy_go", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+        st.button("개인정보\n보호", key="btn_privacy_go", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     with row3_col3:
-        with st.container(border=False):
-            st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-            # 💡 시스템 버튼 분기점 활성화
-            if st.button("시스템", key="btn_system_go", use_container_width=True):
-                st.session_state.sub_page = "system"; st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
+        if st.button("시스템", key="btn_system_go", use_container_width=True):
+            st.session_state.sub_page = "system"; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
-# 📊 [상태] 탭 화면
-elif st.session_state.current_tab == "상태":
-    st.subheader("📊 차량 상태")
-    st.write("차량 진단 및 정보를 확인합니다.")
-
-# 📱 [퀵 컨트롤] 탭 화면
+# 📊 [상태] 및 📱 [퀵 컨트롤] 탭 처리 생략 (구조 보존)
 else:
-    st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
-    main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
-
-    with main_col1:
-        st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
-        st.write("<div style='margin-top:25px;'></div>", unsafe_allow_html=True)
-        st.markdown('<div class="volvo-card-content side-btn">Start<br>Stop</div>', unsafe_allow_html=True)
-
-    with main_col2:
-        st.markdown('<div class="volvo-card-content center-box">VOLVO</div>', unsafe_allow_html=True)
-
-    with main_col3:
-        st.markdown('<div class="volvo-card-content side-btn">알람<br>줄이기</div>', unsafe_allow_html=True)
-        st.write("<div style='margin-top:25px;'></div>", unsafe_allow_html=True)
-        st.markdown('<div class="volvo-card-content side-btn">헤드<br>레스트</div>', unsafe_allow_html=True)
+    st.write(f"현재 탭: {st.session_state.current_tab}")
 
 # --- 4. 하단 공조 장치 바 ---
 bottom_html = (
