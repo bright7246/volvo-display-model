@@ -33,6 +33,12 @@ if "wireless_charging" not in st.session_state: st.session_state.wireless_chargi
 if "left_drive_light_adjust" not in st.session_state: st.session_state.left_drive_light_adjust = False
 if "cluster_trip_info" not in st.session_state: st.session_state.cluster_trip_info = "자동"
 
+# 🔒 [잠금 모두 보기 추가 설정 데이터]
+if "unlock_mode" not in st.session_state: st.session_state.unlock_mode = "모두"
+if "sunroof_curtain_auto_close" not in st.session_state: st.session_state.sunroof_curtain_auto_close = False
+if "turn_signal_blink" not in st.session_state: st.session_state.turn_signal_blink = True
+if "auto_fold_mirror" not in st.session_state: st.session_state.auto_fold_mirror = True
+
 # [시스템 상세 설정 데이터]
 if "sys_time_auto" not in st.session_state: st.session_state.sys_time_auto = True
 if "sys_timezone_auto" not in st.session_state: st.session_state.sys_timezone_auto = True
@@ -252,7 +258,7 @@ st.markdown(
     div.volvo-segment-row div.stButton > button[kind="secondary"] {{ background-color: transparent !important; color: #727a85 !important; border: none !important; border-radius: 22px !important; height: 40px !important; box-shadow: none !important; }}
     div.volvo-fold-btn-zone div.stButton > button {{ background-color: #383e48 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; height: 38px !important; font-size: 14px !important; font-weight: bold !important; width: 100% !important; box-shadow: none !important; }}
 
-    /* 조명 모두보기 전용 수평 알약형 세그먼트 커스텀 패딩 보정 */
+    /* 상세 설정 전용 수평 알약형 세그먼트 커스텀 패딩 보정 */
     div.inline-segment-fix div[data-testid="stHorizontalBlock"] {{ margin-top: 0px !important; }}
 
     /* 🎚️ 우측 토글 정렬을 위한 래퍼 (강제 우측 정렬) */
@@ -455,7 +461,10 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.welcome_light = st.toggle("Welcome_ctrl_tgl", value=st.session_state.welcome_light, label_visibility="collapsed")
             
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="more-link-btn">', unsafe_allow_html=True)
+        if st.button("모두 보기                      〉", key="btn_go_lock_all"):
+            st.session_state.sub_page = "ctrl_lock_all"; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="volvo-title-row">더 보기</div>', unsafe_allow_html=True)
     with st.container(border=True):
@@ -480,7 +489,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 💡 [설정 -> 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세 서브 페이지 (정렬 이슈 완벽 해결!)
+# 💡 [설정 -> 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lighting_all":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  조명 및 디스플레이", key="back_to_control_main"):
@@ -490,7 +499,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
-    # 단락 A: 내부 조명
     st.markdown('<div class="volvo-title-row">내부 조명</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
@@ -537,10 +545,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                     st.session_state.interior_light_dim = "높음"; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
-    # 단락 A: 외부 조명 (🎯 쏠림 오류 전면 수정: 한줄 연결 & 알약 우측 정렬 강제)
     st.markdown('<div class="volvo-title-row">外部 조명</div>', unsafe_allow_html=True)
     with st.container(border=True):
-        ext_col1, ext_col2 = st.columns([4.2, 0.8])  # 넓은 한줄 핏 비율 확보
+        ext_col1, ext_col2 = st.columns([4.2, 0.8])
         with ext_col1:
             st.markdown('<div class="setting-title" style="padding-top: 6px; white-space: nowrap;">좌측 주행 조명에 맞게 조명 조정</div>', unsafe_allow_html=True)
         with ext_col2:
@@ -548,7 +555,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.left_drive_light_adjust = st.toggle("tgl_left_light", value=st.session_state.left_drive_light_adjust, label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
 
-    # 단락 A: 디스플레이
     st.markdown('<div class="volvo-title-row">디스플레이</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="setting-title">계기판 트립 정보</div>', unsafe_allow_html=True)
@@ -567,6 +573,93 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             if st.button("수동", key="trip_manual", type=t_type, use_container_width=True):
                 st.session_state.cluster_trip_info = "수동"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 🔒 [설정 -> 컨트롤 -> 잠금 -> 모두 보기] 상세 서브 페이지 (🎯 새롭게 구성된 레이아웃!)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lock_all":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  잠금", key="back_to_control_main_lock"):
+        st.session_state.sub_page = "control"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    # 단락 1: 문 잠금 해제 & 알람 감도
+    st.markdown('<div class="volvo-title-row">잠금</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        ul_lbl_col, ul_btn_col = st.columns([1.8, 3.2])
+        with ul_lbl_col:
+            st.markdown('<div class="setting-title" style="padding-top: 12px;">문 잠금 해제</div>', unsafe_allow_html=True)
+        with ul_btn_col:
+            st.markdown('<div class="volvo-segment-row inline-segment-fix">', unsafe_allow_html=True)
+            u_col1, u_col2 = st.columns(2)
+            with u_col1:
+                t_type = "primary" if st.session_state.unlock_mode == "하나만" else "secondary"
+                if st.button("하나만", key="lock_ul_one", type=t_type, use_container_width=True):
+                    st.session_state.unlock_mode = "하나만"; st.rerun()
+            with u_col2:
+                t_type = "primary" if st.session_state.unlock_mode == "모두" else "secondary"
+                if st.button("모두", key="lock_ul_all", type=t_type, use_container_width=True):
+                    st.session_state.unlock_mode = "모두"; st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
+        
+        lock_col1, lock_col2 = st.columns([4.2, 0.8])
+        with lock_col1:
+            st.markdown('<div class="setting-title">알람 감도 낮추기</div><div class="setting-desc">페리 또는 다른 교통수단 이용 시</div>', unsafe_allow_html=True)
+        with lock_col2:
+            st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
+            st.session_state.reduce_alarm_sensitivity = st.toggle("tgl_lock_reduce_alarm", value=st.session_state.reduce_alarm_sensitivity, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # 단락 2: 접근 및 하차
+    st.markdown('<div class="volvo-title-row">접근 및 하차</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        acc_col1, acc_col2 = st.columns([4.2, 0.8])
+        with acc_col1:
+            st.markdown('<div class="setting-title">웰컴 라이트</div><div class="setting-desc">차량에 접근하고 차량에서 내릴 때 조명을 켭니다</div>', unsafe_allow_html=True)
+        with acc_col2:
+            st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
+            st.session_state.welcome_light = st.toggle("tgl_lock_welcome", value=st.session_state.welcome_light, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
+        
+        sun_col1, sun_col2 = st.columns([4.2, 0.8])
+        with sun_col1:
+            st.markdown('<div class="setting-title">선루프 커튼 자동닫기</div><div class="setting-desc">외부가 더우면 커튼이 잠긴 후 15분 뒤 닫힙니다.</div>', unsafe_allow_html=True)
+        with sun_col2:
+            st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
+            st.session_state.sunroof_curtain_auto_close = st.toggle("tgl_lock_sunroof", value=st.session_state.sunroof_curtain_auto_close, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
+
+    # 단락 3: 잠금 및 잠금 해제 반응
+    st.markdown('<div class="volvo-title-row">잠금 및 잠금 해제 반응</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        resp_col1, resp_col2 = st.columns([4.2, 0.8])
+        with resp_col1:
+            st.markdown('<div class="setting-title" style="padding-top: 6px;">방향 지시등 점멸</div>', unsafe_allow_html=True)
+        with resp_col2:
+            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
+            st.session_state.turn_signal_blink = st.toggle("tgl_lock_blink", value=st.session_state.turn_signal_blink, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
+        
+        mir_col1, mir_col2 = st.columns([4.2, 0.8])
+        with mir_col1:
+            st.markdown('<div class="setting-title" style="padding-top: 6px;">자동 접이식 미러</div>', unsafe_allow_html=True)
+        with mir_col2:
+            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
+            st.session_state.auto_fold_mirror = st.toggle("tgl_lock_mirror", value=st.session_state.auto_fold_mirror, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
