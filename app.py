@@ -478,7 +478,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         with ss_col2:
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.start_stop = st.toggle("SS_tgl", value=st.session_state.start_stop, label_visibility="collapsed")
-                    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="volvo-title-row">안전 어시스트</div>', unsafe_allow_html=True)
     with st.container(border=True):
