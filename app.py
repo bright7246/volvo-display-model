@@ -28,7 +28,7 @@ if "lane_keeping" not in st.session_state:
 if "ready_to_drive" not in st.session_state:
     st.session_state.ready_to_drive = True
 
-# 볼보 순정 다크 톤 배색 지정
+# 볼보 순정 다크 톤 배색 지정 (1번 사진 기준)
 bg_color = "rgb(18, 22, 28)"
 card_color = "rgb(28, 34, 44)"
 border_color = "rgb(42, 49, 61)"
@@ -64,7 +64,7 @@ st.markdown(
         margin-bottom: 25px;
     }}
     
-    /* 📌 상단 메인 탭 메뉴 (3번 사진 스타일) */
+    /* 📌 상단 메인 탭 메뉴 (1번 사진 고유 스타일 반영) */
     div.tab-zone div[data-testid="stHorizontalBlock"] div.stButton > button {{
         background-color: transparent !important;
         color: #8e959e !important;
@@ -76,14 +76,14 @@ st.markdown(
         box-shadow: none !important;
         border-radius: 0px !important;
     }}
-    /* 활성화된 탭의 흰색 글자 및 하단 깔끔한 밑줄 */
+    /* 활성화된 탭의 흰색 글자 및 하단 밑줄 */
     div.tab-zone div[data-testid="stHorizontalBlock"] div.stButton > button[kind="primary"] {{
         color: #ffffff !important;
         font-weight: bold !important;
         border-bottom: 2px solid #ffffff !important;
     }}
     
-    /* 📱 퀵 컨트롤 전용 카드 스타일 */
+    /* 📱 1번 사진 퀵 컨트롤 전용 카드 레이아웃 스타일 */
     .volvo-card-content {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
@@ -100,7 +100,7 @@ st.markdown(
     .side-btn {{ height: 185px; font-size: 15px; line-height: 1.5; }}
     .center-box {{ height: 400px; font-size: 24px; letter-spacing: 5px; font-family: 'Times New Roman', Times, serif; font-weight: 400; }}
     
-    /* ⚙️ 설정 메인 카드 버튼 (3번 사진의 균형 잡힌 사각형 박스 레이아웃) */
+    /* ⚙️ [핵심 수정] 설정 메인 카드 버튼을 1번 사진 카드 스타일과 100% 똑같이 강제 지정 */
     div.volvo-grid-btn div.stButton > button {{
         background-color: {card_color} !important;
         color: #ffffff !important;
@@ -109,7 +109,8 @@ st.markdown(
         height: 135px !important;
         font-size: 16px !important;
         font-weight: bold !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+        transition: transform 0.1s ease-in-out;
     }}
     
     /* 🚗 주행 상세 세그먼트형 버튼 활성화 (순정 스카이블루) */
@@ -306,14 +307,13 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
         st.session_state.ready_to_drive = st.toggle("RD_toggle", value=st.session_state.ready_to_drive, label_visibility="collapsed")
 
 
-# ⚙️ [설정] 메인 탭 화면 (구조적 버그 수정 완료!)
+# ⚙️ [설정] 메인 탭 화면 (1번 사진 카드 뼈대와 완벽 매칭)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "main":
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
 
     # 1라인: 주행 / 컨트롤
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
-        # 🛠️ 버튼 전체를 div 덩어리로 완벽하게 감쌌습니다
         st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
         if st.button("주행", key="btn_drive_route", use_container_width=True):
             st.session_state.sub_page = "driving"
@@ -336,15 +336,15 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.button("연결", key="btn_connect_route", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # 3라인: 프로필 / 개인정보 보호 / 시스템
-    row3_col1, row3_col2, row3_col3 = st.columns([1, 1.3, 1])
+    # 3라인: 프로필 / 개인정보 보호 / 시스템 (가로 여백 균형 유지)
+    row3_col1, row3_col2, row3_col3 = st.columns(3)
     with row3_col1:
         st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
         st.button("프로필", key="btn_profile_route", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     with row3_col2:
         st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
-        st.button("개인정보 보호", key="btn_privacy_route", use_container_width=True)
+        st.button("개인정보\n보호", key="btn_privacy_route", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     with row3_col3:
         st.markdown('<div class="volvo-grid-btn">', unsafe_allow_html=True)
@@ -356,14 +356,14 @@ elif st.session_state.current_tab == "상태":
     st.subheader("📊 차량 상태")
     st.write("차량 진단 및 정보를 확인합니다.")
 
-# 📱 [퀵 컨트롤] 탭 화면
+# 📱 [퀵 컨트롤] 탭 화면 (1번 사진)
 else:
     st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True) 
     main_col1, main_col2, main_col3 = st.columns([1, 1.3, 1])
 
     with main_col1:
         st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
-        st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True) 
+        st.write("<div style='margin-top:25px;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="volvo-card-content side-btn">Start<br>Stop</div>', unsafe_allow_html=True)
 
     with main_col2:
@@ -371,7 +371,7 @@ else:
 
     with main_col3:
         st.markdown('<div class="volvo-card-content side-btn">알람<br>줄이기</div>', unsafe_allow_html=True)
-        st.markdown('<div style="margin-bottom: 30px;"></div>', unsafe_allow_html=True)
+        st.write("<div style='margin-top:25px;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="volvo-card-content side-btn">헤드<br>레스트</div>', unsafe_allow_html=True)
 
 # --- 4. 하단 공조 장치 바 ---
