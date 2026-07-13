@@ -29,6 +29,12 @@ if "reduce_alarm_sensitivity" not in st.session_state: st.session_state.reduce_a
 if "welcome_light" not in st.session_state: st.session_state.welcome_light = True
 if "wireless_charging" not in st.session_state: st.session_state.wireless_charging = True
 
+# [💡 조명 및 디스플레이 - 모두 보기 전용 데이터]
+if "display_theme" not in st.session_state: st.session_state.display_theme = "자동"
+if "trip_info_mode" not in st.session_state: st.session_state.trip_info_mode = "자동"  # 없음, 자동, 수동 멀티익스클루시브 구조
+if "hud_enabled" not in st.session_state: st.session_state.hud_enabled = True
+if "hud_brightness" not in st.session_state: st.session_state.hud_brightness = 70
+
 # [시스템 상세 설정 데이터]
 if "sys_time_auto" not in st.session_state: st.session_state.sys_time_auto = True
 if "sys_timezone_auto" not in st.session_state: st.session_state.sys_timezone_auto = True
@@ -157,7 +163,7 @@ st.markdown(
     .system-item-main {{ font-size: 15px; font-weight: 500; color: #ffffff; line-height: 1.2; }}
     .system-item-sub {{ font-size: 12px; color: #8e959e; margin-top: 4px; line-height: 1.3; }}
     
-    /* NUGU AUTO 밑 안내 문구 스타일 */
+    /* NUGU OUTO 밑 안내 문구 스타일 */
     .app-notice-desc {{
         font-size: 13px;
         color: #8e959e; 
@@ -249,7 +255,22 @@ st.markdown(
     div.volvo-fold-btn-zone div.stButton > button {{ background-color: #383e48 !important; color: #ffffff !important; border: none !important; border-radius: 8px !important; height: 38px !important; font-size: 14px !important; font-weight: bold !important; width: 100% !important; box-shadow: none !important; }}
 
     .card-divider {{ border-top: 1px solid #333b46; margin-top: 20px; margin-bottom: 0px; }}
-    .more-link {{ display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; color: #ffffff; cursor: pointer; padding-top: 14px; padding-bottom: 12px; }}
+    
+    /* 가짜 모두 보기 링크 스타일 */
+    .more-link-btn button {{
+        background-color: transparent !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        width: 100% !important;
+        text-align: left !important;
+        padding: 14px 0 12px 0 !important;
+        box-shadow: none !important;
+        display: flex !important;
+        justify-content: space-between !important;
+    }}
+    .more-link-btn button:hover {{ color: #00A3E0 !important; }}
 
     /* 뒤로가기 버튼 박스 */
     .back-btn-box {{ display: flex; align-items: center; justify-content: space-between; width: 100%; }}
@@ -417,7 +438,11 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="more-link-btn">', unsafe_allow_html=True)
+        if st.button("모두 보기  〉", key="btn_ctrl_light_more"):
+            st.session_state.sub_page = "ctrl_light_all"
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="volvo-title-row">🔒 잠금</div>', unsafe_allow_html=True)
     with st.container(border=True):
@@ -460,6 +485,81 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 💡 [💡 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세페이지
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_light_all":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈  조명 및 디스플레이", key="back_to_control_main"):
+        st.session_state.sub_page = "control"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    st.markdown('<div class="volvo-title-row">화면 모드</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">테마 선택</div><div class="setting-desc">중앙 스크린 및 계기판의 밝기 테마 배색을 지정합니다.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
+        thm_col1, thm_col2, thm_col3 = st.columns(3)
+        with thm_col1:
+            t_type = "primary" if st.session_state.display_theme == "라이트" else "secondary"
+            if st.button("라이트", key="btn_thm_light", type=t_type, use_container_width=True):
+                st.session_state.display_theme = "라이트"; st.rerun()
+        with thm_col2:
+            t_type = "primary" if st.session_state.display_theme == "다크" else "secondary"
+            if st.button("다크", key="btn_thm_dark", type=t_type, use_container_width=True):
+                st.session_state.display_theme = "다크"; st.rerun()
+        with thm_col3:
+            t_type = "primary" if st.session_state.display_theme == "자동" else "secondary"
+            if st.button("자동", key="btn_thm_auto", type=t_type, use_container_width=True):
+                st.session_state.display_theme = "자동"; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="volvo-title-row">계기판 세부 정보</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">디스플레이 계기판 트립정보</div><div class="setting-desc">계기판 중앙 하단에 연비 및 주행 관련 트립 컴퓨터 정보를 노출할 모드를 선택합니다.</div>', unsafe_allow_html=True)
+        
+        # 🎯 [핵심 요구사항 구현] 1개가 켜지면 나머지가 꺼지는 구조 (Exclusive Segment)
+        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
+        trip_col1, trip_col2, trip_col3 = st.columns(3)
+        with trip_col1:
+            t_type = "primary" if st.session_state.trip_info_mode == "없음" else "secondary"
+            if st.button("없음", key="btn_trip_none", type=t_type, use_container_width=True):
+                st.session_state.trip_info_mode = "없음"; st.rerun()
+        with trip_col2:
+            t_type = "primary" if st.session_state.trip_info_mode == "자동" else "secondary"
+            if st.button("자동", key="btn_trip_auto", type=t_type, use_container_width=True):
+                st.session_state.trip_info_mode = "자동"; st.rerun()
+        with trip_col3:
+            t_type = "primary" if st.session_state.trip_info_mode == "수동" else "secondary"
+            if st.button("수동", key="btn_trip_manual", type=t_type, use_container_width=True):
+                st.session_state.trip_info_mode = "수동"; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="volvo-title-row">헤드업 디스플레이 (HUD)</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        hud_tgl_col1, hud_tgl_col2 = st.columns([3.6, 1])
+        with hud_tgl_col1:
+            st.markdown('<div class="setting-title" style="padding-top:2px;">전면 유리 HUD 활성화</div>', unsafe_allow_html=True)
+        with hud_tgl_col2:
+            st.session_state.hud_enabled = st.toggle("hud_enabled_tgl", value=st.session_state.hud_enabled, label_visibility="collapsed")
+        
+        if st.session_state.hud_enabled:
+            st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
+            st.markdown('<div class="setting-title">HUD 그래픽 밝기</div>', unsafe_allow_html=True)
+            hud_slider_html = f"""
+            <div class="slider-container-custom" style="padding: 0; margin: 0;">
+                <div class="slider-wrapper">
+                    <input type="range" min="10" max="100" value="{st.session_state.hud_brightness}" 
+                           class="slider-custom" id="hudRange" style="width: 100%;">
+                </div>
+                <div class="slider-val-box">{st.session_state.hud_brightness}%</div>
+            </div>
+            """
+            st.components.v1.html(hud_slider_html, height=35)
+            
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -734,7 +834,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="volvo-title-row" style="margin-top: 10px; margin-bottom: 10px;">허용됨</div>', unsafe_allow_html=True)
     
-    # 🎯 [버그 수정 핵심] 마크다운 문자열 인젝션 대신 컴포넌트 객체로 격리하여 안전하게 출력
     allowed_permissions_html = """
     <style>
     .perm-wrap { font-family: 'Helvetica Neue', sans-serif; background-color: transparent; color: #ffffff; padding: 0; margin: 0; }
