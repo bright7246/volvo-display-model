@@ -255,6 +255,13 @@ st.markdown(
     /* 조명 모두보기 전용 수평 알약형 세그먼트 커스텀 패딩 보정 */
     div.inline-segment-fix div[data-testid="stHorizontalBlock"] {{ margin-top: 0px !important; }}
 
+    /* 🎚️ 우측 토글 정렬을 위한 래퍼 (강제 우측 정렬) */
+    div.right-toggle-align div[data-testid="stComponentBlock"] {{
+        display: flex !important;
+        justify-content: flex-end !important;
+        padding-top: 2px !important;
+    }}
+
     .card-divider {{ border-top: 1px solid #333b46; margin-top: 20px; margin-bottom: 0px; }}
     .more-link-btn button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 14px !important; font-weight: bold !important; padding: 14px 0 12px 0 !important; box-shadow: none !important; text-align: left !important; width: 100% !important; }}
 
@@ -412,7 +419,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         with dim_col1:
             t_type = "primary" if st.session_state.interior_light_dim == "끄기" else "secondary"
             if st.button("끄기", key="btn_dim_off", type=t_type, use_container_width=True):
-                st.session_state.interior_light_dim == "끄기"; st.rerun()
+                st.session_state.interior_light_dim = "끄기"; st.rerun()
         with dim_col2:
             t_type = "primary" if st.session_state.interior_light_dim == "낮음" else "secondary"
             if st.button("낮음", key="btn_dim_low", type=t_type, use_container_width=True):
@@ -424,7 +431,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
-        # 모두 보기 클릭 시 새로 빌드된 조명 및 디스플레이 모두보기 전용창으로 화면 전환!
         st.markdown('<div class="more-link-btn">', unsafe_allow_html=True)
         if st.button("모두 보기                      〉", key="btn_go_lighting_all"):
             st.session_state.sub_page = "ctrl_lighting_all"; st.rerun()
@@ -474,7 +480,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 💡 [설정 -> 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세 서브 페이지 (신규 제작! image_fef4fd.jpg 대응)
+# 💡 [설정 -> 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세 서브 페이지 (정렬 이슈 완벽 해결!)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lighting_all":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  조명 및 디스플레이", key="back_to_control_main"):
@@ -511,7 +517,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.components.v1.html(slider_html, height=35)
         st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
         
-        # 내부 조명 감도 가로 정렬 알약 컴포넌트
         dim_lbl_col, dim_btn_col = st.columns([1.8, 3.2])
         with dim_lbl_col:
             st.markdown('<div class="setting-title" style="padding-top: 12px;">내부 조명 감도</div>', unsafe_allow_html=True)
@@ -532,14 +537,16 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                     st.session_state.interior_light_dim = "높음"; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
 
-    # 단락 A: 외부 조명
-    st.markdown('<div class="volvo-title-row">외부 조명</div>', unsafe_allow_html=True)
+    # 단락 A: 외부 조명 (🎯 쏠림 오류 전면 수정: 한줄 연결 & 알약 우측 정렬 강제)
+    st.markdown('<div class="volvo-title-row">外部 조명</div>', unsafe_allow_html=True)
     with st.container(border=True):
-        ext_col1, ext_col2 = st.columns([3.8, 12])
+        ext_col1, ext_col2 = st.columns([4.2, 0.8])  # 넓은 한줄 핏 비율 확보
         with ext_col1:
-            st.markdown('<div class="setting-title" style="padding-top: 4px; line-height: 1.3;">좌측 주행 조명에 맞게 조명 조정</div>', unsafe_allow_html=True)
+            st.markdown('<div class="setting-title" style="padding-top: 6px; white-space: nowrap;">좌측 주행 조명에 맞게 조명 조정</div>', unsafe_allow_html=True)
         with ext_col2:
+            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
             st.session_state.left_drive_light_adjust = st.toggle("tgl_left_light", value=st.session_state.left_drive_light_adjust, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
 
     # 단락 A: 디스플레이
     st.markdown('<div class="volvo-title-row">디스플레이</div>', unsafe_allow_html=True)
