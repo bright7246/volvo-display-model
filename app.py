@@ -25,6 +25,8 @@ if "ready_to_drive" not in st.session_state: st.session_state.ready_to_drive = T
 # [컨트롤 설정 데이터]
 if "interior_brightness" not in st.session_state: st.session_state.interior_brightness = 80
 if "interior_light_dim" not in st.session_state: st.session_state.interior_light_dim = "높음"
+if "reduce_alarm_sensitivity" not in st.session_state: st.session_state.reduce_alarm_sensitivity = False
+if "welcome_light" not in st.session_state: st.session_state.welcome_light = True
 
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
@@ -142,7 +144,7 @@ st.markdown(
     .setting-title {{ font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 4px; }}
     .setting-desc {{ font-size: 12px; color: #8e959e; line-height: 1.4; }}
     
-    /* 🎚️ [가로 전체 확장] 컴포넌트 iframe 자체의 마진과 너비를 100%로 강제 확장 */
+    /* 🎚️ 컴포넌트 너비 확장 규칙 고정 */
     div[data-testid="stHtmlBlock"] {{
         width: 100% !important;
     }}
@@ -236,6 +238,11 @@ st.markdown(
         cursor: pointer;
         padding-top: 14px;
         padding-bottom: 12px; 
+    }}
+    
+    /* 토글 컬러 볼보 순정 파란색 매칭 테마 */
+    div[data-testid="stCheckboxToggleHoverTarget"] div[aria-checked="true"] {{
+        background-color: #00A3E0 !important;
     }}
     
     /* 뒤로가기 링크 박스 */
@@ -376,7 +383,7 @@ if st.session_state.current_tab == "설정" and st.session_state.sub_page == "dr
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 컨트롤] 서브 페이지 (가로 너비 잠금장치 완전 해제 버전)
+# 🎛️ [설정 -> 컨트롤] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
@@ -385,12 +392,13 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
     
+    # ----------------------------------------------------
+    # 단락 1: 조명 및 디스플레이 (와이드 슬라이더 버전)
+    # ----------------------------------------------------
+    st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
-        
-        # 💡 iframe 껍데기 제한을 풀어 하단 '높음' 버튼 오른쪽 끝 정렬선까지 와이드하게 밀어버린 마감
         slider_html = f"""
         <div class="slider-container-custom" style="padding: 0; margin: 0;">
             <div class="slider-wrapper">
@@ -401,12 +409,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             </div>
             <div class="slider-val-box" id="sliderVal">{st.session_state.interior_brightness}</div>
         </div>
-        
         <script>
         var slider = document.getElementById("brightnessRange");
         slider.addEventListener("change", function() {{
-            const url = new URL(window.location.href);
-            url.searchParams.set("brightness_slider", this.value);
             window.parent.postMessage({{
                 type: "streamlit:set_query_params",
                 queryParams: {{"brightness_slider": this.value}}
@@ -415,7 +420,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         </script>
         """
         st.components.v1.html(slider_html, height=35)
-        
         st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
         
         st.markdown('<div class="setting-title">내부 조명 감도</div>', unsafe_allow_html=True)
@@ -435,6 +439,33 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                 st.session_state.interior_light_dim = "높음"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
+        st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
+
+    # ----------------------------------------------------
+    # 🔒 단락 2: 잠금 섹션 (2번 사진 요구사항 완벽 반영)
+    # ----------------------------------------------------
+    st.markdown('<div class="volvo-title-row">🔒 잠금</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        # 1. 알람 감도 낮추기 항목
+        alarm_col1, alarm_col2 = st.columns([3.6, 1])
+        with alarm_col1:
+            st.markdown('<div class="setting-title">알람 감도 낮추기</div><div class="setting-desc">페리 또는 다른 교통수단 이용 시</div>', unsafe_allow_html=True)
+        with alarm_col2:
+            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+            st.session_state.reduce_alarm_sensitivity = st.toggle("Alarm_tgl", value=st.session_state.reduce_alarm_sensitivity, label_visibility="collapsed")
+            
+        st.write("<div style='margin-top:18px;'></div>", unsafe_allow_html=True)
+        
+        # 2. 웰컴 라이트 항목
+        welcome_col1, welcome_col2 = st.columns([3.6, 1])
+        with welcome_col1:
+            st.markdown('<div class="setting-title">웰컴 라이트</div><div class="setting-desc">차량에 접근하고 차량에서 내릴 때 조명을 켭니다</div>', unsafe_allow_html=True)
+        with welcome_col2:
+            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+            st.session_state.welcome_light = st.toggle("Welcome_ctrl_tgl", value=st.session_state.welcome_light, label_visibility="collapsed")
+            
+        # 3. 구분선 및 정갈한 여백 마감 모두 보기 링크
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link"><span>모두 보기</span><span>〉</span></div>', unsafe_allow_html=True)
 
