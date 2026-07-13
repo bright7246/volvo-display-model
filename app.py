@@ -24,12 +24,16 @@ st.markdown(
         background-color: {bg_color} !important;
         color: #ffffff !important;
     }}
+    
+    /* 💡 전체 세로 길이를 길게 뽑기 위해 최대 너비와 상하 패딩 최적화 */
     .block-container {{
-        max-width: 450px !important;
-        padding-top: 2.5rem !important; 
-        padding-bottom: 1.5rem;
+        max-width: 480px !important;
+        padding-top: 2rem !important; 
+        padding-bottom: 3rem !important;
         margin: 0 auto;
+        min-height: 850px; /* 세로 최소 높이 확보 */
     }}
+    
     .volvo-status-bar {{
         display: flex;
         justify-content: space-between;
@@ -39,7 +43,7 @@ st.markdown(
         color: #ffffff !important;
         font-weight: 500;
         padding: 5px 10px;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }}
     .stButton > button {{
         background-color: transparent !important;
@@ -57,7 +61,7 @@ st.markdown(
         border-bottom: 3px solid #ffffff !important;
     }}
     
-    /* 볼보 스타일 카드 디자인 */
+    /* 📱 퀵 컨트롤 전용 카드 디자인 */
     .volvo-card-content {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
@@ -72,34 +76,34 @@ st.markdown(
         width: 100%;
     }}
     .side-btn {{
-        height: 130px;
+        height: 140px; /* 퀵컨트롤 사이드 버튼도 소폭 확장 */
         font-size: 14px;
         line-height: 1.4;
     }}
     .center-box {{
-        height: 280px;
+        height: 300px; /* 퀵컨트롤 중앙 박스 확장 */
         font-size: 24px;
         letter-spacing: 5px;
         font-family: 'Times New Roman', Times, serif;
         font-weight: 400;
     }}
     
-    /* 설정 탭 전용 카드 디자인 */
+    /* 💡 설정 탭 전용 카드 디자인 - 세로 길이를 시원하게 늘림 */
     .volvo-set-card {{
         background-color: {card_color} !important;
         border: 1px solid {border_color} !important;
-        border-radius: 12px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
         text-align: center;
         color: #ffffff !important;
         font-weight: bold;
-        font-size: 15px;
+        font-size: 16px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         width: 100%;
-        height: 90px;
-        margin-bottom: 12px;
+        height: 125px; /* 90px -> 125px로 대폭 늘려서 세로 비율 강조 */
+        margin-bottom: 18px; /* 카드 간 간격도 넓혀서 롱 디스플레이 느낌 제공 */
     }}
     
     /* 하단 바 디자인 */
@@ -108,9 +112,9 @@ st.markdown(
         justify-content: space-between;
         align-items: center;
         background-color: #111418;
-        padding: 12px 18px;
+        padding: 14px 18px;
         border-radius: 12px;
-        margin-top: 40px;
+        margin-top: 50px; /* 하단 바를 아래로 더 밀어내어 전체 길이 확장 */
         border: 1px solid #232830;
     }}
     .bottom-item {{
@@ -164,13 +168,15 @@ with top_col3:
         st.session_state.current_tab = "상태"
         st.rerun()
 
-st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: -10px; margin-bottom: 25px;"></div>', unsafe_allow_html=True)
 
 
 # --- 3. 화면 분기 처리 ---
 
 # ⚙️ [설정] 탭 내용
 if st.session_state.current_tab == "설정":
+    st.write("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
+
     # 1라인: 주행 / 컨트롤
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
@@ -190,7 +196,7 @@ if st.session_state.current_tab == "설정":
     with row3_col1:
         st.markdown('<div class="volvo-set-card" style="font-size: 14px;">프로필</div>', unsafe_allow_html=True)
     with row3_col2:
-        st.markdown('<div class="volvo-set-card" style="font-size: 14px;">개인정보 보호</div>', unsafe_allow_html=True)
+        st.markdown('<div class="volvo-set-card" style="font-size: 14px;">개인정보<br>보호</div>', unsafe_allow_html=True)
     with row3_col3:
         st.markdown('<div class="volvo-set-card" style="font-size: 14px;">시스템</div>', unsafe_allow_html=True)
 
