@@ -193,22 +193,28 @@ st.markdown(
     .oil-bar-fill-green {{ background-color: #00c853; height: 100%; width: 84%; border-radius: 4px 0 0 4px; }}
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
-    /* ⚙️ 설정 메인 격자 카드 - 💥 세로 높이 및 정렬 수정 구역 💥 */
-    div.volvo-grid-card div.stButton > button {{
-        background-color: rgb(22, 27, 35) !important;
-        color: #ffffff !important;
-        border: 1px solid {border_color} !important;
-        border-radius: 14px !important;
-        height: 500px !important; /* 👈 기존 135px에서 160px로 세로 확대 */
-        font-size: 17px !important; /* 글자 크기도 살짝 확대 */
-        font-weight: bold !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-        width: 100% !important;
-        white-space: pre-line !important;
-        display: flex !important;
-        align-items: center !important; /* 세로 중앙 정렬 보장 */
-        justify-content: center !important;
-        padding: 20px 10px !important;
+/* ⚙️ 설정 메인 격자 카드 - 상위 컴포넌트까지 높이 강제 동기화 */
+div.volvo-grid-card,
+div.volvo-grid-card div[data-testid="stWidgetSpacing"],
+div.volvo-grid-card div.stButton,
+div.volvo-grid-card div.stButton > button {
+    height: 220px !important; /* 👈 여기에 원하는 세로 크기(200, 300, 500 등)를 적으세요 */
+}
+
+div.volvo-grid-card div.stButton > button {
+    background-color: rgb(22, 27, 35) !important;
+    color: #ffffff !important;
+    border: 1px solid {border_color} !important;
+    border-radius: 14px !important;
+    font-size: 17px !important;
+    font-weight: bold !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+    width: 100% !important;
+    white-space: pre-line !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px 10px !important;
     }}
     
     /* 🛠️ 세팅 박스 타이틀 */
