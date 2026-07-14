@@ -397,6 +397,12 @@ if "conn_wifi_enabled" not in st.session_state: st.session_state.conn_wifi_enabl
 if "profile_name" not in st.session_state: st.session_state.profile_name = "오너"
 if "care_key_speed_limit" not in st.session_state: st.session_state.care_key_speed_limit = False
 
+# [개인정보 보호 상세 하위 탭 데이터]
+if "all_privacy_enabled" not in st.session_state: st.session_state.all_privacy_enabled = False
+if "car_data_analysis" not in st.session_state: st.session_state.car_data_analysis = False
+if "ota_updates" not in st.session_state: st.session_state.ota_updates = False
+if "asdr_enabled" not in st.session_state: st.session_state.asdr_enabled = False
+
 
 # ==========================================
 # 3. 인포테인먼트 상시 상단 상태바 렌더링
@@ -525,6 +531,7 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   사운드", key="back_to_settings_from_sound"):
+        st.session_page = "main"
         st.session_state.sub_page = "main"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
@@ -994,7 +1001,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
 
 # ------------------------------------------
-# [10-5] 🛡️ 설정 -> 개인정보 보호 상세 뷰 (A 타입 리스트형 신규 추가)
+# [10-5] 🛡️ 설정 -> 개인정보 보호 상세 뷰 (A 타입 리스트형)
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "privacy_settings":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -1013,7 +1020,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         with priv_c1:
             st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">Volvo 개인정보 보호 설정</div><div class="system-item-sub">차량 개인정보 보호 설정 제어</div></div>', unsafe_allow_html=True)
         with priv_c2:
-            st.button("〉", key="btn_priv_volvo_dummy", use_container_width=True)
+            if st.button("〉", key="btn_priv_volvo_all_go", use_container_width=True):
+                st.session_state.sub_page = "privacy_volvo_settings"
+                st.rerun()
             
         st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
         
@@ -1052,6 +1061,98 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.button("〉", key="btn_priv_infodata_dummy", use_container_width=True)
             
         st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ------------------------------------------
+# [10-5-A] ⚙️ 설정 -> 개인정보 보호 -> Volvo 개인정보 보호 설정 (새롭게 추가됨)
+# ------------------------------------------
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "privacy_volvo_settings":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   Volvo 개인정보 보호 설정", key="back_to_privacy_menu"):
+        st.session_state.sub_page = "privacy_settings"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div style="padding: 2px 10px;">', unsafe_allow_html=True)
+    st.markdown('<div style="font-size: 24px; font-weight: bold; color: #ffffff; margin-bottom: 6px;">개인정보 보호 설정</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div style="font-size: 13px; color: #a4aab3; line-height: 1.5; margin-bottom: 25px;">'
+        '저희 <span style="color: #00A3E0; font-weight: bold; cursor: pointer;">개인정보 보호정책</span>에서 귀하의 정보 처리 방법에 대해 알아보십시오.'
+        '</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    # 1. 모든 옵션 활성화 토글 (클릭 시 하위 요소들 일괄 제어)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        all_priv_c1, all_priv_c2 = st.columns([4.2, 0.8])
+        with all_priv_c1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:16px; padding-top:2px;">모든 옵션 활성화</div></div>', unsafe_allow_html=True)
+        with all_priv_c2:
+            st.markdown('<div class="right-toggle-align" style="margin-top: 4px;">', unsafe_allow_html=True)
+            prev_all_state = st.session_state.all_privacy_enabled
+            current_all_state = st.toggle("tgl_all_priv_trigger", value=st.session_state.all_privacy_enabled, label_visibility="collapsed")
+            if current_all_state != prev_all_state:
+                st.session_state.all_privacy_enabled = current_all_state
+                st.session_state.car_data_analysis = current_all_state
+                st.session_state.ota_updates = current_all_state
+                st.session_state.asdr_enabled = current_all_state
+                st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    st.write("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+        
+    # 2. 차량 데이터 분석 (B타입 형태)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        ana_c1, ana_c2 = st.columns([4.2, 0.8])
+        with ana_c1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:16px; padding-top:2px;">차량 데이터 분석</div></div>', unsafe_allow_html=True)
+        with ana_c2:
+            st.markdown('<div class="right-toggle-align" style="margin-top: 4px;">', unsafe_allow_html=True)
+            prev_ana = st.session_state.car_data_analysis
+            st.session_state.car_data_analysis = st.toggle("tgl_car_data_analysis", value=st.session_state.car_data_analysis, label_visibility="collapsed")
+            if prev_ana != st.session_state.car_data_analysis and not st.session_state.car_data_analysis:
+                st.session_state.all_privacy_enabled = False
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    # 3. 무선 소프트웨어 업데이트 (B타입 형태)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        ota_c1, ota_c2 = st.columns([4.2, 0.8])
+        with ota_c1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:16px; padding-top:2px;">무선 소프트웨어 업데이트</div></div>', unsafe_allow_html=True)
+        with ota_c2:
+            st.markdown('<div class="right-toggle-align" style="margin-top: 4px;">', unsafe_allow_html=True)
+            prev_ota = st.session_state.ota_updates
+            st.session_state.ota_updates = st.toggle("tgl_ota_updates", value=st.session_state.ota_updates, label_visibility="collapsed")
+            if prev_ota != st.session_state.ota_updates and not st.session_state.ota_updates:
+                st.session_state.all_privacy_enabled = False
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    # 4. 능동형 안전 정보 기록장치(ASDR) (B타입 형태)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        asdr_c1, asdr_c2 = st.columns([4.2, 0.8])
+        with asdr_c1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:16px; padding-top:2px;">능동형 안전 정보 기록장치(ASDR)</div></div>', unsafe_allow_html=True)
+        with asdr_c2:
+            st.markdown('<div class="right-toggle-align" style="margin-top: 4px;">', unsafe_allow_html=True)
+            prev_asdr = st.session_state.asdr_enabled
+            st.session_state.asdr_enabled = st.toggle("tgl_asdr_enabled", value=st.session_state.asdr_enabled, label_visibility="collapsed")
+            if prev_asdr != st.session_state.asdr_enabled and not st.session_state.asdr_enabled:
+                st.session_state.all_privacy_enabled = False
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -1141,7 +1242,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.session_state.sub_page = "main"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #2d333c" ; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
@@ -1149,7 +1250,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
         slider_html = f"""
         <div class="slider-container-custom" style="padding: 0; margin: 0;">
-            <div class="slider-wrapper"><input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" class="slider-custom" id="brightnessRange" style="width: 100%;" oninput="document.getElementById('sliderVal').innerText = this.value"></div>
+            <div class="slider-wrapper"><input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" class="slider-custom" id="brightnessRange" style="width: 100%;" oninput="document.getElementById(\'sliderVal\').innerText = this.value"></div>
             <div class="slider-val-box" id="sliderVal">{st.session_state.interior_brightness}</div>
         </div>
         <script>
@@ -1232,7 +1333,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
         slider_html = f"""
         <div class="slider-container-custom" style="padding: 0; margin: 0;">
-            <div class="slider-wrapper"><input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" class="slider-custom" id="brightnessRangeAll" style="width: 100%;" oninput="document.getElementById('sliderValAll').innerText = this.value"></div>
+            <div class="slider-wrapper"><input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" class="slider-custom" id="brightnessRangeAll" style="width: 100%;" oninput="document.getElementById(\'sliderValAll\').innerText = this.value"></div>
             <div class="slider-val-box" id="sliderValAll">{st.session_state.interior_brightness}</div>
         </div>
         <script>
