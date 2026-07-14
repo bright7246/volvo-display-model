@@ -164,7 +164,7 @@ st.markdown(
         box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
     }}
 
-    /* ⭕ 타이어 공기압 서브뷰 컴 roar */
+    /* ⭕ 타이어 공기압 서브뷰 컴포넌트 */
     .tire-status-header {{ display: flex; align-items: center; gap: 10px; font-size: 16px; color: #ffffff; font-weight: bold; padding: 10px 4px; }}
     .tire-check-circle-green {{
         width: 86px; height: 86px; border-radius: 50%;
@@ -210,25 +210,6 @@ st.markdown(
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         width: 100% !important;
         white-space: pre-line !important;
-    }}
-    
-    /* 🔊 사운드 전용 알약 커스텀 스타일 버튼 */
-    div.volvo-pill-button-zone div.stButton > button {{
-        background-color: rgb(38, 45, 56) !important;
-        color: #8e959e !important;
-        border: 1px solid #4a5464 !important;
-        border-radius: 24px !important; /* 완벽한 알약 라운딩 */
-        height: 42px !important;
-        padding: 0px 28px !important;
-        font-size: 14px !important;
-        font-weight: bold !important;
-        width: auto !important;
-        box-shadow: none !important;
-    }}
-    div.volvo-pill-button-zone div.stButton > button[kind="primary"] {{
-        background-color: #00A3E0 !important;
-        color: #ffffff !important;
-        border: none !important;
     }}
     
     /* 🛠️ 세팅 박스 타이틀 */
@@ -435,7 +416,7 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🔊 [설정 -> 사운드] 신규 상세 서브 페이지 (B 포커스 선택 바 + 알약형 서라운드 + 강도 조절)
+# 🔊 [설정 -> 사운드] 최종 구현 서브 페이지 (B 포커스 라디오 + 우측 알약 토글 서라운드 + 강도 조절 + B타입 메뉴탭)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   사운드", key="back_to_settings_from_sound"):
@@ -444,9 +425,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    st.markdown('<div class="volvo-title-row" style="margin-top:0px;">B 포커스</div>', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row" style="margin-top:0px;">포커스</div>', unsafe_allow_html=True)
     
-    # 🎯 4개 항목 중 단 1개만 상호 배타적으로 선택 및 활성화되도록 구현
+    # 1. B 포커스 단일 라디오 활성화 존
     with st.container(border=True):
         selected_focus = st.radio(
             "B 포커스 선택 그룹",
@@ -458,29 +439,49 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.sound_focus = selected_focus
             st.rerun()
             
-    st.markdown('<div class="volvo-title-row">부가 설정</div>', unsafe_allow_html=True)
+    # 2. 부가 설정 존 (글자는 왼쪽, 알약 토글은 오른쪽 끝 배치)
     with st.container(border=True):
-        st.markdown('<div class="setting-title">서라운드</div>', unsafe_allow_html=True)
-        st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
-        st.markdown('<div class="volvo-pill-button-zone">', unsafe_allow_html=True)
-        pill_type = "primary" if st.session_state.sound_surround else "secondary"
-        
-        # 알약 버튼 상태 전환 트리거
-        if st.button("서라운드", key="btn_sound_surround_toggle", type=pill_type):
-            st.session_state.sound_surround = not st.session_state.sound_surround
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+        sr_col1, sr_col2 = st.columns([3.6, 1])
+        with sr_col1:
+            st.markdown('<div class="setting-title" style="padding-top: 4px;">서라운드</div>', unsafe_allow_html=True)
+        with sr_col2:
+            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
+            st.session_state.sound_surround = st.toggle("tgl_sound_surround", value=st.session_state.sound_surround, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
         
         st.markdown('<div class="card-divider" style="margin-top: 15px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
         
-        st.markdown('<div class="setting-title">효과 강도 조절</div>', unsafe_allow_html=True)
-        # 내장 슬라이더 연동
+        # 슬라이드 바
         st.session_state.sound_surround_level = st.slider(
             "효과 강도 레벨",
             min_value=0, max_value=100,
             value=st.session_state.sound_surround_level,
             label_visibility="collapsed"
         )
+        
+    # 3. 아래쪽에 새로운 B 타입으로 하위 탭 리스트 추가 (image_610ee3.png 완벽 이식)
+    st.write("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+    
+    # 톤 > 탭
+    tone_col1, tone_col2 = st.columns([4.2, 0.8])
+    with tone_col1:
+        st.markdown('<div class="text-container-fix"><div class="system-item-main">🎛️ 톤</div></div>', unsafe_allow_html=True)
+    with tone_col2:
+        if st.button("〉", key="btn_sound_tone_sub", use_container_width=True):
+            pass  # 추후 톤 세부 설정 탭 이동용 바인딩 가능
+            
+    st.markdown('<div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>', unsafe_allow_html=True)
+    
+    # 볼륨 > 탭
+    vol_col1, vol_col2 = st.columns([4.2, 0.8])
+    with vol_col1:
+        st.markdown('<div class="text-container-fix"><div class="system-item-main">🔊 볼륨</div></div>', unsafe_allow_html=True)
+    with vol_col2:
+        if st.button("〉", key="btn_sound_volume_sub", use_container_width=True):
+            pass  # 추후 볼륨 세부 설정 탭 이동용 바인딩 가능
+            
+    st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -497,7 +498,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     with st.container(border=True):
         pa_col1, pa_col2 = st.columns([3.6, 1])
         with pa_col1:
-            st.markdown('<div class="setting-title">Pilot Assist 기본 설정</div><div class="setting-desc">스티어ering 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="setting-title">Pilot Assist 기본 설정</div><div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>', unsafe_allow_html=True)
         with pa_col2:
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.pilot_assist = st.toggle("PA_tgl", value=st.session_state.pilot_assist, label_visibility="collapsed")
@@ -1210,7 +1211,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        # 🎯 라우팅 연동 성공: 사운드 버튼 클릭 시 신규 구현한 sound 탭으로 이동!
         if st.button("사운드", key="btn_sound_go", use_container_width=True):
             st.session_state.sub_page = "sound"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
