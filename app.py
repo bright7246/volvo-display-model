@@ -201,7 +201,7 @@ div.volvo-grid-card div.stButton > button {
     height: 220px !important; /* 👈 여기에 원하는 세로 크기(200, 300, 500 등)를 적으세요 */
 }
 
-div.volvo-grid-card div.stButton > button {
+div.volvo-grid-card div.stButton > button {{
     background-color: rgb(22, 27, 35) !important;
     color: #ffffff !important;
     border: 1px solid {border_color} !important;
