@@ -531,7 +531,6 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   사운드", key="back_to_settings_from_sound"):
-        st.session_page = "main"
         st.session_state.sub_page = "main"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
@@ -869,7 +868,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="volvo-title-row">키 연결 및 관리</div>', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row">기기 관리</div>', unsafe_allow_html=True)
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
     st.markdown('<div class="volvo-title-row" style="margin-top:0px; font-size:15px; color:#ffffff;">키</div>', unsafe_allow_html=True)
@@ -1053,19 +1052,21 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             
         st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
         
-        # 5. 인포테인먼트 시스템 데이터
+        # 5. 인포테인먼트 시스템 데이터 (하위 탭으로 직접 이동 처리)
         priv_c9, priv_c10 = st.columns([4.2, 0.8])
         with priv_c9:
             st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">인포테인먼트 시스템 데이터</div><div class="system-item-sub">차량에 저장된 활동 및 정보 관리</div></div>', unsafe_allow_html=True)
         with priv_c10:
-            st.button("〉", key="btn_priv_infodata_dummy", use_container_width=True)
+            if st.button("〉", key="btn_priv_infodata_nav", use_container_width=True):
+                st.session_state.sub_page = "privacy_infotainment_data"
+                st.rerun()
             
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ------------------------------------------
-# [10-5-A] ⚙️ 설정 -> 개인정보 보호 -> Volvo 개인정보 보호 설정 (새롭게 추가됨)
+# [10-5-A] ⚙️ 설정 -> 개인정보 보호 -> Volvo 개인정보 보호 설정
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "privacy_volvo_settings":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -1153,6 +1154,41 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.markdown('</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ------------------------------------------
+# [10-5-B] 💾 설정 -> 개인정보 보호 -> 인포테인먼트 시스템 데이터 (새롭게 추가됨)
+# ------------------------------------------
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "privacy_infotainment_data":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   인포테인먼트 시스템 데이터", key="back_to_privacy_menu_from_infodata"):
+        st.session_state.sub_page = "privacy_settings"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        
+        # 1. 프로필 삭제
+        del_p_c1, del_p_c2 = st.columns([4.2, 0.8])
+        with del_p_c1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">프로필 삭제</div><div class="system-item-sub">인포테인먼트 시스템에서 프로필과 계정을 삭제</div></div>', unsafe_allow_html=True)
+        with del_p_c2:
+            st.button("〉", key="btn_del_profile_dummy", use_container_width=True)
+            
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 2. 모든 데이터 삭제(초기화)
+        reset_c1, reset_c2 = st.columns([4.2, 0.8])
+        with reset_c1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">모든 데이터 삭제(초기화)</div><div class="system-item-sub">인포테인먼트 시스템에서 모든 데이터와 프로필 삭제</div></div>', unsafe_allow_html=True)
+        with reset_c2:
+            st.button("〉", key="btn_reset_all_dummy", use_container_width=True)
+            
+        st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
