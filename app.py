@@ -269,6 +269,32 @@ st.markdown(
     .avatar-circle-add {{ width: 56px; height: 56px; border-radius: 50%; background-color: transparent; border: 1px dashed #505b6e; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #8e959e; }}
     .avatar-label {{ font-size: 13px; font-weight: bold; color: #ffffff; margin-top: 8px; white-space: nowrap; }}
 
+    /* 🔑 볼보 앱 키스캔 일러스트 테마 박스 */
+    .volvo-app-illus-box {{
+        background: radial-gradient(circle at center, rgb(38, 46, 58) 0%, rgb(20, 25, 33) 80%);
+        border: 1px solid {border_color};
+        border-radius: 14px;
+        height: 180px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 0 25px 0;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+    }}
+    .volvo-app-illus-icon {{
+        font-size: 55px;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+        letter-spacing: 12px;
+        margin-bottom: 12px;
+    }}
+    .volvo-app-illus-text {{
+        font-size: 13px;
+        color: #8e959e;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }}
+
     /* 하단 바 */
     .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 40px; border: 1px solid #232830; }}
     .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
@@ -693,7 +719,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
 
 # ------------------------------------------
-# [10] 👤 설정 -> 프로필 -> 프로필 설정 상세 뷰 (B 타입)
+# [10] 👤 설정 -> 프로필 -> 프로필 설정 상세 메인 뷰 (B 타입)
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_settings":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -725,14 +751,20 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
         p_col3, p_col4 = st.columns([4.2, 0.8])
         with p_col3: st.markdown('<div class="text-container-fix"><div class="system-item-main">Volvo Cars 앱</div><div class="system-item-sub">커넥티드 서비스를 사용하시려면 차량 소유자로 등록하세요</div></div>', unsafe_allow_html=True)
-        with p_col4: st.button("〉", key="btn_prof_volvo_app", use_container_width=True)
+        with p_col4: 
+            if st.button("〉", key="btn_prof_volvo_app_go", use_container_width=True):
+                st.session_state.sub_page = "profile_volvo_app"
+                st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
     with st.container(border=True):
         st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
         p_col5, p_col6 = st.columns([4.2, 0.8])
         with p_col5: st.markdown('<div class="text-container-fix"><div class="system-item-main">차량 키</div><div class="system-item-sub">키 연결 및 관리</div></div>', unsafe_allow_html=True)
-        with p_col6: st.button("〉", key="btn_prof_car_key", use_container_width=True)
+        with p_col6: 
+            if st.button("〉", key="btn_prof_car_key_go", use_container_width=True):
+                st.session_state.sub_page = "profile_car_key"
+                st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
     with st.container(border=True):
@@ -747,6 +779,88 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         p_col9, p_col10 = st.columns([4.2, 0.8])
         with p_col9: st.markdown('<div class="text-container-fix" style="min-height:36px;"><div class="system-item-main">다른 프로필 관리</div></div>', unsafe_allow_html=True)
         with p_col10: st.button("〉", key="btn_prof_manage_other", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ------------------------------------------
+# [10-1] 📱 설정 -> 프로필 -> Volvo Cars 앱 상세 뷰 (소유자 등록 및 키스캔 무반응 기능 추가)
+# ------------------------------------------
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_volvo_app":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   Volvo Cars 앱", key="back_to_profile_settings_from_app"):
+        st.session_state.sub_page = "profile_settings"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="volvo-title-row">소유자로 등록</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    # 🔑 볼보 앱 일러스트 그래픽 모사 존
+    st.markdown(
+        '<div class="volvo-app-illus-box">'
+        '<div class="volvo-app-illus-icon">🔑📡🔑</div>'
+        '<div class="volvo-app-illus-text">DUAL KEY SCAN SYSTEM</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
+    
+    with st.container(border=True):
+        st.markdown('<div class="setting-title" style="font-size:16px; line-height:1.4;">시작하려면 두 개의 키를 스캔해야합니다.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="setting-desc" style="font-size:13px; line-height:1.5; margin-top:8px; color:#a4aab3;">그런 다음 volvo ID 를 사용하여 Volvo cars 앱에 연결할 수 있습니다.</div>', unsafe_allow_html=True)
+        st.markdown('<div style="margin-top: 22px;"></div>', unsafe_allow_html=True)
+        
+        # 🎯 누르되 아무 반응이 없게 설계된 스캔 전용 버튼
+        scan_col1, scan_col2, scan_col3 = st.columns([1, 2, 1])
+        with scan_col2:
+            if st.button("키 스캔", key="btn_key_scan_trigger_dummy", use_container_width=True, type="primary"):
+                pass  # 무반응 처리 요구사항 반영
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ------------------------------------------
+# [10-2] 🔑 설정 -> 프로필 -> 차량 키 상세 뷰 (A/B 타입 및 무반응 버튼 연동 추가)
+# ------------------------------------------
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_car_key":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   차량 키", key="back_to_profile_settings_from_key"):
+        st.session_state.sub_page = "profile_settings"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="volvo-title-row">키 연결 및 관리</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    # [1] 키 (A타입 헤더 & B타입 바디 연계 구조)
+    st.markdown('<div class="volvo-title-row" style="margin-top:0px; font-size:15px; color:#ffffff;">키</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title" style="color:#e2e8f0;">연결된 키 없음</div>', unsafe_allow_html=True)
+        st.markdown('<div class="setting-desc" style="margin-top:6px; line-height:1.4;">차량에 탑승할 때 키를 연결하여 귀하의 설정을 불러오십시오</div>', unsafe_allow_html=True)
+        st.markdown('<div style="margin-top:18px;"></div>', unsafe_allow_html=True)
+        
+        # 🎯 누르되 반응 없도록 설계한 프로필 연결 버튼
+        if st.button("키를 이 프로필에 연결", key="btn_connect_key_profile_dummy", use_container_width=True):
+            pass  # 무반응 처리 요구사항 반영
+            
+    st.write("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+
+    # [2] 제한된 키 (A타입 헤더 & B타입 리스트 및 〉 링크 구조)
+    st.markdown('<div class="volvo-title-row" style="font-size:15px; color:#ffffff;">제한된 키</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        key_limit_col1, key_limit_col2 = st.columns([4.2, 0.8])
+        with key_limit_col1:
+            st.markdown(
+                '<div class="text-container-fix">'
+                '<div class="system-item-main">케어 키</div>'
+                '<div class="system-item-sub">공유키에 대한 제한 설정</div>'
+                '</div>',
+                unsafe_allow_html=True
+            )
+        with key_limit_col2:
+            st.button("〉", key="btn_care_key_settings_dummy", use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1097,7 +1211,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
-    # 4. 애플리케이션 〉 (이곳을 누르면 하단 sys_apps 서브뷰로 라우팅됨)
+    # 4. 애플리케이션 〉
     c7, c8 = st.columns([4.2, 0.8])
     with c7: st.markdown('<div class="text-container-fix"><div class="system-item-main">애플리케이션</div><div class="system-item-sub">기본 앱, 권한</div></div>', unsafe_allow_html=True)
     with c8:
@@ -1219,7 +1333,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
 
 # ------------------------------------------
-# [18] 📱 시스템 -> 상세 3. 애플리케이션 목록 뷰 (⭐ 모든 앱 보기 배치 적용)
+# [18] 📱 시스템 -> 상세 3. 애플리케이션 목록 뷰
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_apps":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -1231,7 +1345,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
-    # 🌟 [요청 반영] 리스트 최상단에 컨테이너 분할 방식(B 타입)의 모든 앱 보기 〉 추가 완료!
+    # 모든 앱 보기 〉
     with st.container(border=True):
         st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
         all_app_col1, all_app_col2 = st.columns([4.2, 0.8])
