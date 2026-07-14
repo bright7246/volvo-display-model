@@ -193,18 +193,22 @@ st.markdown(
     .oil-bar-fill-green {{ background-color: #00c853; height: 100%; width: 84%; border-radius: 4px 0 0 4px; }}
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
-    /* ⚙️ 설정 메인 격자 카드 */
+    /* ⚙️ 설정 메인 격자 카드 - 💥 세로 높이 및 정렬 수정 구역 💥 */
     div.volvo-grid-card div.stButton > button {{
         background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
-        height: 500px !important;
-        font-size: 16px !important;
+        height: 160px !important; /* 👈 기존 135px에서 160px로 세로 확대 */
+        font-size: 17px !important; /* 글자 크기도 살짝 확대 */
         font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         width: 100% !important;
         white-space: pre-line !important;
+        display: flex !important;
+        align-items: center !important; /* 세로 중앙 정렬 보장 */
+        justify-content: center !important;
+        padding: 20px 10px !important;
     }}
     
     /* 🛠️ 세팅 박스 타이틀 */
@@ -350,50 +354,40 @@ if st.session_state.current_tab == "상태" and st.session_state.sub_page == "ma
     st.markdown('<div class="status-action-zone">', unsafe_allow_html=True)
     status_btn_col1, status_btn_col2 = st.columns(2)
     with status_btn_col1:
-        if st.button("(!)  타이어 공기압", key="btn_status_tire", use_container_width=True):
+        if st.button("(!)   타이어 공기압", key="btn_status_tire", use_container_width=True):
             st.session_state.sub_page = "status_tire"; st.rerun()
     with status_btn_col2:
-        if st.button("📋  진단", key="btn_status_diag", use_container_width=True):
+        if st.button("📋   진단", key="btn_status_diag", use_container_width=True):
             st.session_state.sub_page = "status_diag"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# ⭕ [상태 -> 타이어 공기압] 상세 서브 뷰 (🎯 1번 사진 완벽 반영!)
+# ⭕ [상태 -> 타이어 공기압] 상세 서브 뷰
 elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "status_tire":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  타이어 공기압", key="back_to_status_main_tire"):
+    if st.button("〈   타이어 공기압", key="back_to_status_main_tire"):
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 순정 상단 서브 헤더 배치
     st.markdown('<div class="tire-status-header">✔️ &nbsp; 모든 타이어 압력 정상</div>', unsafe_allow_html=True)
-    
-    # 중앙 큰 초록색 체크 원형 그래픽
     st.markdown('<div class="tire-check-circle-green"><span class="tire-check-icon-green">✓</span></div>', unsafe_allow_html=True)
-    
     st.write("<div style='margin-top: 40px;'></div>", unsafe_allow_html=True)
-    
-    # 기준 공기압 업데이트 버튼 구역
     st.markdown('<div class="tire-action-zone">', unsafe_allow_html=True)
     st.button("기준 공기압 업데이트", key="btn_update_tire_pressure_dummy")
     st.markdown('</div>', unsafe_allow_html=True)
-    
-    # 하단 볼보 블루 권장문구 안내
     st.markdown('<div class="tire-bottom-notice"><span class="tire-blue-text">Volvo 권장</span> 타이어 공기압 수치를 확인하십시오</div>', unsafe_allow_html=True)
 
 
-# 🔧 [상태 -> 진단] 상세 서브 뷰 (🎯 2번 사진 완벽 반영!)
+# 🔧 [상태 -> 진단] 상세 서브 뷰
 elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "status_diag":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  진단", key="back_to_status_main_diag"):
+    if st.button("〈   진단", key="back_to_status_main_diag"):
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="diag-container">', unsafe_allow_html=True)
-    
-    # 항목 1: 서비스 시기
     st.markdown(
         '<div class="diag-row-item">'
         '<div class="diag-icon-zone">🔧</div>'
@@ -405,8 +399,6 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
         '<div class="diag-divider"></div>', 
         unsafe_allow_html=True
     )
-    
-    # 항목 2: 오일 레벨 및 순정형 게이지 바 구현
     st.markdown(
         '<div class="diag-row-item">'
         '<div class="diag-icon-zone">🛢️</div>'
@@ -420,14 +412,13 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
         '<div class="diag-divider"></div>',
         unsafe_allow_html=True
     )
-    
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # 🚗 [설정 -> 주행] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "driving":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  주행", key="back_to_settings"):
+    if st.button("〈   주행", key="back_to_settings"):
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -501,7 +492,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 # 🎛️ [설정 -> 컨트롤] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "control":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  컨트롤", key="back_to_settings_ctrl"):
+    if st.button("〈   컨트롤", key="back_to_settings_ctrl"):
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -552,7 +543,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link-btn">', unsafe_allow_html=True)
-        if st.button("모두 보기                      〉", key="btn_go_lighting_all"):
+        if st.button("모두 보기                       〉", key="btn_go_lighting_all"):
             st.session_state.sub_page = "ctrl_lighting_all"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -576,7 +567,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link-btn">', unsafe_allow_html=True)
-        if st.button("모두 보기                      〉", key="btn_go_lock_all"):
+        if st.button("모두 보기                       〉", key="btn_go_lock_all"):
             st.session_state.sub_page = "ctrl_lock_all"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -603,7 +594,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 # 💡 [설정 -> 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lighting_all":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  조명 및 디스플레이", key="back_to_control_main"):
+    if st.button("〈   조명 및 디스플레이", key="back_to_control_main"):
         st.session_state.sub_page = "control"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -691,7 +682,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 # 🔒 [설정 -> 컨트롤 -> 잠금 -> 모두 보기] 상세 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lock_all":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  잠금", key="back_to_control_main_lock"):
+    if st.button("〈   잠금", key="back_to_control_main_lock"):
         st.session_state.sub_page = "control"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -775,7 +766,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 # 💻 [설정 -> 시스템] 메인 리스트 탭
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "system":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  시스템", key="back_to_settings_sys"):
+    if st.button("〈   시스템", key="back_to_settings_sys"):
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -839,7 +830,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 # 🌐 [시스템 -> 상세 1. 언어 및 입력] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_language":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  언어 및 입력", key="back_to_sys_main_1"):
+    if st.button("〈   언어 및 입력", key="back_to_sys_main_1"):
         st.session_state.sub_page = "system"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -867,7 +858,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 # ⏰ [시스템 -> 상세 2. 날짜 및 시간] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_datetime":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  날짜 및 시간", key="back_to_sys_main_2"):
+    if st.button("〈   날짜 및 시간", key="back_to_sys_main_2"):
         st.session_state.sub_page = "system"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -907,7 +898,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 # 📱 [시스템 -> 상세 3. 애플리케이션 (기본 앱 목록)] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_apps":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  애플리케이션", key="back_to_sys_main_3"):
+    if st.button("〈   애플리케이션", key="back_to_sys_main_3"):
         st.session_state.sub_page = "system"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -966,7 +957,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 # 🔍 [시스템 -> 애플리케이션 -> NUGU Auto 앱 정보] 세부 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_nugu_info":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈  앱 정보", key="back_to_sys_apps"):
+    if st.button("〈   앱 정보", key="back_to_sys_apps"):
         st.session_state.sub_page = "sys_apps"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
@@ -1024,7 +1015,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     col_top_l, col_top_r = st.columns([3.5, 1.5])
     with col_top_l:
         st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-        if st.button("〈  앱 권한", key="back_to_nugu_info"):
+        if st.button("〈   앱 권한", key="back_to_nugu_info"):
             st.session_state.sub_page = "sys_nugu_info"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
     with col_top_r:
