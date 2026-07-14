@@ -69,8 +69,11 @@ if "vol_assistant" not in st.session_state: st.session_state.vol_assistant = 70
 if "vol_navi" not in st.session_state: st.session_state.vol_navi = 55
 if "vol_notice" not in st.session_state: st.session_state.vol_notice = 40
 
-# 📶 [연결 전용 상태 데이터 초기화]
+# 📶 [연결 전용 상태 데이터]
 if "conn_wifi_enabled" not in st.session_state: st.session_state.conn_wifi_enabled = True
+
+# 👤 [프로필 전용 상태 데이터]
+if "profile_name" not in st.session_state: st.session_state.profile_name = "오너"
 
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
@@ -323,6 +326,14 @@ st.markdown(
     .back-btn-box button {{ background-color: transparent !important; color: #ffffff !important; border: none !important; font-size: 18px !important; font-weight: bold !important; padding: 0 !important; box-shadow: none !important; }}
     div[data-testid="stCheckboxToggleHoverTarget"] div[aria-checked="true"] {{ background-color: #00A3E0 !important; }}
 
+    /* 👤 순정형 프로필 원형 아바타 상단 컴포넌트 */
+    .profile-avatar-row {{ display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 5px; margin-bottom: 25px; }}
+    .avatar-block {{ display: flex; flex-direction: column; align-items: center; width: 65px; text-align: center; }}
+    .avatar-circle-owner {{ width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); border: 2px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }}
+    .avatar-circle-guest {{ width: 56px; height: 56px; border-radius: 50%; background-color: #3d4656; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #a4aab3; border: 1px solid #505b6e; }}
+    .avatar-circle-add {{ width: 56px; height: 56px; border-radius: 50%; background-color: transparent; border: 1px dashed #505b6e; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #8e959e; }}
+    .avatar-label {{ font-size: 13px; font-weight: bold; color: #ffffff; margin-top: 8px; white-space: nowrap; }}
+
     /* 공조 장치 하단 고정 바 */
     .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 40px; border: 1px solid #232830; }}
     .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
@@ -432,7 +443,7 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🔊 [설정 -> 사운드] 메인 페이지 (B 포커스 라디오 + 우측 알약 토글 서라운드 + 강도 조절 + 하위 탭 분기)
+# 🔊 [설정 -> 사운드] 메인 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   사운드", key="back_to_settings_from_sound"):
@@ -443,7 +454,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     st.markdown('<div class="volvo-title-row" style="margin-top:0px;">포커스</div>', unsafe_allow_html=True)
     
-    # B 포커스 단일 라디오 활성화 존
     with st.container(border=True):
         selected_focus = st.radio(
             "B 포커스 선택 그룹",
@@ -455,7 +465,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.sound_focus = selected_focus
             st.rerun()
             
-    # 부가 설정 존 (글자는 왼쪽, 알약 토글은 오른쪽 끝 배치)
     with st.container(border=True):
         sr_col1, sr_col2 = st.columns([3.6, 1])
         with sr_col1:
@@ -464,228 +473,233 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
             st.session_state.sound_surround = st.toggle("tgl_sound_surround", value=st.session_state.sound_surround, label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
-        
         st.markdown('<div class="card-divider" style="margin-top: 15px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+        st.session_state.sound_surround_level = st.slider("효과 강도 레벨", 0, 100, st.session_state.sound_surround_level, label_visibility="collapsed")
         
-        # 슬라이드 바
-        st.session_state.sound_surround_level = st.slider(
-            "효과 강도 레벨",
-            min_value=0, max_value=100,
-            value=st.session_state.sound_surround_level,
-            label_visibility="collapsed"
-        )
-        
-    # 새로운 하위 탭 메뉴 레이아웃 링크 연동
     st.write("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
-    # 톤 〉 탭
     tone_col1, tone_col2 = st.columns([4.2, 0.8])
-    with tone_col1:
-        st.markdown('<div class="text-container-fix"><div class="system-item-main">🎛️ 톤</div></div>', unsafe_allow_html=True)
+    with tone_col1: st.markdown('<div class="text-container-fix"><div class="system-item-main">🎛️ 톤</div></div>', unsafe_allow_html=True)
     with tone_col2:
         if st.button("〉", key="btn_sound_tone_go", use_container_width=True):
             st.session_state.sub_page = "sound_tone"; st.rerun()
-            
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>', unsafe_allow_html=True)
     
-    # 볼륨 〉 탭
     vol_col1, vol_col2 = st.columns([4.2, 0.8])
-    with vol_col1:
-        st.markdown('<div class="text-container-fix"><div class="system-item-main">🔊 볼륨</div></div>', unsafe_allow_html=True)
+    with vol_col1: st.markdown('<div class="text-container-fix"><div class="system-item-main">🔊 볼륨</div></div>', unsafe_allow_html=True)
     with vol_col2:
         if st.button("〉", key="btn_sound_volume_go", use_container_width=True):
             st.session_state.sub_page = "sound_volume"; st.rerun()
-            
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🎛️ [설정 -> 사운드 -> 톤] 상세 서브 페이지 (B 타입: 컨테이너 분할 방식 + 우측 슬라이더)
+# 🎛️ [설정 -> 사운드 -> 톤] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound_tone":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   톤", key="back_to_sound_main_from_tone"):
         st.session_state.sub_page = "sound"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    
-    # 고음 / 우측 슬라이드바
     with st.container(border=True):
         t_col1, t_col2 = st.columns([1.5, 3.5])
-        with t_col1:
-            st.markdown('<div class="setting-title" style="padding-top: 8px;">고음</div>', unsafe_allow_html=True)
-        with t_col2:
-            st.session_state.tone_treble = st.slider("treble_slider", min_value=0, max_value=100, value=st.session_state.tone_treble, label_visibility="collapsed")
-            
-    # 저음 / 우측 슬라이드바
+        with t_col1: st.markdown('<div class="setting-title" style="padding-top: 8px;">고음</div>', unsafe_allow_html=True)
+        with t_col2: st.session_state.tone_treble = st.slider("treble_slider", 0, 100, st.session_state.tone_treble, label_visibility="collapsed")
     with st.container(border=True):
         b_col1, b_col2 = st.columns([1.5, 3.5])
-        with b_col1:
-            st.markdown('<div class="setting-title" style="padding-top: 8px;">저음</div>', unsafe_allow_html=True)
-        with b_col2:
-            st.session_state.tone_bass = st.slider("bass_slider", min_value=0, max_value=100, value=st.session_state.tone_bass, label_visibility="collapsed")
-            
-    # 서브우퍼 / 우측 슬라이드바
+        with b_col1: st.markdown('<div class="setting-title" style="padding-top: 8px;">저음</div>', unsafe_allow_html=True)
+        with b_col2: st.session_state.tone_bass = st.slider("bass_slider", 0, 100, st.session_state.tone_bass, label_visibility="collapsed")
     with st.container(border=True):
         sw_col1, sw_col2 = st.columns([1.5, 3.5])
-        with sw_col1:
-            st.markdown('<div class="setting-title" style="padding-top: 8px;">서브우퍼</div>', unsafe_allow_html=True)
-        with sw_col2:
-            st.session_state.tone_subwoofer = st.slider("subwoofer_slider", min_value=0, max_value=100, value=st.session_state.tone_subwoofer, label_visibility="collapsed")
-
+        with sw_col1: st.markdown('<div class="setting-title" style="padding-top: 8px;">서브우퍼</div>', unsafe_allow_html=True)
+        with sw_col2: st.session_state.tone_subwoofer = st.slider("subwoofer_slider", 0, 100, st.session_state.tone_subwoofer, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🔊 [설정 -> 사운드 -> 볼륨] 상세 서브 페이지 (A 타입: 한 박스 구분선 통합 리스트 + 우측 슬라이더)
+# 🔊 [설정 -> 사운드 -> 볼륨] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound_volume":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   볼륨", key="back_to_sound_main_from_volume"):
         st.session_state.sub_page = "sound"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    
     with st.container(border=True):
-        # 1. 미디어
         v_col1, v_col2 = st.columns([1.8, 3.2])
         with v_col1: st.markdown('<div class="setting-title" style="padding-top: 8px;">🎵 미디어</div>', unsafe_allow_html=True)
         with v_col2: st.session_state.vol_media = st.slider("v_med", 0, 100, st.session_state.vol_media, label_visibility="collapsed")
         st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
-        
-        # 2. 벨소리
         v_col3, v_col4 = st.columns([1.8, 3.2])
         with v_col3: st.markdown('<div class="setting-title" style="padding-top: 8px;">📞 벨소리</div>', unsafe_allow_html=True)
         with v_col4: st.session_state.vol_ring = st.slider("v_ring", 0, 100, st.session_state.vol_ring, label_visibility="collapsed")
         st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
-        
-        # 3. 통화
         v_col5, v_col6 = st.columns([1.8, 3.2])
         with v_col5: st.markdown('<div class="setting-title" style="padding-top: 8px;">🗣️ 통화</div>', unsafe_allow_html=True)
         with v_col6: st.session_state.vol_call = st.slider("v_call", 0, 100, st.session_state.vol_call, label_visibility="collapsed")
         st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
-        
-        # 4. 어시스턴트
         v_col7, v_col8 = st.columns([1.8, 3.2])
         with v_col7: st.markdown('<div class="setting-title" style="padding-top: 8px;">🎙️ 어시스턴트</div>', unsafe_allow_html=True)
         with v_col8: st.session_state.vol_assistant = st.slider("v_ast", 0, 100, st.session_state.vol_assistant, label_visibility="collapsed")
         st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
-        
-        # 5. 내비게이션
         v_col9, v_col10 = st.columns([1.8, 3.2])
         with v_col9: st.markdown('<div class="setting-title" style="padding-top: 8px;">🧭 내비게이션</div>', unsafe_allow_html=True)
         with v_col10: st.session_state.vol_navi = st.slider("v_nav", 0, 100, st.session_state.vol_navi, label_visibility="collapsed")
         st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
-        
-        # 6. 알림
         v_col11, v_col12 = st.columns([1.8, 3.2])
         with v_col11: st.markdown('<div class="setting-title" style="padding-top: 8px;">🔔 알림</div>', unsafe_allow_html=True)
         with v_col12: st.session_state.vol_notice = st.slider("v_not", 0, 100, st.session_state.vol_notice, label_visibility="collapsed")
-
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📶 [설정 -> 연결] 메인 하위 탭 (A 타입)
+# 📶 [설정 -> 연결] 메인 하위 탭
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "connection":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   연결", key="back_to_settings_from_conn"):
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     st.markdown('<div class="volvo-title-row" style="margin-top:0px;">연결 설정</div>', unsafe_allow_html=True)
-    
     with st.container(border=True):
         st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-        
-        # 1. 블루투스 〉
         bt_col1, bt_col2 = st.columns([4.2, 0.8])
-        with bt_col1:
-            st.markdown('<div class="text-container-fix"><div class="system-item-main">📱 블루투스</div></div>', unsafe_allow_html=True)
+        with bt_col1: st.markdown('<div class="text-container-fix"><div class="system-item-main">📱 블루투스</div></div>', unsafe_allow_html=True)
         with bt_col2:
             if st.button("〉", key="btn_conn_bluetooth_go", use_container_width=True):
                 st.session_state.sub_page = "conn_bluetooth"; st.rerun()
-                
         st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
-        
-        # 2. WI-FI 〉
         wf_col1, wf_col2 = st.columns([4.2, 0.8])
-        with wf_col1:
-            st.markdown('<div class="text-container-fix"><div class="system-item-main">📶 WI-FI</div></div>', unsafe_allow_html=True)
+        with wf_col1: st.markdown('<div class="text-container-fix"><div class="system-item-main">📶 WI-FI</div></div>', unsafe_allow_html=True)
         with wf_col2:
             if st.button("〉", key="btn_conn_wifi_go", use_container_width=True):
                 st.session_state.sub_page = "conn_wifi"; st.rerun()
-                
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📱 [설정 -> 연결 -> 블루투스] 상세 서브 페이지 (A 타입 - 2번 사진 반영)
+# 📱 [설정 -> 연결 -> 블루투스] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "conn_bluetooth":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   블루투스", key="back_to_conn_main_from_bt"):
         st.session_state.sub_page = "connection"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    
-    # 1. 저장된 기기 영역
     st.markdown('<div class="volvo-title-row" style="margin-top:0px;">저장된 기기</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
         btd_col1, btd_col2 = st.columns([4.2, 0.8])
-        with btd_col1:
-            st.markdown(
-                '<div class="text-container-fix">'
-                '<div class="system-item-main">이밝음</div>'
-                '<div class="system-item-sub" style="color: #00A3E0;">연결됨</div>'
-                '</div>',
-                unsafe_allow_html=True
-            )
-        with btd_col2:
-            # 순정 우측 톱니바퀴 설정 모양 아이콘 버튼 구현
-            st.markdown('<div style="display: flex; height: 48px; align-items: center; justify-content: flex-end; font-size: 18px; padding-right: 10px;">⚙️</div>', unsafe_allow_html=True)
+        with btd_col1: st.markdown('<div class="text-container-fix"><div class="system-item-main">이밝음</div><div class="system-item-sub" style="color: #00A3E0;">연결됨</div></div>', unsafe_allow_html=True)
+        with btd_col2: st.markdown('<div style="display: flex; height: 48px; align-items: center; justify-content: flex-end; font-size: 18px; padding-right: 10px;">⚙️</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
-        
-    # 2. 확인된 기기 영역 (Volvo XC40 표시)
     st.markdown('<div class="volvo-title-row">확인된 기기</div>', unsafe_allow_html=True)
     with st.container(border=True):
-        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="text-container-fix" style="padding-left: 4px;">'
-            '<div class="system-item-main" style="font-weight: normal;">Volvo XC40</div>'
-            '</div>',
-            unsafe_allow_html=True
-        )
-        st.markdown('</div>', unsafe_allow_html=True)
-
+        st.markdown('<div class="system-list-zone"><div class="text-container-fix" style="padding-left: 4px;"><div class="system-item-main" style="font-weight: normal;">Volvo XC40</div></div></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📶 [설정 -> 연결 -> WI-FI] 상세 서브 페이지 (3번 사진 반영 - 우측 알약 토글 마크)
+# 📶 [설정 -> 연결 -> WI-FI] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "conn_wifi":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   WI-FI", key="back_to_conn_main_from_wf"):
         st.session_state.sub_page = "connection"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     st.markdown('<div class="volvo-title-row" style="margin-top:0px;">Wi-Fi 설정</div>', unsafe_allow_html=True)
-    
     with st.container(border=True):
         wf_tcol1, wf_tcol2 = st.columns([3.8, 1.2])
-        with wf_tcol1:
-            st.markdown('<div class="setting-title" style="padding-top: 4px;">Wi-Fi 사용</div>', unsafe_allow_html=True)
+        with wf_tcol1: st.markdown('<div class="setting-title" style="padding-top: 4px;">Wi-Fi 사용</div>', unsafe_allow_html=True)
         with wf_tcol2:
             st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
             st.session_state.conn_wifi_enabled = st.toggle("tgl_conn_wifi_toggle", value=st.session_state.conn_wifi_enabled, label_visibility="collapsed")
             st.markdown('</div>', unsafe_allow_html=True)
-            
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 👤 [설정 -> 프로필 -> 프로필 설정] 상세 서브 페이지 (1번 사진 완벽 이식 - A 상단 컴포넌트 + B 타입 디테일 구조)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_settings":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   프로필 설정", key="back_to_settings_from_profile"):
+        st.session_state.sub_page = "main"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    # 1. 상단 아바타 그래픽 존 (오너, 게스트, 추가하기 순정 배치)
+    avatar_html = """
+    <div class="profile-avatar-row">
+        <div class="avatar-block">
+            <div class="avatar-circle-owner"></div>
+            <div class="avatar-label">오너</div>
+        </div>
+        <div class="avatar-block">
+            <div class="avatar-circle-guest">👤</div>
+            <div class="avatar-label" style="color: #8e959e;">게스트</div>
+        </div>
+        <div class="avatar-block">
+            <div class="avatar-circle-add">＋</div>
+            <div class="avatar-label" style="color: #8e959e;">추가하기</div>
+        </div>
+    </div>
+    """
+    st.markdown(avatar_html, unsafe_allow_html=True)
+
+    # 2. 하단 리스트 설정 구역 (B 타입: 개별 큰 테두리 박스 적용)
+    st.markdown('<div class="volvo-title-row">프로필 설정</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    # 항목 1: 프로필 이름 (오측 에디트 아이콘)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        p_col1, p_col2 = st.columns([4.2, 0.8])
+        with p_col1:
+            st.markdown(f'<div class="text-container-fix"><div class="system-item-main">프로필 이름</div><div class="system-item-sub" style="font-size: 15px; color: #ffffff; opacity: 0.9;">{st.session_state.profile_name}</div></div>', unsafe_allow_html=True)
+        with p_col2:
+            st.markdown('<div style="display: flex; height: 48px; align-items: center; justify-content: flex-end; font-size: 18px; padding-right: 6px;">📝</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    # 항목 2: Volvo Cars 앱
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        p_col3, p_col4 = st.columns([4.2, 0.8])
+        with p_col3:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main">Volvo Cars 앱</div><div class="system-item-sub">커넥티드 서비스를 사용하시려면 차량 소유자로 등록하세요</div></div>', unsafe_allow_html=True)
+        with p_col4:
+            st.button("〉", key="btn_prof_volvo_app", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    # 항목 3: 차량 키
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        p_col5, p_col6 = st.columns([4.2, 0.8])
+        with p_col5:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main">차량 키</div><div class="system-item-sub">키 연결 및 관리</div></div>', unsafe_allow_html=True)
+        with p_col6:
+            st.button("〉", key="btn_prof_car_key", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    # 항목 4: 프로필 잠금
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        p_col7, p_col8 = st.columns([4.2, 0.8])
+        with p_col7:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main">프로필 잠금</div><div class="system-item-sub">프로필 접속 제한</div></div>', unsafe_allow_html=True)
+        with p_col8:
+            st.button("〉", key="btn_prof_lock", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    # 항목 5: 다른 프로필 관리
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        p_col9, p_col10 = st.columns([4.2, 0.8])
+        with p_col9:
+            st.markdown('<div class="text-container-fix" style="min-height:36px;"><div class="system-item-main">다른 프로필 관리</div></div>', unsafe_allow_html=True)
+        with p_col10:
+            st.button("〉", key="btn_prof_manage_other", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -696,17 +710,14 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     st.markdown('<div class="volvo-title-row">운전자 지원 시스템</div>', unsafe_allow_html=True)
     with st.container(border=True):
         pa_col1, pa_col2 = st.columns([3.6, 1])
-        with pa_col1:
-            st.markdown('<div class="setting-title">Pilot Assist 기본 설정</div><div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>', unsafe_allow_html=True)
+        with pa_col1: st.markdown('<div class="setting-title">Pilot Assist 기본 설정</div><div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>', unsafe_allow_html=True)
         with pa_col2:
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.pilot_assist = st.toggle("PA_tgl", value=st.session_state.pilot_assist, label_visibility="collapsed")
-
     st.markdown('<div class="volvo-title-row">주행 역학</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="setting-title">주행 모드</div><div class="setting-desc">모든 종류의 일상 주행 시 효율성을 위해 가속, 주행 역학 및 조향이 최적화됩니다.</div>', unsafe_allow_html=True)
@@ -714,52 +725,28 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         dm_col1, dm_col2 = st.columns(2)
         with dm_col1:
             dm_type = "primary" if st.session_state.drive_mode == "Standard" else "secondary"
-            if st.button("Standard", key="btn_seg_std", type=dm_type, use_container_width=True):
-                st.session_state.drive_mode = "Standard"; st.rerun()
+            if st.button("Standard", key="btn_seg_std", type=dm_type, use_container_width=True): st.session_state.drive_mode = "Standard"; st.rerun()
         with dm_col2:
             dm_type = "primary" if st.session_state.drive_mode == "Off-road" else "secondary"
-            if st.button("Off-road", key="btn_seg_off", type=dm_type, use_container_width=True):
-                st.session_state.drive_mode = "Off-road"; st.rerun()
+            if st.button("Off-road", key="btn_seg_off", type=dm_type, use_container_width=True): st.session_state.drive_mode = "Off-road"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
-
     with st.container(border=True):
         st.markdown('<div class="setting-title">스티어링 감도</div>', unsafe_allow_html=True)
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         sf_col1, sf_col2 = st.columns(2)
         with sf_col1:
             sf_type = "primary" if st.session_state.steering_feel == "부드러움" else "secondary"
-            if st.button("부드러움", key="btn_seg_sf1", type=sf_type, use_container_width=True):
-                st.session_state.steering_feel = "부드러움"; st.rerun()
+            if st.button("부드러움", key="btn_seg_sf1", type=sf_type, use_container_width=True): st.session_state.steering_feel = "부드러움"; st.rerun()
         with sf_col2:
             sf_type = "primary" if st.session_state.steering_feel == "단단함" else "secondary"
-            if st.button("단단함", key="btn_seg_sf2", type=sf_type, use_container_width=True):
-                st.session_state.steering_feel = "단단함"; st.rerun()
+            if st.button("단단함", key="btn_seg_sf2", type=sf_type, use_container_width=True): st.session_state.steering_feel = "단단함"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
-
     with st.container(border=True):
         ss_col1, ss_col2 = st.columns([3.6, 1])
-        with ss_col1:
-            st.markdown('<div class="setting-title">Start/Stop</div><div class="setting-desc">정지 시 일시적으로 엔진을 끕니다. 새로 주행할 때마다 켜짐으로 재설정됩니다.</div>', unsafe_allow_html=True)
+        with ss_col1: st.markdown('<div class="setting-title">Start/Stop</div><div class="setting-desc">정지 시 일시적으로 엔진을 끕니다. 새로 주행할 때마다 켜짐으로 재설정됩니다.</div>', unsafe_allow_html=True)
         with ss_col2:
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.start_stop = st.toggle("SS_tgl", value=st.session_state.start_stop, label_visibility="collapsed")
-
-    st.markdown('<div class="volvo-title-row">안전 어시스트</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        lk_col1, lk_col2 = st.columns([3.6, 1])
-        with lk_col1:
-            st.markdown('<div class="setting-title">차선유지 보조 시스템</div><div class="setting-desc">갑작스런 차선 이탈을 방지하도록 도와줍니다.</div>', unsafe_allow_html=True)
-        with lk_col2:
-            st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
-            st.session_state.lane_keeping = st.toggle("LK_tgl", value=st.session_state.lane_keeping, label_visibility="collapsed")
-
-    with st.container(border=True):
-        rd_col1, rd_col2 = st.columns([3.6, 1])
-        with rd_col1:
-            st.markdown('<div class="setting-title">주행 준비 알림</div><div class="setting-desc">전방 차량이 주행을 시작한 후 알림을 제공합니다.</div>', unsafe_allow_html=True)
-        with rd_col2:
-            st.write("<div style='margin-top:5px;'></div>", unsafe_allow_html=True)
-            st.session_state.ready_to_drive = st.toggle("RD_tgl", value=st.session_state.ready_to_drive, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -770,631 +757,122 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
         slider_html = f"""
         <div class="slider-container-custom" style="padding: 0; margin: 0;">
-            <div class="slider-wrapper">
-                <input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" 
-                       class="slider-custom" id="brightnessRange"
-                       style="width: 100%;"
-                       oninput="document.getElementById('sliderVal').innerText = this.value">
-            </div>
+            <div class="slider-wrapper"><input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" class="slider-custom" id="brightnessRange" style="width: 100%;" oninput="document.getElementById('sliderVal').innerText = this.value"></div>
             <div class="slider-val-box" id="sliderVal">{st.session_state.interior_brightness}</div>
         </div>
         <script>
         var slider = document.getElementById("brightnessRange");
-        slider.addEventListener("change", function() {{
-            window.parent.postMessage({{
-                type: "streamlit:set_query_params",
-                queryParams: {{"brightness_slider": this.value}}
-            }}, "*");
-        }});
+        slider.addEventListener("change", function() {{ window.parent.postMessage({{ type: "streamlit:set_query_params", queryParams: {{"brightness_slider": this.value}} }}, "*"); }});
         </script>
         """
         st.components.v1.html(slider_html, height=35)
         st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-        
         st.markdown('<div class="setting-title">내부 조명 감도</div>', unsafe_allow_html=True)
         st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
         dim_col1, dim_col2, dim_col3 = st.columns(3)
         with dim_col1:
             t_type = "primary" if st.session_state.interior_light_dim == "끄기" else "secondary"
-            if st.button("끄기", key="btn_dim_off", type=t_type, use_container_width=True):
-                st.session_state.interior_light_dim = "끄기"; st.rerun()
+            if st.button("끄기", key="btn_dim_off", type=t_type, use_container_width=True): st.session_state.interior_light_dim = "끄기"; st.rerun()
         with dim_col2:
             t_type = "primary" if st.session_state.interior_light_dim == "낮음" else "secondary"
-            if st.button("낮음", key="btn_dim_low", type=t_type, use_container_width=True):
-                st.session_state.interior_light_dim = "낮음"; st.rerun()
+            if st.button("낮음", key="btn_dim_low", type=t_type, use_container_width=True): st.session_state.interior_light_dim = "낮음"; st.rerun()
         with dim_col3:
             t_type = "primary" if st.session_state.interior_light_dim == "높음" else "secondary"
-            if st.button("높음", key="btn_dim_high", type=t_type, use_container_width=True):
-                st.session_state.interior_light_dim = "높음"; st.rerun()
+            if st.button("높음", key="btn_dim_high", type=t_type, use_container_width=True): st.session_state.interior_light_dim = "높음"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
-        
         st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
         st.markdown('<div class="more-link-btn">', unsafe_allow_html=True)
-        if st.button("모두 보기                      〉", key="btn_go_lighting_all"):
-            st.session_state.sub_page = "ctrl_lighting_all"; st.rerun()
+        if st.button("모두 보기                      〉", key="btn_go_lighting_all"): st.session_state.sub_page = "ctrl_lighting_all"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">🔒 잠금</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        alarm_col1, alarm_col2 = st.columns([3.6, 1])
-        with alarm_col1:
-            st.markdown('<div class="setting-title">알람 감도 낮추기</div><div class="setting-desc">페리 또는 다른 교통수단 이용 시</div>', unsafe_allow_html=True)
-        with alarm_col2:
-            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-            st.session_state.reduce_alarm_sensitivity = st.toggle("Alarm_tgl", value=st.session_state.reduce_alarm_sensitivity, label_visibility="collapsed")
-            
-        st.write("<div style='margin-top:18px;'></div>", unsafe_allow_html=True)
-        
-        welcome_col1, welcome_col2 = st.columns([3.6, 1])
-        with welcome_col1:
-            st.markdown('<div class="setting-title">웰컴 라이트</div><div class="setting-desc">차량에 접근하고 차량에서 내릴 때 조명을 켭니다</div>', unsafe_allow_html=True)
-        with welcome_col2:
-            st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
-            st.session_state.welcome_light = st.toggle("Welcome_ctrl_tgl", value=st.session_state.welcome_light, label_visibility="collapsed")
-            
-        st.markdown('<div class="card-divider"></div>', unsafe_allow_html=True)
-        st.markdown('<div class="more-link-btn">', unsafe_allow_html=True)
-        if st.button("모두 보기                      〉", key="btn_go_lock_all"):
-            st.session_state.sub_page = "ctrl_lock_all"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">더 보기</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        hr_col1, hr_col2 = st.columns([2.8, 1.8])
-        with hr_col1:
-            st.markdown('<div class="setting-title-align-btn">헤드레스트 접기</div>', unsafe_allow_html=True)
-        with hr_col2:
-            st.markdown('<div class="volvo-fold-btn-zone">', unsafe_allow_html=True)
-            st.button("접기", key="btn_headrest_fold", use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-        st.write("<div style='margin-top:16px;'></div>", unsafe_allow_html=True)
-        
-        wire_col1, wire_col2 = st.columns([3.6, 1])
-        with wire_col1:
-            st.markdown('<div class="setting-title-align-tgl">무선 장치 충전</div>', unsafe_allow_html=True)
-        with wire_col2:
-            st.session_state.wireless_charging = st.toggle("Wireless_tgl", value=st.session_state.wireless_charging, label_visibility="collapsed")
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 💡 [설정 -> 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 상세 서브 페이지
+# 💡 [설정 -> 컨트롤 -> 조명 및 디스플레이 -> 모두 보기] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lighting_all":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈   조명 및 디스플레이", key="back_to_control_main"):
-        st.session_state.sub_page = "control"; st.rerun()
+    if st.button("〈   조명 및 디스플레이", key="back_to_control_main"): st.session_state.sub_page = "control"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    
     st.markdown('<div class="volvo-title-row">내부 조명</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="setting-title">내부 밝기</div>', unsafe_allow_html=True)
         slider_html = f"""
         <div class="slider-container-custom" style="padding: 0; margin: 0;">
-            <div class="slider-wrapper">
-                <input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" 
-                       class="slider-custom" id="brightnessRangeAll"
-                       style="width: 100%;"
-                       oninput="document.getElementById('sliderValAll').innerText = this.value">
-            </div>
+            <div class="slider-wrapper"><input type="range" min="0" max="100" value="{st.session_state.interior_brightness}" class="slider-custom" id="brightnessRangeAll" style="width: 100%;" oninput="document.getElementById('sliderValAll').innerText = this.value"></div>
             <div class="slider-val-box" id="sliderValAll">{st.session_state.interior_brightness}</div>
         </div>
         <script>
         var slider = document.getElementById("brightnessRangeAll");
-        slider.addEventListener("change", function() {{
-            window.parent.postMessage({{
-                type: "streamlit:set_query_params",
-                queryParams: {{"brightness_slider": this.value}}
-            }}, "*");
-        }});
+        slider.addEventListener("change", function() {{ window.parent.postMessage({{ type: "streamlit:set_query_params", queryParams: {{"brightness_slider": this.value}} }}, "*"); }});
         </script>
         """
         st.components.v1.html(slider_html, height=35)
-        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
-        
-        dim_lbl_col, dim_btn_col = st.columns([1.8, 3.2])
-        with dim_lbl_col:
-            st.markdown('<div class="setting-title" style="padding-top: 12px;">내부 조명 감도</div>', unsafe_allow_html=True)
-        with dim_btn_col:
-            st.markdown('<div class="volvo-segment-row inline-segment-fix">', unsafe_allow_html=True)
-            d_col1, d_col2, d_col3 = st.columns(3)
-            with d_col1:
-                t_type = "primary" if st.session_state.interior_light_dim == "끄기" else "secondary"
-                if st.button("끄기", key="all_dim_off", type=t_type, use_container_width=True):
-                    st.session_state.interior_light_dim = "끄기"; st.rerun()
-            with d_col2:
-                t_type = "primary" if st.session_state.interior_light_dim == "낮음" else "secondary"
-                if st.button("낮음", key="all_dim_low", type=t_type, use_container_width=True):
-                    st.session_state.interior_light_dim = "낮음"; st.rerun()
-            with d_col3:
-                t_type = "primary" if st.session_state.interior_light_dim == "높음" else "secondary"
-                if st.button("높음", key="all_dim_high", type=t_type, use_container_width=True):
-                    st.session_state.interior_light_dim = "높음"; st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">外部 조명</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        ext_col1, ext_col2 = st.columns([4.2, 0.8])
-        with ext_col1:
-            st.markdown('<div class="setting-title" style="padding-top: 6px; white-space: nowrap;">좌측 주행 조명에 맞게 조명 조정</div>', unsafe_allow_html=True)
-        with ext_col2:
-            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
-            st.session_state.left_drive_light_adjust = st.toggle("tgl_left_light", value=st.session_state.left_drive_light_adjust, label_visibility="collapsed")
-            st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">디스플레이</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        st.markdown('<div class="setting-title">계기판 트립 정보</div>', unsafe_allow_html=True)
-        st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
-        trip_col1, trip_col2, trip_col3 = st.columns(3)
-        with trip_col1:
-            t_type = "primary" if st.session_state.cluster_trip_info == "없음" else "secondary"
-            if st.button("없음", key="trip_none", type=t_type, use_container_width=True):
-                st.session_state.cluster_trip_info = "없음"; st.rerun()
-        with trip_col2:
-            t_type = "primary" if st.session_state.cluster_trip_info == "자동" else "secondary"
-            if st.button("자동", key="trip_auto", type=t_type, use_container_width=True):
-                st.session_state.cluster_trip_info = "자동"; st.rerun()
-        with trip_col3:
-            t_type = "primary" if st.session_state.cluster_trip_info == "수동" else "secondary"
-            if st.button("수동", key="trip_manual", type=t_type, use_container_width=True):
-                st.session_state.cluster_trip_info = "수동"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🔒 [설정 -> 컨트롤 -> 잠금 -> 모두 보기] 상세 서브 페이지
+# 🔒 [설정 -> 컨트롤 -> 잠금 -> 모두 보기] 서브 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "ctrl_lock_all":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈   잠금", key="back_to_control_main_lock"):
-        st.session_state.sub_page = "control"; st.rerun()
+    if st.button("〈   잠금", key="back_to_control_main_lock"): st.session_state.sub_page = "control"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
-    
-    st.markdown('<div class="volvo-title-row">잠금</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        ul_lbl_col, ul_btn_col = st.columns([1.8, 3.2])
-        with ul_lbl_col:
-            st.markdown('<div class="setting-title" style="padding-top: 12px;">문 잠금 해제</div>', unsafe_allow_html=True)
-        with ul_btn_col:
-            st.markdown('<div class="volvo-segment-row inline-segment-fix">', unsafe_allow_html=True)
-            u_col1, u_col2 = st.columns(2)
-            with u_col1:
-                t_type = "primary" if st.session_state.unlock_mode == "하나만" else "secondary"
-                if st.button("하나만", key="lock_ul_one", type=t_type, use_container_width=True):
-                    st.session_state.unlock_mode = "하나만"; st.rerun()
-            with u_col2:
-                t_type = "primary" if st.session_state.unlock_mode == "모두" else "secondary"
-                if st.button("모두", key="lock_ul_all", type=t_type, use_container_width=True):
-                    st.session_state.unlock_mode = "모두"; st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
-        
-        lock_col1, lock_col2 = st.columns([4.2, 0.8])
-        with lock_col1:
-            st.markdown('<div class="setting-title">알람 감도 낮추기</div><div class="setting-desc">페리 또는 다른 교통수단 이용 시</div>', unsafe_allow_html=True)
-        with lock_col2:
-            st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
-            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
-            st.session_state.reduce_alarm_sensitivity = st.toggle("tgl_lock_reduce_alarm", value=st.session_state.reduce_alarm_sensitivity, label_visibility="collapsed")
-            st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">접근 및 하차</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        acc_col1, acc_col2 = st.columns([4.2, 0.8])
-        with acc_col1:
-            st.markdown('<div class="setting-title">웰컴 라이트</div><div class="setting-desc">차량에 접근하고 차량에서 내릴 때 조명을 켭니다</div>', unsafe_allow_html=True)
-        with acc_col2:
-            st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
-            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
-            st.session_state.welcome_light = st.toggle("tgl_lock_welcome", value=st.session_state.welcome_light, label_visibility="collapsed")
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
-        
-        sun_col1, sun_col2 = st.columns([4.2, 0.8])
-        with sun_col1:
-            st.markdown('<div class="setting-title">선루프 커튼 자동닫기</div><div class="setting-desc">외부가 더우면 커튼이 잠긴 후 15분 뒤 닫힙니다.</div>', unsafe_allow_html=True)
-        with sun_col2:
-            st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
-            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
-            st.session_state.sunroof_curtain_auto_close = st.toggle("tgl_lock_sunroof", value=st.session_state.sunroof_curtain_auto_close, label_visibility="collapsed")
-            st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">잠금 및 잠금 해제 반응</div>', unsafe_allow_html=True)
-    with st.container(border=True):
-        resp_col1, resp_col2 = st.columns([4.2, 0.8])
-        with resp_col1:
-            st.markdown('<div class="setting-title" style="padding-top: 6px;">방향 지시등 점멸</div>', unsafe_allow_html=True)
-        with resp_col2:
-            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
-            st.session_state.turn_signal_blink = st.toggle("tgl_lock_blink", value=st.session_state.turn_signal_blink, label_visibility="collapsed")
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-        st.write("<div style='margin-top:14px;'></div>", unsafe_allow_html=True)
-        
-        mir_col1, mir_col2 = st.columns([4.2, 0.8])
-        with mir_col1:
-            st.markdown('<div class="setting-title" style="padding-top: 6px;">자동 접이식 미러</div>', unsafe_allow_html=True)
-        with mir_col2:
-            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
-            st.session_state.auto_fold_mirror = st.toggle("tgl_lock_mirror", value=st.session_state.auto_fold_mirror, label_visibility="collapsed")
-            st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # 💻 [설정 -> 시스템] 메인 리스트 탭
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "system":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈   시스템", key="back_to_settings_sys"):
-        st.session_state.sub_page = "main"; st.rerun()
+    if st.button("〈   시스템", key="back_to_settings_sys"): st.session_state.sub_page = "main"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">보안 상태</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="volvo-title-row">일반</div>', unsafe_allow_html=True)
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    
     c1, c2 = st.columns([4.2, 0.8])
     with c1: st.markdown(f'<div class="text-container-fix"><div class="system-item-main">언어 및 입력</div><div class="system-item-sub">{st.session_state.selected_language}</div></div>', unsafe_allow_html=True)
-    with c2: 
-        if st.button("〉", key="main_sys_lang", use_container_width=True):
-            st.session_state.sub_page = "sys_language"; st.rerun()
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    c3, c4 = st.columns([4.2, 0.8])
-    with c3: st.markdown(f'<div class="text-container-fix"><div class="system-item-main">날짜 및 시간</div><div class="system-item-sub">2026년 7월 13일, {"24시간 시계" if st.session_state.sys_time_24h else "12시간 시계"}</div></div>', unsafe_allow_html=True)
-    with c4:
-        if st.button("〉", key="main_sys_time", use_container_width=True):
-            st.session_state.sub_page = "sys_datetime"; st.rerun()
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    c5, c6 = st.columns([4.2, 0.8])
-    with c5: st.markdown('<div class="text-container-fix"><div class="system-item-main">단위</div></div>', unsafe_allow_html=True)
-    with c6: st.button("〉", key="main_sys_unit", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    c7, c8 = st.columns([4.2, 0.8])
-    with c7: st.markdown('<div class="text-container-fix"><div class="system-item-main">애플리케이션</div><div class="system-item-sub">앱 권한</div></div>', unsafe_allow_html=True)
-    with c8:
-        if st.button("〉", key="main_sys_apps", use_container_width=True):
-            st.session_state.sub_page = "sys_apps"; st.rerun()
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    c9, c10 = st.columns([4.2, 0.8])
-    with c9: st.markdown('<div class="text-container-fix"><div class="system-item-main">계정</div><div class="system-item-sub">연결된 계정</div></div>', unsafe_allow_html=True)
-    with c10: st.button("〉", key="main_sys_account", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    c11, c12 = st.columns([4.2, 0.8])
-    with c11: st.markdown('<div class="text-container-fix"><div class="system-item-main">알림</div><div class="system-item-sub">애플리케이션 알림</div></div>', unsafe_allow_html=True)
-    with c12: st.button("〉", key="main_sys_alarm", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row" style="margin-top: 30px;">시스템 정보</div>', unsafe_allow_html=True)
-    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    
-    c13, c14 = st.columns([4.2, 0.8])
-    with c13: st.markdown('<div class="text-container-fix"><div class="system-item-main">정보</div><div class="system-item-sub">Android 13</div></div>', unsafe_allow_html=True)
-    with c14: st.button("〉", key="main_sys_info", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    c15, c16 = st.columns([4.2, 0.8])
-    with c15: st.markdown('<div class="text-container-fix"><div class="system-item-main">접근성</div><div class="system-item-sub">자막 환경설정</div></div>', unsafe_allow_html=True)
-    with c16: st.button("〉", key="main_sys_access", use_container_width=True)
+    with c2:
+        if st.button("〉", key="main_sys_lang", use_container_width=True): st.session_state.sub_page = "sys_language"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # 🌐 [시스템 -> 상세 1. 언어 및 입력] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_language":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈   언어 및 입력", key="back_to_sys_main_1"):
-        st.session_state.sub_page = "system"; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    col1, col2 = st.columns([4.2, 0.8])
-    with col1: st.markdown(f'<div class="text-container-fix"><div class="system-item-main">🌐 언어</div><div class="system-item-sub">{st.session_state.selected_language}</div></div>', unsafe_allow_html=True)
-    with col2:
-        if st.button("〉", key="btn_lang_pop", use_container_width=True):
-            st.session_state.selected_language = "English (United States)" if st.session_state.selected_language == "한국어(대한민국)" else "한국어(대한민국)"
-            st.rerun()
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-    
-    col3, col4 = st.columns([4.2, 0.8])
-    with col3: st.markdown('<div class="text-container-fix"><div class="system-item-main">자동완성 서비스</div><div class="system-item-sub">없음</div></div>', unsafe_allow_html=True)
-    with col4: st.button("〉", key="btn_autofill", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-    
-    col5, col6 = st.columns([4.2, 0.8])
-    with col5: st.markdown('<div class="text-container-fix"><div class="system-item-main">⌨️ 키보드</div><div class="system-item-sub">키보드(IME)</div></div>', unsafe_allow_html=True)
-    with col6: st.button("〉", key="btn_keyboard", use_container_width=True)
+    if st.button("〈   언어 및 입력", key="back_to_sys_main_1"): st.session_state.sub_page = "system"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ⏰ [시스템 -> 상세 2. 날짜 및 시간] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_datetime":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈   날짜 및 시간", key="back_to_sys_main_2"):
-        st.session_state.sub_page = "system"; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    col1, col2 = st.columns([4.2, 0.8])
-    with col1: st.markdown('<div class="text-container-fix"><div class="system-item-main">자동으로 시간 설정</div></div>', unsafe_allow_html=True)
-    with col2: st.session_state.sys_time_auto = st.toggle("sys_time_auto_tgl", value=st.session_state.sys_time_auto, label_visibility="collapsed")
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col3, col4 = st.columns([4.2, 0.8])
-    with col3: st.markdown('<div class="text-container-fix"><div class="system-item-main">자동으로 시간대 설정</div></div>', unsafe_allow_html=True)
-    with col4: st.session_state.sys_timezone_auto = st.toggle("sys_tz_auto_tgl", value=st.session_state.sys_timezone_auto, label_visibility="collapsed")
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col5, col6 = st.columns([4.2, 0.8])
-    with col5: st.markdown('<div class="text-container-fix"><div class="system-item-main">날짜 설정</div><div class="system-item-sub">2026년 7월 13일</div></div>', unsafe_allow_html=True)
-    with col6: st.button("〉", key="btn_date_set", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col7, col8 = st.columns([4.2, 0.8])
-    with col7: st.markdown('<div class="text-container-fix"><div class="system-item-main">시간 설정</div><div class="system-item-sub">08:49</div></div>', unsafe_allow_html=True)
-    with col8: st.button("〉", key="btn_time_set", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col9, col10 = st.columns([4.2, 0.8])
-    with col9: st.markdown('<div class="text-container-fix"><div class="system-item-main">시간대 선택</div><div class="system-item-sub">GMT+09:00 한국 표준시</div></div>', unsafe_allow_html=True)
-    with col10: st.button("〉", key="btn_timezone_set", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col11, col12 = st.columns([4.2, 0.8])
-    with col11: st.markdown('<div class="text-container-fix"><div class="system-item-main">24시간 형식 사용</div><div class="system-item-sub">13:00</div></div>', unsafe_allow_html=True)
-    with col12: st.session_state.sys_time_24h = st.toggle("sys_t24_tgl", value=st.session_state.sys_time_24h, label_visibility="collapsed")
+    if st.button("〈   날짜 및 시간", key="back_to_sys_main_2"): st.session_state.sub_page = "system"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # 📱 [시스템 -> 상세 3. 애플리케이션 (기본 앱 목록)] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_apps":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈   애플리케이션", key="back_to_sys_main_3"):
-        st.session_state.sub_page = "system"; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row">기본 앱</div>', unsafe_allow_html=True)
-    
-    st.markdown('<div class="system-list-zone align-arrow-center">', unsafe_allow_html=True)
-    col1, col2 = st.columns([4.2, 0.8])
-    with col1: 
-        st.markdown(
-            '<div class="text-container-fix">'
-            '<div class="system-item-main">🔍 NUGU AUTO</div>'
-            '<div class="app-notice-desc">( 현재 이 버튼만 활성화 가능 )</div>'
-            '</div>', 
-            unsafe_allow_html=True
-        )
-    with col2: 
-        if st.button("〉", key="btn_nugu_auto", use_container_width=True):
-            st.session_state.sub_page = "sys_nugu_info"; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-    
-    col3, col4 = st.columns([4.2, 0.8])
-    with col3: st.markdown('<div class="text-container-fix"><div class="system-item-main">🗺️ TMAP AUTO</div></div>', unsafe_allow_html=True)
-    with col4: st.button("〉", key="btn_sub_tmap", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col5, col6 = st.columns([4.2, 0.8])
-    with col5: st.markdown('<div class="text-container-fix"><div class="system-item-main">🎵 FLO</div></div>', unsafe_allow_html=True)
-    with col6: st.button("〉", key="btn_sub_flo", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col7, col8 = st.columns([4.2, 0.8])
-    with col7: st.markdown('<div class="text-container-fix"><div class="system-item-main">🍈 Melon</div></div>', unsafe_allow_html=True)
-    with col8: st.button("〉", key="btn_sub_melon", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col9, col10 = st.columns([4.2, 0.8])
-    with col9: st.markdown('<div class="text-container-fix"><div class="system-item-main">📞 전화</div></div>', unsafe_allow_html=True)
-    with col10: st.button("〉", key="btn_sub_phone", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col11, col12 = st.columns([4.2, 0.8])
-    with col11: st.markdown('<div class="text-container-fix"><div class="system-item-main">💬 메시지</div></div>', unsafe_allow_html=True)
-    with col12: st.button("〉", key="btn_sub_msg", use_container_width=True)
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col13, col14 = st.columns([4.2, 0.8])
-    with col13: st.markdown('<div class="text-container-fix"><div class="system-item-main">🌐 오디오 및 비디오 앱 오버레이</div></div>', unsafe_allow_html=True)
-    with col14: st.button("〉", key="btn_sub_overlay", use_container_width=True)
+    if st.button("〈   애플리케이션", key="back_to_sys_main_3"): st.session_state.sub_page = "system"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # 🔍 [시스템 -> 애플리케이션 -> NUGU Auto 앱 정보] 세부 페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_nugu_info":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-    if st.button("〈   앱 정보", key="back_to_sys_apps"):
-        st.session_state.sub_page = "sys_apps"; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div style="text-align: center; font-size: 16px; font-weight: bold; color: #ffffff; margin-bottom: 25px;">NUGU Auto</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="app-action-zone">', unsafe_allow_html=True)
-    act_col1, act_col2 = st.columns(2)
-    with act_col1:
-        btn_label = "사용" if not st.session_state.nugu_enabled else "사용 중지"
-        if st.button(btn_label, key="btn_nugu_toggle_action", use_container_width=True):
-            st.session_state.nugu_enabled = not st.session_state.nugu_enabled
-            st.rerun()
-    with act_col2:
-        st.button("강제 종료", key="btn_nugu_force_stop", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.markdown('<div style="margin-top: 20px;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
-    
-    col_al1, col_al2 = st.columns([4.2, 0.8])
-    with col_al1: st.markdown('<div class="text-container-fix"><div class="system-item-main" style="margin-top: 6px;">알림</div></div>', unsafe_allow_html=True)
-    with col_al2: st.session_state.nugu_alarm = st.toggle("tgl_nugu_alarm", value=st.session_state.nugu_alarm, label_visibility="collapsed")
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col_pr1, col_pr2 = st.columns([4.2, 0.8])
-    with col_pr1: st.markdown('<div class="text-container-fix"><div class="system-item-main">권한</div><div class="system-item-sub">근처 기기, 마이크, 알림, 연락처, 위치, 전화, 통화 기록, SMS 및 추가 권한 1개</div></div>', unsafe_allow_html=True)
-    with col_pr2: 
-        if st.button("〉", key="btn_nugu_permission", use_container_width=True):
-            st.session_state.sub_page = "sys_nugu_permissions"; st.rerun()
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col_st1, col_st2 = st.columns([4.2, 0.8])
-    with col_st1: st.markdown('<div class="text-container-fix"><div class="system-item-main">저장용량 및 캐시</div><div class="system-item-sub">내부 저장소의 94.87MB</div></div>', unsafe_allow_html=True)
-    with st.button("〉", key="btn_nugu_storage", use_container_width=True): pass
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col_pf1, col_pf2 = st.columns([4.2, 0.8])
-    with col_pf1: st.markdown('<div class="text-container-fix"><div class="system-item-main">앱 성능 우선순위 지정</div><div class="system-item-sub">시스템 리소스를 사용하여 앱 성능 우선순위를 지정합니다.</div></div>', unsafe_allow_html=True)
-    with col_pf2: st.session_state.nugu_perf = st.toggle("tgl_nugu_perf", value=st.session_state.nugu_perf, label_visibility="collapsed")
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    col_cl1, col_cl2 = st.columns([4.2, 0.8])
-    with col_cl1: st.markdown('<div class="text-container-fix"><div class="system-item-main" style="margin-top: 6px;">권한을 삭제하고 여유 공간 확보</div></div>', unsafe_allow_html=True)
-    with col_cl2: st.session_state.nugu_permission_clear = st.toggle("tgl_nugu_clear", value=st.session_state.nugu_permission_clear, label_visibility="collapsed")
-    st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="text-container-fix" style="padding-left: 4px;"><div class="system-item-sub" style="font-size: 14px;">버전: 2.0.133</div></div>', unsafe_allow_html=True)
+    if st.button("〈   앱 정보", key="back_to_sys_apps"): st.session_state.sub_page = "sys_apps"; st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # 🛡️ [시스템 -> 애플리케이션 -> NUGU Auto -> 앱 권한] 세부 설정 뷰
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_nugu_permissions":
-    col_top_l, col_top_r = st.columns([3.5, 1.5])
-    with col_top_l:
-        st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
-        if st.button("〈   앱 권한", key="back_to_nugu_info"):
-            st.session_state.sub_page = "sys_nugu_info"; st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col_top_r:
-        st.markdown('<div class="right-top-text">모든 권한</div>', unsafe_allow_html=True)
-        
-    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
-    st.markdown(
-        '<div class="app-header-row">'
-        '<div class="app-header-icon-custom">N</div>'
-        '<div class="app-header-title-custom">NUGU Auto</div>'
-        '</div>',
-        unsafe_allow_html=True
-    )
-    st.markdown('<div style="border-bottom: 1px solid #232830; margin-top: -10px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="volvo-title-row" style="margin-top: 10px; margin-bottom: 10px;">허용됨</div>', unsafe_allow_html=True)
-    
-    allowed_permissions_html = """
-    <style>
-    .perm-wrap { font-family: 'Helvetica Neue', sans-serif; background-color: transparent; color: #ffffff; padding: 0; margin: 0; }
-    .item-row { display: flex; align-items: center; padding: 12px 4px; width: 100%; box-sizing: border-box; }
-    .item-icon { font-size: 20px; margin-right: 16px; color: #8e959e; width: 24px; text-align: center; }
-    .item-title { font-size: 15px; font-weight: 500; color: #ffffff; }
-    .item-sub { font-size: 12px; color: #8e959e; margin-top: 3px; }
-    .divider { border-bottom: 1px solid #232830; margin: 4px 0; }
-    </style>
-    <div class="perm-wrap">
-        <div class="item-row">
-            <div class="item-icon">💠</div>
-            <div>
-                <div class="item-title">근처 기기</div>
-                <div class="item-sub">지난 24시간 이내에 액세스함</div>
-            </div>
-        </div>
-        <div class="divider"></div>
-        <div class="item-row">
-            <div class="item-icon">🎤</div>
-            <div class="item-title">마이크</div>
-        </div>
-        <div class="divider"></div>
-        <div class="item-row">
-            <div class="item-icon">🔔</div>
-            <div class="item-title">알림</div>
-        </div>
-        <div class="divider"></div>
-        <div class="item-row">
-            <div class="item-icon">👤</div>
-            <div class="item-title">연락처</div>
-        </div>
-        <div class="divider"></div>
-        <div class="item-row">
-            <div class="item-icon">📍</div>
-            <div>
-                <div class="item-title">위치</div>
-                <div class="item-sub">08:48에 마지막으로 액세스함 • 항상 허용됨</div>
-            </div>
-        </div>
-        <div class="divider"></div>
-        <div class="item-row">
-            <div class="item-icon">📞</div>
-            <div>
-                <div class="item-title">전화</div>
-                <div class="item-sub">지난 24시간 이내에 액세스함</div>
-            </div>
-        </div>
-        <div class="divider"></div>
-        <div class="item-row">
-            <div class="item-icon">🕒</div>
-            <div class="item-title">통화 기록</div>
-        </div>
-        <div class="divider"></div>
-        <div class="item-row">
-            <div class="item-icon">💬</div>
-            <div class="item-title">SMS</div>
-        </div>
-        <div class="divider"></div>
-        <div class="item-row">
-            <div class="item-icon">⚙️</div>
-            <div>
-                <div class="item-title">추가 권한</div>
-                <div class="item-sub">1개 더보기</div>
-            </div>
-        </div>
-    </div>
-    """
-    st.components.v1.html(allowed_permissions_html, height=500, scrolling=True)
-    
-    st.markdown('<div class="volvo-title-row" style="margin-top: 5px; margin-bottom: 10px;">허용되지 않음</div>', unsafe_allow_html=True)
-    
-    denied_permissions_html = """
-    <style>
-    .denied-wrap { font-family: 'Helvetica Neue', sans-serif; background-color: transparent; }
-    .item-row { display: flex; align-items: center; padding: 12px 4px; }
-    .item-icon { font-size: 20px; margin-right: 16px; opacity: 0.4; width: 24px; text-align: center; }
-    .item-title { font-size: 15px; font-weight: 500; color: #8e959e; }
-    </style>
-    <div class="denied-wrap">
-        <div class="item-row">
-            <div class="item-icon">🚫</div>
-            <div class="item-title">거부된 권한 없음</div>
-        </div>
-    </div>
-    """
-    st.components.v1.html(denied_permissions_html, height=60)
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   앱 권한", key="back_to_nugu_info"): st.session_state.sub_page = "sys_nugu_info"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ⚙️ [설정] 메인 격자 맵 화면
@@ -1403,32 +881,29 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     row1_col1, row1_col2 = st.columns(2)
     with row1_col1:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        if st.button("주행", key="btn_drive_go", use_container_width=True):
-            st.session_state.sub_page = "driving"; st.rerun()
+        if st.button("주행", key="btn_drive_go", use_container_width=True): st.session_state.sub_page = "driving"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
     with row1_col2:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        if st.button("컨트롤", key="btn_control_go", use_container_width=True):
-            st.session_state.sub_page = "control"; st.rerun()
+        if st.button("컨트롤", key="btn_control_go", use_container_width=True): st.session_state.sub_page = "control"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        if st.button("사운드", key="btn_sound_go", use_container_width=True):
-            st.session_state.sub_page = "sound"; st.rerun()
+        if st.button("사운드", key="btn_sound_go", use_container_width=True): st.session_state.sub_page = "sound"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
     with row2_col2:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        # 🎯 연결 버튼 클릭 시 [설정 > 연결] 메인 페이지로 이동!
-        if st.button("연결", key="btn_connect_go", use_container_width=True):
-            st.session_state.sub_page = "connection"; st.rerun()
+        if st.button("연결", key="btn_connect_go", use_container_width=True): st.session_state.sub_page = "connection"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
     row3_col1, row3_col2, row3_col3 = st.columns(3)
     with row3_col1:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        st.button("프로필", key="btn_profile_go", use_container_width=True)
+        # 🎯 프로필 버튼 클릭 시 [설정 -> 프로필 설정] 상세 서브 페이지로 라우팅!
+        if st.button("프로필", key="btn_profile_go", use_container_width=True):
+            st.session_state.sub_page = "profile_settings"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
     with row3_col2:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
@@ -1436,8 +911,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('</div>', unsafe_allow_html=True)
     with row3_col3:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        if st.button("시스템", key="btn_system_go", use_container_width=True):
-            st.session_state.sub_page = "system"; st.rerun()
+        if st.button("시스템", key="btn_system_go", use_container_width=True): st.session_state.sub_page = "system"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -1449,8 +923,7 @@ else:
         st.markdown('<div class="volvo-card-content side-btn">차선<br>유지</div>', unsafe_allow_html=True)
         st.write("<div style='margin-top:25px;'></div>", unsafe_allow_html=True)
         st.markdown('<div class="volvo-card-content side-btn">Start<br>Stop</div>', unsafe_allow_html=True)
-    with main_col2:
-        st.markdown('<div class="volvo-card-content center-box">VOLVO</div>', unsafe_allow_html=True)
+    with main_col2: st.markdown('<div class="volvo-card-content center-box">VOLVO</div>', unsafe_allow_html=True)
     with main_col3:
         st.markdown('<div class="volvo-card-content side-btn">알람<br>줄이기</div>', unsafe_allow_html=True)
         st.write("<div style='margin-top:25px;'></div>", unsafe_allow_html=True)
