@@ -51,10 +51,23 @@ if "nugu_alarm" not in st.session_state: st.session_state.nugu_alarm = True
 if "nugu_perf" not in st.session_state: st.session_state.nugu_perf = False
 if "nugu_permission_clear" not in st.session_state: st.session_state.nugu_permission_clear = True
 
-# 🔊 [사운드 전용 상태 데이터 초기화]
+# 🔊 [사운드 및 하위 메뉴 전용 상태 데이터]
 if "sound_focus" not in st.session_state: st.session_state.sound_focus = "모두"
 if "sound_surround" not in st.session_state: st.session_state.sound_surround = True
 if "sound_surround_level" not in st.session_state: st.session_state.sound_surround_level = 50
+
+# 🎛️ 톤 설정 데이터
+if "tone_treble" not in st.session_state: st.session_state.tone_treble = 50
+if "tone_bass" not in st.session_state: st.session_state.tone_bass = 50
+if "tone_subwoofer" not in st.session_state: st.session_state.tone_subwoofer = 50
+
+# 📢 볼륨 설정 데이터
+if "vol_media" not in st.session_state: st.session_state.vol_media = 60
+if "vol_ring" not in st.session_state: st.session_state.vol_ring = 50
+if "vol_call" not in st.session_state: st.session_state.vol_call = 50
+if "vol_assistant" not in st.session_state: st.session_state.vol_assistant = 70
+if "vol_navi" not in st.session_state: st.session_state.vol_navi = 55
+if "vol_notice" not in st.session_state: st.session_state.vol_notice = 40
 
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
@@ -416,7 +429,7 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🔊 [설정 -> 사운드] 최종 구현 서브 페이지 (B 포커스 라디오 + 우측 알약 토글 서라운드 + 강도 조절 + B타입 메뉴탭)
+# 🔊 [설정 -> 사운드] 메인 페이지 (B 포커스 라디오 + 우측 알약 토글 서라운드 + 강도 조절 + 하위 탭 분기)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   사운드", key="back_to_settings_from_sound"):
@@ -459,29 +472,115 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             label_visibility="collapsed"
         )
         
-    # 3. 아래쪽에 새로운 B 타입으로 하위 탭 리스트 추가 (image_610ee3.png 완벽 이식)
+    # 3. 새로운 하위 탭 메뉴 레이아웃 링크 연동
     st.write("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
-    # 톤 > 탭
+    # 톤 〉 탭
     tone_col1, tone_col2 = st.columns([4.2, 0.8])
     with tone_col1:
         st.markdown('<div class="text-container-fix"><div class="system-item-main">🎛️ 톤</div></div>', unsafe_allow_html=True)
     with tone_col2:
-        if st.button("〉", key="btn_sound_tone_sub", use_container_width=True):
-            pass  # 추후 톤 세부 설정 탭 이동용 바인딩 가능
+        if st.button("〉", key="btn_sound_tone_go", use_container_width=True):
+            st.session_state.sub_page = "sound_tone"; st.rerun()
             
     st.markdown('<div style="border-bottom: 1px solid #232830; margin: 4px 0;"></div>', unsafe_allow_html=True)
     
-    # 볼륨 > 탭
+    # 볼륨 〉 탭
     vol_col1, vol_col2 = st.columns([4.2, 0.8])
     with vol_col1:
         st.markdown('<div class="text-container-fix"><div class="system-item-main">🔊 볼륨</div></div>', unsafe_allow_html=True)
     with vol_col2:
-        if st.button("〉", key="btn_sound_volume_sub", use_container_width=True):
-            pass  # 추후 볼륨 세부 설정 탭 이동용 바인딩 가능
+        if st.button("〉", key="btn_sound_volume_go", use_container_width=True):
+            st.session_state.sub_page = "sound_volume"; st.rerun()
             
     st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 🎛️ [설정 -> 사운드 -> 톤] 상세 서브 페이지 (B 타입: 컨테이너 분할 방식 + 우측 슬라이더)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound_tone":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   톤", key="back_to_sound_main_from_tone"):
+        st.session_state.sub_page = "sound"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    # 고음 / 우측 슬라이드바
+    with st.container(border=True):
+        t_col1, t_col2 = st.columns([1.5, 3.5])
+        with t_col1:
+            st.markdown('<div class="setting-title" style="padding-top: 8px;">고음</div>', unsafe_allow_html=True)
+        with t_col2:
+            st.session_state.tone_treble = st.slider("treble_slider", min_value=0, max_value=100, value=st.session_state.tone_treble, label_visibility="collapsed")
+            
+    # 저음 / 우측 슬라이드바
+    with st.container(border=True):
+        b_col1, b_col2 = st.columns([1.5, 3.5])
+        with b_col1:
+            st.markdown('<div class="setting-title" style="padding-top: 8px;">저음</div>', unsafe_allow_html=True)
+        with b_col2:
+            st.session_state.tone_bass = st.slider("bass_slider", min_value=0, max_value=100, value=st.session_state.tone_bass, label_visibility="collapsed")
+            
+    # 서브우퍼 / 우측 슬라이드바
+    with st.container(border=True):
+        sw_col1, sw_col2 = st.columns([1.5, 3.5])
+        with sw_col1:
+            st.markdown('<div class="setting-title" style="padding-top: 8px;">서브우퍼</div>', unsafe_allow_html=True)
+        with sw_col2:
+            st.session_state.tone_subwoofer = st.slider("subwoofer_slider", min_value=0, max_value=100, value=st.session_state.tone_subwoofer, label_visibility="collapsed")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 🔊 [설정 -> 사운드 -> 볼륨] 상세 서브 페이지 (A 타입: 한 박스 구분선 통합 리스트 + 우측 슬라이더)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound_volume":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   볼륨", key="back_to_sound_main_from_volume"):
+        st.session_state.sub_page = "sound"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    with st.container(border=True):
+        # 1. 미디어
+        v_col1, v_col2 = st.columns([1.8, 3.2])
+        with v_col1: st.markdown('<div class="setting-title" style="padding-top: 8px;">🎵 미디어</div>', unsafe_allow_html=True)
+        with v_col2: st.session_state.vol_media = st.slider("v_med", 0, 100, st.session_state.vol_media, label_visibility="collapsed")
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 2. 벨소리
+        v_col3, v_col4 = st.columns([1.8, 3.2])
+        with v_col3: st.markdown('<div class="setting-title" style="padding-top: 8px;">📞 벨소리</div>', unsafe_allow_html=True)
+        with v_col4: st.session_state.vol_ring = st.slider("v_ring", 0, 100, st.session_state.vol_ring, label_visibility="collapsed")
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 3. 통화
+        v_col5, v_col6 = st.columns([1.8, 3.2])
+        with v_col5: st.markdown('<div class="setting-title" style="padding-top: 8px;">🗣️ 통화</div>', unsafe_allow_html=True)
+        with v_col6: st.session_state.vol_call = st.slider("v_call", 0, 100, st.session_state.vol_call, label_visibility="collapsed")
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 4. 어시스턴트
+        v_col7, v_col8 = st.columns([1.8, 3.2])
+        with v_col7: st.markdown('<div class="setting-title" style="padding-top: 8px;">🎙️ 어시스턴트</div>', unsafe_allow_html=True)
+        with v_col8: st.session_state.vol_assistant = st.slider("v_ast", 0, 100, st.session_state.vol_assistant, label_visibility="collapsed")
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 5. 내비게이션
+        v_col9, v_col10 = st.columns([1.8, 3.2])
+        with v_col9: st.markdown('<div class="setting-title" style="padding-top: 8px;">🧭 내비게이션</div>', unsafe_allow_html=True)
+        with v_col10: st.session_state.vol_navi = st.slider("v_nav", 0, 100, st.session_state.vol_navi, label_visibility="collapsed")
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 6. 알림
+        v_col11, v_col12 = st.columns([1.8, 3.2])
+        with v_col11: st.markdown('<div class="setting-title" style="padding-top: 8px;">🔔 알림</div>', unsafe_allow_html=True)
+        with v_col12: st.session_state.vol_notice = st.slider("v_not", 0, 100, st.session_state.vol_notice, label_visibility="collapsed")
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 
