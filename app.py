@@ -199,7 +199,7 @@ st.markdown(
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
-        height: 135px !important;
+        height: 200px !important;
         font-size: 16px !important;
         font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
