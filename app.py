@@ -51,11 +51,10 @@ if "nugu_alarm" not in st.session_state: st.session_state.nugu_alarm = True
 if "nugu_perf" not in st.session_state: st.session_state.nugu_perf = False
 if "nugu_permission_clear" not in st.session_state: st.session_state.nugu_permission_clear = True
 
-# 🔊 [사운드 신규 상태 데이터 추가]
-if "sound_spatial" not in st.session_state: st.session_state.sound_spatial = "모두"
-if "subwoofer_enabled" not in st.session_state: st.session_state.subwoofer_enabled = True
-if "fader_val" not in st.session_state: st.session_state.fader_val = 0  # 앞/뒤 상태 수치
-if "balance_val" not in st.session_state: st.session_state.balance_val = 0  # 좌/우 상태 수치
+# 🔊 [사운드 전용 상태 데이터 초기화]
+if "sound_focus" not in st.session_state: st.session_state.sound_focus = "모두"
+if "sound_surround" not in st.session_state: st.session_state.sound_surround = True
+if "sound_surround_level" not in st.session_state: st.session_state.sound_surround_level = 50
 
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
@@ -165,7 +164,7 @@ st.markdown(
         box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
     }}
 
-    /* ⭕ 타이어 공기압 서브뷰 컴포넌트 */
+    /* ⭕ 타이어 공기압 서브뷰 컴 roar */
     .tire-status-header {{ display: flex; align-items: center; gap: 10px; font-size: 16px; color: #ffffff; font-weight: bold; padding: 10px 4px; }}
     .tire-check-circle-green {{
         width: 86px; height: 86px; border-radius: 50%;
@@ -200,82 +199,37 @@ st.markdown(
     .oil-bar-label-row {{ display: flex; justify-content: space-between; font-size: 12px; color: #8e959e; margin-top: 6px; font-weight: bold; padding: 0 2px; }}
 
     /* ⚙️ 설정 메인 격자 카드 */
-    div.volvo-grid-card,
-    div.volvo-grid-card div[data-testid="stWidgetSpacing"],
-    div.volvo-grid-card div.stButton,
-    div.volvo-grid-card div.stButton > button {{
-        height: 135px !important; /* 👈 이전의 이상적인 고정 높이 135px 복원 */
-    }}
-
     div.volvo-grid-card div.stButton > button {{
         background-color: rgb(22, 27, 35) !important;
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
-        font-size: 17px !important;
+        height: 135px !important;
+        font-size: 16px !important;
         font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         width: 100% !important;
         white-space: pre-line !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0px !important;
-        margin: 0px !important;
     }}
     
-    /* 🔊 [사운드 화면 커스텀 스타일 정의] */
-    .sound-cabin-box {{
-        background-color: rgb(22, 27, 35);
-        border: 1px solid {border_color};
-        border-radius: 16px;
-        height: 240px;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        padding: 20px;
-        box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+    /* 🔊 사운드 전용 알약 커스텀 스타일 버튼 */
+    div.volvo-pill-button-zone div.stButton > button {{
+        background-color: rgb(38, 45, 56) !important;
+        color: #8e959e !important;
+        border: 1px solid #4a5464 !important;
+        border-radius: 24px !important; /* 완벽한 알약 라운딩 */
+        height: 42px !important;
+        padding: 0px 28px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        width: auto !important;
+        box-shadow: none !important;
     }}
-    .cabin-seat {{
-        background-color: rgb(40, 48, 62);
-        color: #a4aab3;
-        border-radius: 6px;
-        padding: 8px;
-        font-size: 11px;
-        text-align: center;
-        font-weight: bold;
-        border: 1px solid #4a5464;
-    }}
-    .cabin-seat.active-seat {{
+    div.volvo-pill-button-zone div.stButton > button[kind="primary"] {{
         background-color: #00A3E0 !important;
         color: #ffffff !important;
-        border: 1px solid #00c4ff !important;
-        box-shadow: 0 0 10px rgba(0,163,224,0.6);
+        border: none !important;
     }}
-    .sound-eq-title {{
-        text-align: center;
-        font-size: 14px;
-        color: #ffffff;
-        font-weight: bold;
-    }}
-    
-    /* 사운드 십자 패드 컨트롤 버튼 스타일 전용 타겟팅 */
-    div.sound-pad-zone div.stButton > button {{
-        background-color: rgb(34, 40, 52) !important;
-        color: #ffffff !important;
-        border: 1px solid #4a5464 !important;
-        border-radius: 50% !important;
-        height: 40px !important;
-        width: 40px !important;
-        padding: 0px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 14px !important;
-        margin: 0 auto !important;
-    }}
-    div.sound-pad-zone div.stButton > button:hover {{ border-color: #00A3E0 !important; }}
     
     /* 🛠️ 세팅 박스 타이틀 */
     .volvo-title-row {{ font-size: 14px; color: #8e959e; font-weight: bold; margin-top: 22px; margin-bottom: 12px; padding-left: 5px; }}
@@ -481,7 +435,7 @@ elif st.session_state.current_tab == "상태" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 🔊 [설정 -> 사운드] 신규 하위 탭 상세 서브 페이지 (image_6038c8.jpg 레이아웃 완벽 매칭)
+# 🔊 [설정 -> 사운드] 신규 상세 서브 페이지 (B 포커스 선택 바 + 알약형 서라운드 + 강도 조절)
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sound":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   사운드", key="back_to_settings_from_sound"):
@@ -489,86 +443,45 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
-    # 좌우 분할 구조 생성 (좌측: 텍스트 및 기본 설정 / 우측: 시각 밸런스 패드 컨트롤러)
-    sound_left_col, sound_right_col = st.columns([1.1, 0.9])
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row" style="margin-top:0px;">B 포커스</div>', unsafe_allow_html=True)
     
-    with sound_left_col:
-        st.markdown('<div class="volvo-title-row" style="margin-top:0px;">사운드 최적화</div>', unsafe_allow_html=True)
-        with st.container(border=True):
-            st.markdown('<div class="setting-title">공간 최적화</div>', unsafe_allow_html=True)
-            st.markdown('<div class="volvo-segment-row">', unsafe_allow_html=True)
-            sp_col1, sp_col2, sp_col3 = st.columns(3)
-            with sp_col1:
-                sp_type = "primary" if st.session_state.sound_spatial == "모두" else "secondary"
-                if st.button("모두", key="btn_sp_all", type=sp_type, use_container_width=True):
-                    st.session_state.sound_spatial = "모두"; st.rerun()
-            with sp_col2:
-                sp_type = "primary" if st.session_state.sound_spatial == "운전자" else "secondary"
-                if st.button("운전자", key="btn_sp_driver", type=sp_type, use_container_width=True):
-                    st.session_state.sound_spatial = "운전자"; st.rerun()
-            with sp_col3:
-                sp_type = "primary" if st.session_state.sound_spatial == "뒷좌석" else "secondary"
-                if st.button("뒷좌석", key="btn_sp_rear", type=sp_type, use_container_width=True):
-                    st.session_state.sound_spatial = "뒷좌석"; st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        with st.container(border=True):
-            sub_w_col1, sub_w_col2 = st.columns([3.5, 1])
-            with sub_w_col1:
-                st.markdown('<div class="setting-title" style="padding-top:2px;">서브우퍼</div>', unsafe_allow_html=True)
-            with sub_w_col2:
-                st.session_state.subwoofer_enabled = st.toggle("Subwoofer_tgl", value=st.session_state.subwoofer_enabled, label_visibility="collapsed")
-                
-    with sound_right_col:
-        # 순정 시각적 이퀄라이저 공간 연출
-        st.markdown('<div class="sound-cabin-box">', unsafe_allow_html=True)
-        
-        # 1층: 앞좌석 좌/우 배치 상황 레이아웃
-        seat_fr_col1, seat_fr_col2 = st.columns(2)
-        with seat_fr_col1:
-            is_act = "active-seat" if st.session_state.sound_spatial in ["모두", "운전자"] else ""
-            st.markdown(f'<div class="cabin-seat {is_act}">앞좌석 좌 (운전석)</div>', unsafe_allow_html=True)
-        with seat_fr_col2:
-            is_act = "active-seat" if st.session_state.sound_spatial == "모두" else ""
-            st.markdown(f'<div class="cabin-seat {is_act}">앞좌석 우</div>', unsafe_allow_html=True)
+    # 🎯 4개 항목 중 단 1개만 상호 배타적으로 선택 및 활성화되도록 구현
+    with st.container(border=True):
+        selected_focus = st.radio(
+            "B 포커스 선택 그룹",
+            options=["모두", "운전석", "앞좌석", "뒷좌석"],
+            index=["모두", "운전석", "앞좌석", "뒷좌석"].index(st.session_state.sound_focus),
+            label_visibility="collapsed"
+        )
+        if selected_focus != st.session_state.sound_focus:
+            st.session_state.sound_focus = selected_focus
+            st.rerun()
             
-        # 2층: 십자형 페이더 및 밸런스 패드 정렬 컨트롤러 구역
-        st.markdown('<div class="sound-pad-zone">', unsafe_allow_html=True)
-        pad_r1_c1, pad_r1_c2, pad_r1_c3 = st.columns(3)
-        with pad_r1_c2:
-            if st.button("▲", key="pad_up"):
-                st.session_state.fader_val = min(st.session_state.fader_val + 1, 7); st.rerun()
-                
-        pad_r2_c1, pad_r2_c2, pad_r2_c3 = st.columns(3)
-        with pad_r2_c1:
-            if st.button("◀", key="pad_left"):
-                st.session_state.balance_val = max(st.session_state.balance_val - 1, -7); st.rerun()
-        with pad_r2_c2:
-            if st.button("⟲", key="pad_reset"):
-                st.session_state.fader_val = 0; st.session_state.balance_val = 0; st.rerun()
-        with pad_r2_c3:
-            if st.button("▶", key="pad_right"):
-                st.session_state.balance_val = min(st.session_state.balance_val + 1, 7); st.rerun()
-                
-        pad_r3_c1, pad_r3_c2, pad_r3_c3 = st.columns(3)
-        with pad_r3_c2:
-            if st.button("▼", key="pad_down"):
-                st.session_state.fader_val = max(st.session_state.fader_val - 1, -7); st.rerun()
+    st.markdown('<div class="volvo-title-row">부가 설정</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="setting-title">서라운드</div>', unsafe_allow_html=True)
+        st.write("<div style='margin-top:6px;'></div>", unsafe_allow_html=True)
+        st.markdown('<div class="volvo-pill-button-zone">', unsafe_allow_html=True)
+        pill_type = "primary" if st.session_state.sound_surround else "secondary"
+        
+        # 알약 버튼 상태 전환 트리거
+        if st.button("서라운드", key="btn_sound_surround_toggle", type=pill_type):
+            st.session_state.sound_surround = not st.session_state.sound_surround
+            st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 3층: 뒷좌석 좌/우 배치 상황 레이아웃
-        seat_rr_col1, seat_rr_col2 = st.columns(2)
-        with seat_rr_col1:
-            is_act = "active-seat" if st.session_state.sound_spatial in ["모두", "뒷좌석"] else ""
-            st.markdown(f'<div class="cabin-seat {is_act}">뒷좌석 좌</div>', unsafe_allow_html=True)
-        with seat_rr_col2:
-            is_act = "active-seat" if st.session_state.sound_spatial in ["모두", "뒷좌석"] else ""
-            st.markdown(f'<div class="cabin-seat {is_act}">뒷좌석 우</div>', unsafe_allow_html=True)
-            
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-divider" style="margin-top: 15px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
         
-        # 현재 이퀄라이저 설정값 디스플레이
-        st.markdown(f'<div class="sound-eq-title">밸런스: {st.session_state.balance_val} &nbsp;|&nbsp; 페이더: {st.session_state.fader_val}</div>', unsafe_allow_html=True)
+        st.markdown('<div class="setting-title">효과 강도 조절</div>', unsafe_allow_html=True)
+        # 내장 슬라이더 연동
+        st.session_state.sound_surround_level = st.slider(
+            "효과 강도 레벨",
+            min_value=0, max_value=100,
+            value=st.session_state.sound_surround_level,
+            label_visibility="collapsed"
+        )
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # 🚗 [설정 -> 주행] 서브 페이지
@@ -584,7 +497,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     with st.container(border=True):
         pa_col1, pa_col2 = st.columns([3.6, 1])
         with pa_col1:
-            st.markdown('<div class="setting-title">Pilot Assist 기본 설정</div><div class="setting-desc">스티어링 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>', unsafe_allow_html=True)
+            st.markdown('<div class="setting-title">Pilot Assist 기본 설정</div><div class="setting-desc">스티어ering 휠에서 ▶을 눌러 어댑티브 크루즈 컨트롤과 Pilot Assist를 전환합니다.</div>', unsafe_allow_html=True)
         with pa_col2:
             st.write("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
             st.session_state.pilot_assist = st.toggle("PA_tgl", value=st.session_state.pilot_assist, label_visibility="collapsed")
@@ -1051,7 +964,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# 📱 [시스템 -> 애플리케이션 (기본 앱 목록)] 상세페이지
+# 📱 [시스템 -> 상세 3. 애플리케이션 (기본 앱 목록)] 상세페이지
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "sys_apps":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
     if st.button("〈   애플리케이션", key="back_to_sys_main_3"):
@@ -1149,7 +1062,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
     col_st1, col_st2 = st.columns([4.2, 0.8])
     with col_st1: st.markdown('<div class="text-container-fix"><div class="system-item-main">저장용량 및 캐시</div><div class="system-item-sub">내부 저장소의 94.87MB</div></div>', unsafe_allow_html=True)
-    with col_st2: st.button("〉", key="btn_nugu_storage", use_container_width=True)
+    with st.button("〉", key="btn_nugu_storage", use_container_width=True): pass
     st.markdown('<div style="border-bottom: 1px solid #333b46; margin: 8px 0;"></div>', unsafe_allow_html=True)
 
     col_pf1, col_pf2 = st.columns([4.2, 0.8])
@@ -1297,7 +1210,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     row2_col1, row2_col2 = st.columns(2)
     with row2_col1:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        # 🎯 사운드 탭 진입 트리거 연결 완료!
+        # 🎯 라우팅 연동 성공: 사운드 버튼 클릭 시 신규 구현한 sound 탭으로 이동!
         if st.button("사운드", key="btn_sound_go", use_container_width=True):
             st.session_state.sub_page = "sound"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
