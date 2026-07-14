@@ -897,7 +897,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
 
 # ------------------------------------------
-# [10-2-A] 🔑 설정 -> 프로필 -> 차량 키 -> 케어 키 상세 뷰 (새롭게 추가됨)
+# [10-2-A] 🔑 설정 -> 프로필 -> 차량 키 -> 케어 키 상세 뷰
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_care_key":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -929,7 +929,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
 
 # ------------------------------------------
-# [10-3] 🔒 설정 -> 프로필 -> 프로필 잠금 (잠금 유형 선택) 상세 뷰 (새롭게 추가됨)
+# [10-3] 🔒 설정 -> 프로필 -> 프로필 잠금 (잠금 유형 선택) 상세 뷰
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_lock_settings":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -973,7 +973,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
 
 
 # ------------------------------------------
-# [10-4] 👥 설정 -> 프로필 -> 다른 프로필 관리 상세 뷰 (새롭게 추가됨)
+# [10-4] 👥 설정 -> 프로필 -> 다른 프로필 관리 상세 뷰
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_manage_other":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -991,6 +991,68 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         '</div>',
         unsafe_allow_html=True
     )
+
+
+# ------------------------------------------
+# [10-5] 🛡️ 설정 -> 개인정보 보호 상세 뷰 (A 타입 리스트형 신규 추가)
+# ------------------------------------------
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "privacy_settings":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   개인정보 보호", key="back_to_settings_from_privacy"):
+        st.session_state.sub_page = "main"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        
+        # 1. Volvo 개인정보 보호 설정
+        priv_c1, priv_c2 = st.columns([4.2, 0.8])
+        with priv_c1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">Volvo 개인정보 보호 설정</div><div class="system-item-sub">차량 개인정보 보호 설정 제어</div></div>', unsafe_allow_html=True)
+        with priv_c2:
+            st.button("〉", key="btn_priv_volvo_dummy", use_container_width=True)
+            
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 2. 마이크
+        priv_c3, priv_c4 = st.columns([4.2, 0.8])
+        with priv_c3:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">마이크</div><div class="system-item-sub">앱의 마이크 액세스 권한 제어</div></div>', unsafe_allow_html=True)
+        with priv_c4:
+            st.button("〉", key="btn_priv_mic_dummy", use_container_width=True)
+            
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 3. 위치
+        priv_c5, priv_c6 = st.columns([4.2, 0.8])
+        with priv_c5:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">위치</div><div class="system-item-sub">위치에 대한 앱 액세스 제어</div></div>', unsafe_allow_html=True)
+        with priv_c6:
+            st.button("〉", key="btn_priv_loc_dummy", use_container_width=True)
+            
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 4. 앱 권한
+        priv_c7, priv_c8 = st.columns([4.2, 0.8])
+        with priv_c7:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">앱 권한</div><div class="system-item-sub">내 데이터에 대한 앱 액세스 권한 제어</div></div>', unsafe_allow_html=True)
+        with priv_c8:
+            st.button("〉", key="btn_priv_perm_dummy", use_container_width=True)
+            
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 5. 인포테인먼트 시스템 데이터
+        priv_c9, priv_c10 = st.columns([4.2, 0.8])
+        with priv_c9:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:15px;">인포테인먼트 시스템 데이터</div><div class="system-item-sub">차량에 저장된 활동 및 정보 관리</div></div>', unsafe_allow_html=True)
+        with priv_c10:
+            st.button("〉", key="btn_priv_infodata_dummy", use_container_width=True)
+            
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ------------------------------------------
@@ -1079,7 +1141,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.session_state.sub_page = "main"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c" ; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
 
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     st.markdown('<div class="volvo-title-row">조명 및 디스플레이</div>', unsafe_allow_html=True)
@@ -1758,7 +1820,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('</div>', unsafe_allow_html=True)
     with row3_col2:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        st.button("개인정보\n보호", key="btn_privacy_go", use_container_width=True)
+        if st.button("개인정보\n보호", key="btn_privacy_go_main", use_container_width=True):
+            st.session_state.sub_page = "privacy_settings"
+            st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
     with row3_col3:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
