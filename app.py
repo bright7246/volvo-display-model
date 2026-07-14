@@ -295,6 +295,29 @@ st.markdown(
         letter-spacing: 1px;
     }}
 
+    /* 🚫 빈 프로필 알림 컴포넌트 */
+    .no-profile-wrapper {{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        height: 380px;
+        padding: 0 20px;
+    }}
+    .no-profile-main {{
+        font-size: 22px;
+        font-weight: bold;
+        color: #ffffff;
+        margin-bottom: 10px;
+        letter-spacing: -0.5px;
+    }}
+    .no-profile-sub {{
+        font-size: 14px;
+        color: #8e959e;
+        line-height: 1.4;
+    }}
+
     /* 하단 바 */
     .volvo-bottom-bar {{ display: flex; justify-content: space-between; align-items: center; background-color: #111418; padding: 14px 18px; border-radius: 12px; margin-top: 40px; border: 1px solid #232830; }}
     .bottom-item {{ font-size: 14px; font-weight: 500; color: #ffffff !important; text-align: center; }}
@@ -307,6 +330,10 @@ st.markdown(
 # ==========================================
 # 2. 전역 애플리케이션 세션 데이터 초기화
 # ==========================================
+
+# 하위 메뉴 이동 라우터 변수 초기화
+if "sub_page" not in st.session_state: st.session_state.sub_page = "main"
+if "current_tab" not in st.session_state: st.session_state.current_tab = "설정"
 
 # [주행 설정 데이터]
 if "pilot_assist" not in st.session_state: st.session_state.pilot_assist = True
@@ -366,8 +393,9 @@ if "vol_notice" not in st.session_state: st.session_state.vol_notice = 40
 # [연결 설정 데이터]
 if "conn_wifi_enabled" not in st.session_state: st.session_state.conn_wifi_enabled = True
 
-# [프로필 설정 데이터]
+# [프로필 및 하위 잠금/키 설정 데이터]
 if "profile_name" not in st.session_state: st.session_state.profile_name = "오너"
+if "care_key_speed_limit" not in st.session_state: st.session_state.care_key_speed_limit = False
 
 
 # ==========================================
@@ -771,20 +799,26 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
         p_col7, p_col8 = st.columns([4.2, 0.8])
         with p_col7: st.markdown('<div class="text-container-fix"><div class="system-item-main">프로필 잠금</div><div class="system-item-sub">프로필 접속 제한</div></div>', unsafe_allow_html=True)
-        with p_col8: st.button("〉", key="btn_prof_lock", use_container_width=True)
+        with p_col8: 
+            if st.button("〉", key="btn_prof_lock_go", use_container_width=True):
+                st.session_state.sub_page = "profile_lock_settings"
+                st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
         
     with st.container(border=True):
         st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
         p_col9, p_col10 = st.columns([4.2, 0.8])
         with p_col9: st.markdown('<div class="text-container-fix" style="min-height:36px;"><div class="system-item-main">다른 프로필 관리</div></div>', unsafe_allow_html=True)
-        with p_col10: st.button("〉", key="btn_prof_manage_other", use_container_width=True)
+        with p_col10: 
+            if st.button("〉", key="btn_prof_manage_other_go", use_container_width=True):
+                st.session_state.sub_page = "profile_manage_other"
+                st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ------------------------------------------
-# [10-1] 📱 설정 -> 프로필 -> Volvo Cars 앱 상세 뷰 (소유자 등록 및 키스캔 무반응 기능 추가)
+# [10-1] 📱 설정 -> 프로필 -> Volvo Cars 앱 상세 뷰
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_volvo_app":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -797,7 +831,6 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div class="volvo-title-row">소유자로 등록</div>', unsafe_allow_html=True)
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
-    # 🔑 볼보 앱 일러스트 그래픽 모사 존
     st.markdown(
         '<div class="volvo-app-illus-box">'
         '<div class="volvo-app-illus-icon">🔑📡🔑</div>'
@@ -811,16 +844,15 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('<div class="setting-desc" style="font-size:13px; line-height:1.5; margin-top:8px; color:#a4aab3;">그런 다음 volvo ID 를 사용하여 Volvo cars 앱에 연결할 수 있습니다.</div>', unsafe_allow_html=True)
         st.markdown('<div style="margin-top: 22px;"></div>', unsafe_allow_html=True)
         
-        # 🎯 누르되 아무 반응이 없게 설계된 스캔 전용 버튼
         scan_col1, scan_col2, scan_col3 = st.columns([1, 2, 1])
         with scan_col2:
             if st.button("키 스캔", key="btn_key_scan_trigger_dummy", use_container_width=True, type="primary"):
-                pass  # 무반응 처리 요구사항 반영
+                pass
     st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ------------------------------------------
-# [10-2] 🔑 설정 -> 프로필 -> 차량 키 상세 뷰 (A/B 타입 및 무반응 버튼 연동 추가)
+# [10-2] 🔑 설정 -> 프로필 -> 차량 키 상세 뷰
 # ------------------------------------------
 elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_car_key":
     st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
@@ -833,20 +865,17 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div class="volvo-title-row">키 연결 및 관리</div>', unsafe_allow_html=True)
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     
-    # [1] 키 (A타입 헤더 & B타입 바디 연계 구조)
     st.markdown('<div class="volvo-title-row" style="margin-top:0px; font-size:15px; color:#ffffff;">키</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="setting-title" style="color:#e2e8f0;">연결된 키 없음</div>', unsafe_allow_html=True)
         st.markdown('<div class="setting-desc" style="margin-top:6px; line-height:1.4;">차량에 탑승할 때 키를 연결하여 귀하의 설정을 불러오십시오</div>', unsafe_allow_html=True)
         st.markdown('<div style="margin-top:18px;"></div>', unsafe_allow_html=True)
         
-        # 🎯 누르되 반응 없도록 설계한 프로필 연결 버튼
         if st.button("키를 이 프로필에 연결", key="btn_connect_key_profile_dummy", use_container_width=True):
-            pass  # 무반응 처리 요구사항 반영
+            pass
             
     st.write("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
 
-    # [2] 제한된 키 (A타입 헤더 & B타입 리스트 및 〉 링크 구조)
     st.markdown('<div class="volvo-title-row" style="font-size:15px; color:#ffffff;">제한된 키</div>', unsafe_allow_html=True)
     with st.container(border=True):
         st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
@@ -860,9 +889,108 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
                 unsafe_allow_html=True
             )
         with key_limit_col2:
-            st.button("〉", key="btn_care_key_settings_dummy", use_container_width=True)
+            if st.button("〉", key="btn_care_key_settings_go", use_container_width=True):
+                st.session_state.sub_page = "profile_care_key"
+                st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ------------------------------------------
+# [10-2-A] 🔑 설정 -> 프로필 -> 차량 키 -> 케어 키 상세 뷰 (새롭게 추가됨)
+# ------------------------------------------
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_care_key":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   케어 키", key="back_to_car_key_from_care"):
+        st.session_state.sub_page = "profile_car_key"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="volvo-title-row">제한</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        ck_col1, ck_col2 = st.columns([4.2, 0.8])
+        with ck_col1:
+            st.markdown(
+                '<div class="text-container-fix">'
+                '<div class="system-item-main" style="font-size: 16px; font-weight: bold;">속도 제한</div>'
+                '</div>',
+                unsafe_allow_html=True
+            )
+        with ck_col2:
+            st.markdown('<div class="right-toggle-align" style="margin-top: 6px;">', unsafe_allow_html=True)
+            st.session_state.care_key_speed_limit = st.toggle("tgl_care_key_speed_limit", value=st.session_state.care_key_speed_limit, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ------------------------------------------
+# [10-3] 🔒 설정 -> 프로필 -> 프로필 잠금 (잠금 유형 선택) 상세 뷰 (새롭게 추가됨)
+# ------------------------------------------
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_lock_settings":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   잠금 유형 선택", key="back_to_profile_settings_from_lock"):
+        st.session_state.sub_page = "profile_settings"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        
+        # 1. 없음
+        lock_c1, lock_c2 = st.columns([4.2, 0.8])
+        with lock_c1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main" style="font-weight: bold; font-size:16px;">없음</div><div class="system-item-sub">현재 프로필 잠금</div></div>', unsafe_allow_html=True)
+        with lock_c2:
+            st.button("〉", key="btn_lock_none_dummy", use_container_width=True)
+            
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 2. 패턴
+        lock_c3, lock_c4 = st.columns([4.2, 0.8])
+        with lock_c3:
+            st.markdown('<div class="text-container-fix" style="min-height:48px;"><div class="system-item-main" style="font-weight: bold; font-size:16px;">패턴</div></div>', unsafe_allow_html=True)
+        with lock_c4:
+            st.button("〉", key="btn_lock_pattern_dummy", use_container_width=True)
+            
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 10px 0;"></div>', unsafe_allow_html=True)
+        
+        # 3. PIN
+        lock_c5, lock_c6 = st.columns([4.2, 0.8])
+        with lock_c5:
+            st.markdown('<div class="text-container-fix" style="min-height:48px;"><div class="system-item-main" style="font-weight: bold; font-size:16px;">PIN</div></div>', unsafe_allow_html=True)
+        with lock_c6:
+            st.button("〉", key="btn_lock_pin_dummy", use_container_width=True)
+            
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# ------------------------------------------
+# [10-4] 👥 설정 -> 프로필 -> 다른 프로필 관리 상세 뷰 (새롭게 추가됨)
+# ------------------------------------------
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "profile_manage_other":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   다른 프로필 관리", key="back_to_profile_settings_from_manage"):
+        st.session_state.sub_page = "profile_settings"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    # 볼보 순정 스타일의 정중앙 빈 상태 구조 재현
+    st.markdown(
+        '<div class="no-profile-wrapper">'
+        '<div class="no-profile-main">관리할 프로필 없음</div>'
+        '<div class="no-profile-sub">추가된 프로필이 여기에 표시됩니다</div>'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 
 # ------------------------------------------
@@ -1280,7 +1408,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     
     col5, col6 = st.columns([4.2, 0.8])
     with col5: st.markdown('<div class="text-container-fix"><div class="system-item-main">⌨️ 키보드</div><div class="system-item-sub">키보드(IME)</div></div>', unsafe_allow_html=True)
-    with col6: st.button("〉", key="btn_keyboard", use_container_width=True)
+    with col5: st.button("〉", key="btn_keyboard", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
