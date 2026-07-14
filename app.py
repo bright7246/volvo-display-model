@@ -51,7 +51,7 @@ if "nugu_alarm" not in st.session_state: st.session_state.nugu_alarm = True
 if "nugu_perf" not in st.session_state: st.session_state.nugu_perf = False
 if "nugu_permission_clear" not in st.session_state: st.session_state.nugu_permission_clear = True
 
-# 🔊 [사운드 및 하위 메뉴 전용 상태 데이터]
+# 🔊 [사운드 전용 상태 데이터]
 if "sound_focus" not in st.session_state: st.session_state.sound_focus = "모두"
 if "sound_surround" not in st.session_state: st.session_state.sound_surround = True
 if "sound_surround_level" not in st.session_state: st.session_state.sound_surround_level = 50
@@ -68,6 +68,9 @@ if "vol_call" not in st.session_state: st.session_state.vol_call = 50
 if "vol_assistant" not in st.session_state: st.session_state.vol_assistant = 70
 if "vol_navi" not in st.session_state: st.session_state.vol_navi = 55
 if "vol_notice" not in st.session_state: st.session_state.vol_notice = 40
+
+# 📶 [연결 전용 상태 데이터 초기화]
+if "conn_wifi_enabled" not in st.session_state: st.session_state.conn_wifi_enabled = True
 
 # 볼보 순정 다크 톤 배색 지정
 bg_color = "rgb(18, 22, 28)"
@@ -440,7 +443,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
     st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
     st.markdown('<div class="volvo-title-row" style="margin-top:0px;">포커스</div>', unsafe_allow_html=True)
     
-    # 1. B 포커스 단일 라디오 활성화 존
+    # B 포커스 단일 라디오 활성화 존
     with st.container(border=True):
         selected_focus = st.radio(
             "B 포커스 선택 그룹",
@@ -452,7 +455,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             st.session_state.sound_focus = selected_focus
             st.rerun()
             
-    # 2. 부가 설정 존 (글자는 왼쪽, 알약 토글은 오른쪽 끝 배치)
+    # 부가 설정 존 (글자는 왼쪽, 알약 토글은 오른쪽 끝 배치)
     with st.container(border=True):
         sr_col1, sr_col2 = st.columns([3.6, 1])
         with sr_col1:
@@ -472,7 +475,7 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
             label_visibility="collapsed"
         )
         
-    # 3. 새로운 하위 탭 메뉴 레이아웃 링크 연동
+    # 새로운 하위 탭 메뉴 레이아웃 링크 연동
     st.write("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
     st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
     
@@ -581,6 +584,108 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         with v_col11: st.markdown('<div class="setting-title" style="padding-top: 8px;">🔔 알림</div>', unsafe_allow_html=True)
         with v_col12: st.session_state.vol_notice = st.slider("v_not", 0, 100, st.session_state.vol_notice, label_visibility="collapsed")
 
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 📶 [설정 -> 연결] 메인 하위 탭 (A 타입)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "connection":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   연결", key="back_to_settings_from_conn"):
+        st.session_state.sub_page = "main"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row" style="margin-top:0px;">연결 설정</div>', unsafe_allow_html=True)
+    
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        
+        # 1. 블루투스 〉
+        bt_col1, bt_col2 = st.columns([4.2, 0.8])
+        with bt_col1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main">📱 블루투스</div></div>', unsafe_allow_html=True)
+        with bt_col2:
+            if st.button("〉", key="btn_conn_bluetooth_go", use_container_width=True):
+                st.session_state.sub_page = "conn_bluetooth"; st.rerun()
+                
+        st.markdown('<div style="border-bottom: 1px solid #232830; margin: 8px 0;"></div>', unsafe_allow_html=True)
+        
+        # 2. WI-FI 〉
+        wf_col1, wf_col2 = st.columns([4.2, 0.8])
+        with wf_col1:
+            st.markdown('<div class="text-container-fix"><div class="system-item-main">📶 WI-FI</div></div>', unsafe_allow_html=True)
+        with wf_col2:
+            if st.button("〉", key="btn_conn_wifi_go", use_container_width=True):
+                st.session_state.sub_page = "conn_wifi"; st.rerun()
+                
+        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 📱 [설정 -> 연결 -> 블루투스] 상세 서브 페이지 (A 타입 - 2번 사진 반영)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "conn_bluetooth":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   블루투스", key="back_to_conn_main_from_bt"):
+        st.session_state.sub_page = "connection"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    
+    # 1. 저장된 기기 영역
+    st.markdown('<div class="volvo-title-row" style="margin-top:0px;">저장된 기기</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        btd_col1, btd_col2 = st.columns([4.2, 0.8])
+        with btd_col1:
+            st.markdown(
+                '<div class="text-container-fix">'
+                '<div class="system-item-main">이밝음</div>'
+                '<div class="system-item-sub" style="color: #00A3E0;">연결됨</div>'
+                '</div>',
+                unsafe_allow_html=True
+            )
+        with btd_col2:
+            # 순정 우측 톱니바퀴 설정 모양 아이콘 버튼 구현
+            st.markdown('<div style="display: flex; height: 48px; align-items: center; justify-content: flex-end; font-size: 18px; padding-right: 10px;">⚙️</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    # 2. 확인된 기기 영역 (Volvo XC40 표시)
+    st.markdown('<div class="volvo-title-row">확인된 기기</div>', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown('<div class="system-list-zone">', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="text-container-fix" style="padding-left: 4px;">'
+            '<div class="system-item-main" style="font-weight: normal;">Volvo XC40</div>'
+            '</div>',
+            unsafe_allow_html=True
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# 📶 [설정 -> 연결 -> WI-FI] 상세 서브 페이지 (3번 사진 반영 - 우측 알약 토글 마크)
+elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "conn_wifi":
+    st.markdown('<div class="back-btn-box">', unsafe_allow_html=True)
+    if st.button("〈   WI-FI", key="back_to_conn_main_from_wf"):
+        st.session_state.sub_page = "connection"; st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div style="border-bottom: 1px solid #2d333c; margin-top: 5px; margin-bottom: 15px;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="subpage-content-zone">', unsafe_allow_html=True)
+    st.markdown('<div class="volvo-title-row" style="margin-top:0px;">Wi-Fi 설정</div>', unsafe_allow_html=True)
+    
+    with st.container(border=True):
+        wf_tcol1, wf_tcol2 = st.columns([3.8, 1.2])
+        with wf_tcol1:
+            st.markdown('<div class="setting-title" style="padding-top: 4px;">Wi-Fi 사용</div>', unsafe_allow_html=True)
+        with wf_tcol2:
+            st.markdown('<div class="right-toggle-align">', unsafe_allow_html=True)
+            st.session_state.conn_wifi_enabled = st.toggle("tgl_conn_wifi_toggle", value=st.session_state.conn_wifi_enabled, label_visibility="collapsed")
+            st.markdown('</div>', unsafe_allow_html=True)
+            
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -1315,7 +1420,9 @@ elif st.session_state.current_tab == "설정" and st.session_state.sub_page == "
         st.markdown('</div>', unsafe_allow_html=True)
     with row2_col2:
         st.markdown('<div class="volvo-grid-card">', unsafe_allow_html=True)
-        st.button("연결", key="btn_connect_go", use_container_width=True)
+        # 🎯 연결 버튼 클릭 시 [설정 > 연결] 메인 페이지로 이동!
+        if st.button("연결", key="btn_connect_go", use_container_width=True):
+            st.session_state.sub_page = "connection"; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
     row3_col1, row3_col2, row3_col3 = st.columns(3)
