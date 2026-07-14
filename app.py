@@ -199,7 +199,7 @@ st.markdown(
         color: #ffffff !important;
         border: 1px solid {border_color} !important;
         border-radius: 14px !important;
-        height: 160px !important; /* 👈 기존 135px에서 160px로 세로 확대 */
+        height: 500px !important; /* 👈 기존 135px에서 160px로 세로 확대 */
         font-size: 17px !important; /* 글자 크기도 살짝 확대 */
         font-weight: bold !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
